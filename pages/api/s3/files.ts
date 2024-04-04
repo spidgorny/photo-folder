@@ -18,6 +18,7 @@ export function getS3Storage() {
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const s3 = getS3Storage();
   const stream = s3.list();
+  console.log("stream", stream);
   let files = await toArray(stream);
   files = files.filter(
     (file: S3File) =>

@@ -34,10 +34,11 @@ export function PreviewImage(props: PropsWithChildren<{ file: S3File }>) {
           }}
         >
           <Image
-            src={`/api/s3/${props.file.key}/jpg`}
+            src={`/api/s3/jpg/${props.file.key}`}
             width={320}
             height={200}
             alt={props.file.key}
+            loading="lazy"
           />
         </div>
       </Link>

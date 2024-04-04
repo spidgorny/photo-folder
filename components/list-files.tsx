@@ -9,7 +9,7 @@ export interface S3File {
 }
 
 export function ListFiles() {
-  const { data, error } = useSWR<{ files: S3File[] }>("/api/s3", fetcher);
+  const { data, error } = useSWR<{ files: S3File[] }>("/api/s3/files", fetcher);
   if (error) return <div className="alert alert-danger">{error?.message}</div>;
   if (!data) return <div>loading...</div>;
   return (

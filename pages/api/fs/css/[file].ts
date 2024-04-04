@@ -10,8 +10,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   // imageFile = imageFile.replace(/C:/, "/c");
   // console.log({ imageFile });
   const imageBlob = fs.readFileSync(imageFile);
-  const { css, img } = await getPlaiceholder(imageBlob);
+  const { css, base64 } = await getPlaiceholder(imageBlob);
   res.status(200);
   res.setHeader("cache-control", "public, max-age=999999999");
-  res.json({ css, img });
+  res.json({ css, base64 });
 };
