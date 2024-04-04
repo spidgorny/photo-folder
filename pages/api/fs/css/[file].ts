@@ -1,5 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-
 import { getPlaiceholder } from "plaiceholder";
 import { FOLDER } from "../files";
 import { NextApiRequest, NextApiResponse } from "next";

@@ -1,10 +1,10 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import {NextApiRequest, NextApiResponse} from "next";
+import { getPlaiceholder } from "plaiceholder";
 
 export const FOLDER = "C:\\Users\\depidsvy\\Pictures\\1000 Full HD Wallpapers";
 
-import { getPlaiceholder } from "plaiceholder";
 import * as fs from "fs";
-export default (req, res) => {
+export default (req: NextApiRequest, res: NextApiResponse) => {
   const files = fs.readdirSync(FOLDER);
   res.status(200).json({ files });
 };
