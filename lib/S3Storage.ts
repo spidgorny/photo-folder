@@ -33,5 +33,14 @@ export function getS3Storage() {
           resolve(data);
         });
       }),
+    exists: (key: string, options?: any) =>
+      new Promise((resolve, reject) => {
+        s3s.exists(key, options, (err: Error | null, data: any) => {
+          if (err) {
+            reject(err);
+          }
+          resolve(data);
+        });
+      }),
   };
 }

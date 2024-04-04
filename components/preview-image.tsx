@@ -1,12 +1,10 @@
 import { PropsWithChildren } from "react";
-import useSWR from "swr";
-import { fetcher } from "../lib/fetcher";
 import Image from "next/image";
 import { S3File } from "./list-files";
 import Link from "next/link";
 
 export function PreviewImage(props: PropsWithChildren<{ file: S3File }>) {
-  const { data, error } = useSWR("/api/s3/" + props.file.key, fetcher);
+  // const { data, error } = useSWR("/api/s3/" + props.file.key, fetcher);
   return (
     <div
       style={{
@@ -30,17 +28,16 @@ export function PreviewImage(props: PropsWithChildren<{ file: S3File }>) {
             height: "100%",
             transform: "scale(1.5)",
             filter: "blur(40px)",
-            ...data?.css,
+            ...props.file.css,
           }}
-        >
-          <Image
-            src={`/api/s3/jpg/${props.file.key}`}
-            width={320}
-            height={200}
-            alt={props.file.key}
-            loading="lazy"
-          />
-        </div>
+        />
+        <Image
+          src={`/api/s3/thumb/${props.file.key}`}
+          width={320}
+          height={200}
+          alt={props.file.key}
+          loading="lazy"
+        />
       </Link>
     </div>
   );

@@ -5,6 +5,7 @@ import { S3File } from "../components/list-files";
 import path from "path";
 import invariant from "tiny-invariant";
 import { getS3Storage } from "../lib/S3Storage";
+import sharp from "sharp";
 
 void runTest(async () => {
   const s3 = getS3Storage();

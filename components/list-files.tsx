@@ -6,6 +6,9 @@ export interface S3File {
   key: string;
   size: number;
   modified: string;
+  css?: Record<string, string>;
+  base64?: string;
+  metadata?: Record<string, string>;
 }
 
 export function useFiles() {
