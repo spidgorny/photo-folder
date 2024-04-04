@@ -3,20 +3,26 @@ import Image from "next/image";
 import { S3File } from "./list-files";
 import Link from "next/link";
 
-export function PreviewImage(props: PropsWithChildren<{ file: S3File }>) {
+export function PreviewImage(
+  props: PropsWithChildren<{ prefix: string; file: S3File }>,
+) {
   // const { data, error } = useSWR("/api/s3/" + props.file.key, fetcher);
+  const aspectRatio = props.file.metadata.width / props.file.metadata.height;
   return (
     <div
+      id={props.file.key}
       style={{
         position: "relative",
         border: "solid 1px silver",
         display: "block",
         overflow: "hidden",
         width: 320,
-        height: 200,
+        height: 320 / aspectRatio,
       }}
     >
-      <Link href={"/lightbox/" + encodeURIComponent(props.file.key)}>
+      <Link
+        href={`/${props.prefix}/lightbox/` + encodeURIComponent(props.file.key)}
+      >
         <div
           style={{
             position: "absolute",
@@ -24,19 +30,26 @@ export function PreviewImage(props: PropsWithChildren<{ file: S3File }>) {
             right: 0,
             bottom: 0,
             left: 0,
-            width: "100%",
-            height: "100%",
-            transform: "scale(1.5)",
-            filter: "blur(40px)",
+            width: 320,
+            height: 320 / aspectRatio,
+            transform: "scale(1.1)",
+            filter: "blur(20px)",
+            zIndex: 10,
             ...props.file.css,
           }}
         />
         <Image
           src={`/api/s3/thumb/${props.file.key}`}
           width={320}
-          height={200}
+          height={320 / aspectRatio}
           alt={props.file.key}
           loading="lazy"
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            zIndex: 20,
+          }}
         />
       </Link>
     </div>

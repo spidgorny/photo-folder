@@ -5,7 +5,6 @@ import { S3File } from "../components/list-files";
 import path from "path";
 import invariant from "tiny-invariant";
 import { getS3Storage } from "../lib/S3Storage";
-import sharp from "sharp";
 
 void runTest(async () => {
   const s3 = getS3Storage();
@@ -13,14 +12,14 @@ void runTest(async () => {
   const files: S3File[] = await s3.list({ prefix });
   invariant(files.length, `not files in ${prefix}`);
   // console.table(files);
-  const thumbnailFilePath = `${prefix}/thumbnails.json`;
+  const thumbnailFilePath = `${prefix}/.thumbnails.json`;
   fs.mkdirSync(path.dirname(thumbnailFilePath), { recursive: true });
   let thumbnails = [];
   if (fs.existsSync(thumbnailFilePath)) {
     thumbnails = JSON.parse(fs.readFileSync(thumbnailFilePath, "utf8"));
   } else {
     try {
-      thumbnails = JSON.parse(s3.get(`${prefix}/thumbnails.json`));
+      thumbnails = JSON.parse(s3.get(thumbnailFilePath));
     } catch (err) {
       console.error(err);
       thumbnails = [];
@@ -41,6 +40,7 @@ void runTest(async () => {
       });
       delete metadata.icc;
       delete metadata.exif;
+      delete metadata.xmp;
       thumbnails = replaceOrAppend(
         thumbnails,
         { ...file, css, base64, metadata },
@@ -57,10 +57,7 @@ void runTest(async () => {
     console.error(error);
   }
   fs.writeFileSync(thumbnailFilePath, JSON.stringify(thumbnails, null, 2));
-  await s3.put(
-    `${prefix}/thumbnails.json`,
-    JSON.stringify(thumbnails, null, 2),
-  );
+  await s3.put(thumbnailFilePath, JSON.stringify(thumbnails, null, 2));
 });
 
 const replaceOrAppend = (arr: any[], val: any, compFn: (v: any) => boolean) => {
