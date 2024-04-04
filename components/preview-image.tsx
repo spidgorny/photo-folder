@@ -42,6 +42,7 @@ export function PreviewImage(
           src={`/api/s3/thumb/${props.file.key}`}
           width={320}
           height={320 / aspectRatio}
+          unoptimized
           alt={props.file.key}
           loading="lazy"
           style={{
