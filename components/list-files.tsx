@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { fetcher } from "./fetcher";
+import { fetcher } from "../lib/fetcher";
 import { PreviewImage } from "./preview-image";
 
 export interface S3File {
@@ -8,8 +8,16 @@ export interface S3File {
   modified: string;
 }
 
+export function useFiles() {
+  const { data, error, isLoading } = useSWR<{ files: S3File[] }>(
+    "/api/s3/files",
+    fetcher,
+  );
+  return { data, error, isLoading };
+}
+
 export function ListFiles() {
-  const { data, error } = useSWR<{ files: S3File[] }>("/api/s3/files", fetcher);
+  const { data, error, isLoading } = useFiles();
   if (error) return <div className="alert alert-danger">{error?.message}</div>;
   if (!data) return <div>loading...</div>;
   return (

@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 import useSWR from "swr";
-import { fetcher } from "./fetcher";
+import { fetcher } from "../lib/fetcher";
 import Image from "next/image";
 import { S3File } from "./list-files";
 import Link from "next/link";
