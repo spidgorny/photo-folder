@@ -1,5 +1,6 @@
 import { PreviewImage } from "./preview-image";
-import { S3File, useFiles } from "./use-files";
+import { useFiles } from "./use-files";
+import { S3File } from "../lib/s3-file";
 
 export function ListFiles(props: { prefix: string }) {
   const { data, error, isLoading } = useFiles(props.prefix);

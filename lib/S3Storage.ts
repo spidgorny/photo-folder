@@ -3,17 +3,20 @@ import s3_storage from "s3-storage";
 import { promisify } from "node:util";
 import toArray from "stream-to-array";
 
-import { S3File } from "../components/use-files";
+import { S3File } from "./s3-file";
 
 export type S3Storage = ReturnType<typeof getS3Storage>;
 
 export function getS3Storage() {
-  invariant(process.env.AWS_ACCESS_KEY_ID, "missing AWS_ACCESS_KEY_ID");
-  invariant(process.env.AWS_SECRET_ACCESS_KEY, "missing AWS_SECRET_ACCESS_KEY");
+  invariant(process.env.BUCKET_ACCESS_KEY_ID, "missing BUCKET_ACCESS_KEY_ID");
+  invariant(
+    process.env.BUCKET_SECRET_ACCESS_KEY,
+    "missing BUCKET_SECRET_ACCESS_KEY",
+  );
   invariant(process.env.BUCKET_NAME, "missing BUCKET_NAME");
   const s3s = s3_storage(process.env.BUCKET_NAME, {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.BUCKET_ACCESS_KEY_ID,
+    secretAccessKey: process.env.BUCKET_SECRET_ACCESS_KEY,
     region: process.env.AWS_DEFAULT_REGION,
   });
   const s3get = promisify(s3s.get.bind(s3s));

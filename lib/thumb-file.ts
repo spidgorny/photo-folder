@@ -2,33 +2,22 @@ import { S3Storage } from "./S3Storage";
 import fs from "fs";
 import path from "path";
 
-import { S3File } from "../components/use-files";
+import { S3File } from "./s3-file";
 
 export class ThumbFile {
   protected thumbnailFilePath: string;
   thumbnails = [] as S3File[];
 
-  constructor(
-    protected s3: S3Storage,
-    protected prefix: string,
-  ) {
+  constructor(protected prefix: string) {
     this.thumbnailFilePath = `${this.prefix}/.thumbnails.json`;
   }
 
   async init() {
     fs.mkdirSync(path.dirname(this.thumbnailFilePath), { recursive: true });
-    let thumbnails = [];
     if (fs.existsSync(this.thumbnailFilePath)) {
       this.thumbnails = JSON.parse(
         fs.readFileSync(this.thumbnailFilePath, "utf8"),
       );
-    } else {
-      try {
-        this.thumbnails = JSON.parse(this.s3.get(this.thumbnailFilePath));
-      } catch (err) {
-        console.error(err);
-        this.thumbnails = [];
-      }
     }
   }
 
@@ -61,13 +50,34 @@ export class ThumbFile {
       this.thumbnailFilePath,
       JSON.stringify(this.thumbnails, null, 2),
     );
-    await this.s3.put(
-      this.thumbnailFilePath,
-      JSON.stringify(this.thumbnails, null, 2),
-    );
   }
 
   removeKey(key: string) {
     this.thumbnails = this.thumbnails.filter((x) => x.key !== key);
+  }
+}
+
+export class ThumbFileS3 extends ThumbFile {
+  constructor(
+    protected s3: S3Storage,
+    protected prefix: string,
+  ) {
+    super(prefix);
+  }
+
+  async init() {
+    try {
+      this.thumbnails = JSON.parse(await this.s3.get(this.thumbnailFilePath));
+    } catch (err) {
+      console.error(err);
+      this.thumbnails = [];
+    }
+  }
+
+  async save() {
+    await this.s3.put(
+      this.thumbnailFilePath,
+      JSON.stringify(this.thumbnails, null, 2),
+    );
   }
 }

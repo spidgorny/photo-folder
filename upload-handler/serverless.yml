@@ -1,0 +1,55 @@
+service: upload-handler
+frameworkVersion: '3'
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-central-1
+  profile: default
+
+plugins:
+#  - serverless-bundle
+  - serverless-esbuild
+
+functions:
+  uploadHandler:
+    handler: index.handler
+    events:
+      - s3:
+          event: s3:ObjectCreated:*
+          bucket: slawa-photo
+          rules:
+            - prefix: '*/'
+            - suffix: .jpg
+          existing: true
+          forceDeploy: true
+
+custom:
+  esbuild:
+    bundle: true
+    minify: false
+  bundle:
+    sourcemaps: true                # Enable source maps
+    caching: true                   # Enable Webpack caching
+    concurrency: 5                  # Set desired concurrency, defaults to the number of available cores
+    stats: true                    # Don't print out any Webpack output
+    linting: true                   # Enable linting as a part of the build process
+    generateStatsFiles: false       # Creates stats files that could be used for bundle analyzing, more below
+    esbuild: true                  # Use esbuild-loader instead of babel or ts for faster builds
+    disableForkTsChecker: false     # Disable the ForkTsChecker plugin, more below
+    tsConfig: "tsconfig.json"       # Path to your 'tsconfig.json', if it's not in the root
+    forceInclude: # Optional list of NPM packages that need to be included
+      - any-promise                         # Only necessary if packages are included dynamically
+    ignorePackages: # Ignore building any of the following packages
+      - hiredis                       # For ex, hiredis needs to be ignored if using redis
+    externals: # Set non Webpack compatible packages as externals
+      - isomorphic-webcrypto          # They'll be included in the node_modules/, more below
+    forceExclude: # Don't include these in the package
+      - chrome-aws-lambda             # Because it'll be provided through a Lambda Layer
+    excludeFiles: "**/*.test.ts"    # Exclude files from Webpack that match the glob
+    fixPackages: # Include fixes for specific packages
+      - "formidable@1.x"              # For ex, formidable@1.x doesn't work by default with Webpack
+#    copyFiles: # Copy any additional files to the generated package
+#      - from: 'public/*'              # Where the files are currently
+#        to: './'                      # Where in the package should they go

@@ -6,7 +6,10 @@
     "dev": "next dev",
     "dev:turbo": "next dev --turbo",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "sls:invoke:local": "cd upload-handler && npx serverless invoke local -f uploadHandler -p ./testEventS3.json",
+    "sls:deploy":"npx sls deploy",
+    "sls:logs":"npx sls logs -f uploadHandler -t"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
@@ -24,10 +27,13 @@
     "yet-another-react-lightbox": "^3.17.2"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.137",
     "@types/node": "20.12.4",
     "@types/react": "^18.2.74",
     "find-up": "^7.0.0",
     "prettier": "^3.2.5",
+    "serverless-bundle": "^6.1.0",
+    "serverless-esbuild": "^1.52.1",
     "tsx": "^4.7.2",
     "typescript": "^5.4.3"
   }
