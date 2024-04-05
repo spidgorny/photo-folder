@@ -2,7 +2,8 @@ import invariant from "tiny-invariant";
 import s3_storage from "s3-storage";
 import { promisify } from "node:util";
 import toArray from "stream-to-array";
-import { S3File } from "../components/list-files";
+
+import { S3File } from "../components/use-files";
 
 export type S3Storage = ReturnType<typeof getS3Storage>;
 

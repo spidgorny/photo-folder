@@ -1,10 +1,10 @@
 import { useParams } from "next/navigation";
 import "yet-another-react-lightbox/styles.css";
-import { useFiles } from "../../../components/list-files";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import React from "react";
 import "yet-another-react-lightbox/plugins/captions.css";
 import { LightboxPreview } from "../../../components/lightbox-preview";
+import { useFiles } from "../../../components/use-files";
 
 export default function PreviewPage() {
   const params = useParams();

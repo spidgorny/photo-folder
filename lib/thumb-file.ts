@@ -1,7 +1,8 @@
 import { S3Storage } from "./S3Storage";
 import fs from "fs";
 import path from "path";
-import { S3File } from "../components/list-files";
+
+import { S3File } from "../components/use-files";
 
 export class ThumbFile {
   protected thumbnailFilePath: string;

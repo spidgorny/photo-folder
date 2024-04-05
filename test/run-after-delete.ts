@@ -1,11 +1,11 @@
 import { runTest } from "./bootstrap";
 import fs from "fs";
 import { getPlaiceholder } from "plaiceholder";
-import { S3File } from "../components/list-files";
 import path from "path";
 import invariant from "tiny-invariant";
 import { getS3Storage } from "../lib/S3Storage";
 import { ThumbFile } from "../lib/thumb-file";
+import { S3File } from "../components/use-files";
 
 void runTest(async () => {
   const s3 = getS3Storage();
@@ -25,7 +25,7 @@ void runTest(async () => {
       thumbFile.removeKey(entry.key);
     }
     delete entry.metadata.xmp;
-    thumbFile.thumbnails.push(entry);
+    thumbFile.put(entry);
   }
   await thumbFile.save();
 });

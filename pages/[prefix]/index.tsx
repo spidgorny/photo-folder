@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { ListFiles } from "../../components/list-files";
 import { useParams } from "next/navigation";
+import { ListFilesGrid } from "../../components/list-files-grid";
 
 export default function Home() {
   const params = useParams();
@@ -12,7 +13,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="container-fluid">
-        {params?.prefix && <ListFiles prefix={params.prefix as string} />}
+        {/*{params?.prefix && <ListFiles prefix={params.prefix as string} />}*/}
+        {params?.prefix && <ListFilesGrid prefix={params.prefix as string} />}
       </main>
     </div>
   );

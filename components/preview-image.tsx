@@ -1,7 +1,7 @@
 import { PropsWithChildren } from "react";
 import Image from "next/image";
-import { S3File } from "./list-files";
 import Link from "next/link";
+import { S3File } from "./use-files";
 
 export function PreviewImage(
   props: PropsWithChildren<{ prefix: string; file: S3File }>,

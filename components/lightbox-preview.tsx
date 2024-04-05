@@ -1,9 +1,9 @@
-import { S3File } from "./list-files";
 import Lightbox, { Slide } from "yet-another-react-lightbox";
 import { useRouter } from "next/navigation";
 import React from "react";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
+import { S3File } from "./use-files";
 
 export function LightboxPreview(props: {
   prefix: string;
