@@ -4,6 +4,8 @@ import { promisify } from "node:util";
 import toArray from "stream-to-array";
 import { S3File } from "../components/list-files";
 
+export type S3Storage = ReturnType<typeof getS3Storage>;
+
 export function getS3Storage() {
   invariant(process.env.AWS_ACCESS_KEY_ID, "missing AWS_ACCESS_KEY_ID");
   invariant(process.env.AWS_SECRET_ACCESS_KEY, "missing AWS_SECRET_ACCESS_KEY");

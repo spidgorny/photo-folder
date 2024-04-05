@@ -8,7 +8,7 @@ export interface S3File {
   modified: string;
   css?: Record<string, string>;
   base64?: string;
-  metadata?: Record<string, string | number> & {
+  metadata?: Record<string, any> & {
     width: number;
     height: number;
   };
