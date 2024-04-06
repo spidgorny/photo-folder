@@ -9,18 +9,22 @@ provider:
   profile: default
 
 plugins:
-#  - serverless-bundle
+  #  - serverless-bundle
   - serverless-esbuild
 
 functions:
   uploadHandler:
     handler: index.handler
+    environment:
+      BUCKET_ACCESS_KEY_ID: ${env:BUCKET_ACCESS_KEY_ID}
+      BUCKET_SECRET_ACCESS_KEY: ${env:BUCKET_SECRET_ACCESS_KEY}
+      BUCKET_NAME: ${env:BUCKET_NAME}
     events:
       - s3:
           event: s3:ObjectCreated:*
           bucket: slawa-photo
           rules:
-            - prefix: '*/'
+            #            - prefix: '*/'
             - suffix: .jpg
           existing: true
           forceDeploy: true
@@ -29,6 +33,14 @@ custom:
   esbuild:
     bundle: true
     minify: false
+    external:
+      - sharp
+      - aws-sdk
+    exclude: [ ]
+    packagerOptions:
+      scripts:
+        - npm install --os=linux --cpu=x64 sharp
+
   bundle:
     sourcemaps: true                # Enable source maps
     caching: true                   # Enable Webpack caching
@@ -44,7 +56,7 @@ custom:
     ignorePackages: # Ignore building any of the following packages
       - hiredis                       # For ex, hiredis needs to be ignored if using redis
     externals: # Set non Webpack compatible packages as externals
-      - isomorphic-webcrypto          # They'll be included in the node_modules/, more below
+      - sharp          # They'll be included in the node_modules/, more below
     forceExclude: # Don't include these in the package
       - chrome-aws-lambda             # Because it'll be provided through a Lambda Layer
     excludeFiles: "**/*.test.ts"    # Exclude files from Webpack that match the glob

@@ -1,47 +1,58 @@
 import { S3Event } from "aws-lambda";
-import { ThumbFileS3 } from "../lib/thumb-file";
-import { getPlaiceholder } from "plaiceholder";
 import { getS3Storage } from "../lib/S3Storage";
+import { time, UploadObject, urlDecode } from "./utils.ts";
+import { handlePlaceholder } from "./handle-placeholder.ts";
+import { handleThumbnail } from "./handle-thumbnail.ts";
+import path from "path";
+
+function preventRunningIfWrongFileUploaded(uploadObject: UploadObject) {
+	if (uploadObject.key.includes("/.thumbnails/")) {
+		throw new Error("ignore files in .thumbnails/ folder");
+	}
+	const allowedFiles = [
+		"jpeg",
+		"jpg",
+		"png",
+		"webp",
+		"gif",
+		"avif",
+		"tiff",
+		"svg",
+	];
+	if (!allowedFiles.some((ext) => uploadObject.key.endsWith(ext))) {
+		throw new Error(`wrong extension [${path.extname(uploadObject.key)}]`);
+	}
+}
 
 export async function handler(event: S3Event) {
-  console.log(event);
-  let uploadObject = event.Records[0].s3.object;
-  console.log(uploadObject);
-  const prefix = uploadObject.key.split("/")[0];
-  console.log({ prefix });
+	console.log(event);
+	let uploadObject = event.Records[0].s3.object;
+	uploadObject.key = urlDecode(uploadObject.key);
+	console.log(uploadObject);
+	const prefix = uploadObject.key.split("/")[0];
+	console.log({ prefix });
+	preventRunningIfWrongFileUploaded(uploadObject);
 
-  const s3 = getS3Storage();
-  const thumbFile = new ThumbFileS3(s3, prefix);
-  await thumbFile.init();
-  const bytes = await s3.get(uploadObject.key);
-  let { css, base64, metadata } = await getPlaiceholder(bytes, {
-    autoOrient: true,
-    size: 8,
-  });
-  delete metadata.icc;
-  delete metadata.exif;
-  delete metadata.xmp;
-  const modified = new Date().toISOString();
-  let value = {
-    key: uploadObject.key,
-    size: uploadObject.size,
-    modified,
-    css,
-    base64,
-    metadata,
-  };
-  console.log(value);
-  thumbFile.put(value);
-  await thumbFile.save();
-  return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        uploadObject,
-        value,
-      },
-      null,
-      2,
-    ),
-  };
+	const s3 = getS3Storage();
+	const bytes = await s3.get(uploadObject.key);
+	const timePlaceholder = await time(
+		async () => await handlePlaceholder(s3, prefix, uploadObject, bytes),
+	);
+	const timeThumbnail = await time(
+		async () => await handleThumbnail(s3, prefix, uploadObject, bytes),
+	);
+
+	console.log({ timePlaceholder, timeThumbnail });
+	return {
+		statusCode: 200,
+		body: JSON.stringify(
+			{
+				uploadObject,
+				timePlaceholder,
+				timeThumbnail,
+			},
+			null,
+			2,
+		),
+	};
 }

@@ -8,10 +8,11 @@
     "build": "next build",
     "start": "next start",
     "sls:invoke:local": "cd upload-handler && npx serverless invoke local -f uploadHandler -p ./testEventS3.json",
-    "sls:deploy":"npx sls deploy",
-    "sls:logs":"npx sls logs -f uploadHandler -t"
+    "sls:deploy": "cd upload-handler && npx sls deploy --verbose",
+    "sls:logs": "cd upload-handler && npx sls logs -f uploadHandler -t"
   },
   "dependencies": {
+    "aws-sdk": "^2.1594.0",
     "dotenv": "^16.4.5",
     "next": "14.1.4",
     "plaiceholder": "^3.0.0",
@@ -36,5 +37,9 @@
     "serverless-esbuild": "^1.52.1",
     "tsx": "^4.7.2",
     "typescript": "^5.4.3"
+  },
+  "prettier": {
+    "useTabs": true,
+    "tabWidth": 2
   }
 }
