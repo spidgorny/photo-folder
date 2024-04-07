@@ -5,7 +5,7 @@ import path from "path";
 import { S3File } from "./s3-file";
 
 export class ThumbFile {
-	protected thumbnailFilePath: string;
+	public thumbnailFilePath: string;
 	thumbnails = [] as S3File[];
 
 	constructor(protected prefix: string) {

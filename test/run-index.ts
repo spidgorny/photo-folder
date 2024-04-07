@@ -1,7 +1,5 @@
 import { runTest } from "./bootstrap";
-import fs from "fs";
 import { getPlaiceholder } from "plaiceholder";
-import path from "path";
 import invariant from "tiny-invariant";
 import { getS3Storage } from "../lib/S3Storage";
 import { ThumbFile } from "../lib/thumb-file";
@@ -11,11 +9,11 @@ import { S3File } from "../lib/s3-file";
 void runTest(async () => {
 	const s3 = getS3Storage();
 	const prefix = "2024 Cyprus";
-	const files: S3File[] = await s3.list({ prefix });
+	const files: S3File[] = await s3.list(prefix);
 	invariant(files.length, `not files in ${prefix}`);
 	// console.table(files);
 
-	const thumbFile = new ThumbFile(s3, prefix);
+	const thumbFile = new ThumbFile(prefix);
 	await thumbFile.init();
 	try {
 		for (let [index, file] of files.entries()) {

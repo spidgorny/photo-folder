@@ -11,7 +11,7 @@ import { S3File } from "../lib/s3-file";
 void runTest(async () => {
 	const s3 = getS3Storage();
 	const prefix = "2024 Cyprus";
-	const files: S3File[] = await s3.list({ prefix });
+	const files: S3File[] = await s3.list(prefix);
 	invariant(files.length, `not files in ${prefix}`);
 
 	for (let [index, file] of files.entries()) {
