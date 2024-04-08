@@ -15,14 +15,14 @@ void runTest(async () => {
 	invariant(files.length, `not files in ${prefix}`);
 
 	for (let [index, file] of files.entries()) {
-		console.log("==", index, "/", files.length, file.key);
 		const thumbPath = `${prefix}/.thumbnails/${path.basename(file.key)}`;
 		if (await s3.exists(thumbPath)) {
 			// don't process already processed
 			continue;
 		}
+		console.log("==", index, "/", files.length, file.key);
 		let thumbnail: Buffer;
-		const bytes = await s3.get(file.key);
+		const bytes = await s3.getBuffer(file.key);
 		const src = sharp(bytes);
 		let metadata = await src.metadata();
 		if (metadata.width > metadata.height) {
@@ -31,6 +31,5 @@ void runTest(async () => {
 			thumbnail = await src.resize({ height: 1200 }).toBuffer();
 		}
 		await s3.put(thumbPath, thumbnail);
-		// fs.writeFileSync(thumbPath, thumbnail);
 	}
 });

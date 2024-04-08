@@ -25,6 +25,10 @@ export class ThumbFile {
 		return this.thumbnails.find((x) => x.key === key);
 	}
 
+	get(key: string) {
+		return this.thumbnails.find((x) => x.key === key);
+	}
+
 	put(value: S3File) {
 		this.thumbnails = this.replaceOrAppend(
 			this.thumbnails,
@@ -67,7 +71,9 @@ export class ThumbFileS3 extends ThumbFile {
 
 	async init() {
 		try {
-			this.thumbnails = JSON.parse(await this.s3.get(this.thumbnailFilePath));
+			this.thumbnails = JSON.parse(
+				await this.s3.getString(this.thumbnailFilePath),
+			);
 		} catch (err) {
 			console.error(err);
 			this.thumbnails = [];

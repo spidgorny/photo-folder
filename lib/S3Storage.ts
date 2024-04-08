@@ -48,11 +48,16 @@ export class S3Storage {
 				Prefix,
 			}),
 		);
-		return data.Contents.map((x) => ({
+		let files = data.Contents.map((x) => ({
 			key: x.Key,
 			size: x.Size,
 			modified: x.LastModified?.toISOString(),
 		}));
+		files = files.filter(
+			(file: S3File) =>
+				!file.key.split("/").some((file) => file.startsWith(".")),
+		);
+		return files;
 	}
 
 	async uploadS3File(Key: string, filePath: string) {
@@ -155,10 +160,10 @@ export class S3Storage {
 	}
 
 	async getString(Key: string) {
-		return this.get(Key).toString();
+		return (await this.getBuffer(Key)).toString();
 	}
 
-	async get(Key: string) {
+	async getBuffer(Key: string) {
 		const params: GetObjectCommandInput = {
 			Bucket: this.bucketName,
 			Key: Key,

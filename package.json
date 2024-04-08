@@ -8,15 +8,18 @@
     "build": "next build",
     "start": "next start",
     "sls:invoke:local": "cd upload-handler && npx serverless invoke local -f uploadHandler -p ./testEventS3.json",
-    "sls:deploy": "cd upload-handler && npx sls deploy --verbose",
-    "sls:logs": "cd upload-handler && npx sls logs -f uploadHandler -t"
+    "sls:deploy": "cd upload-handler && npx serverless deploy --verbose",
+    "sls:logs": "cd upload-handler && npx serverless logs -f uploadHandler -t",
+    "aws:logs": "aws logs tail --follow --region eu-central-1 /aws/lambda/upload-handler-dev-uploadHandler",
+    "s3:thumbs:down": "aws s3 cp s3://slawa-photo/2024 Cyprus/.thumbnails.json' 'test/2024 Cyprus/'",
+    "s3:thumbs:up": "aws s3 cp \"test/2024 Cyprus/.thumbnails.json\" \"s3://slawa-photo/2024 Cyprus/\""
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.550.0",
     "@aws-sdk/lib-storage": "^3.550.0",
-    "aws-sdk": "^2.1594.0",
     "axios": "^1.6.8",
     "bytes": "^3.1.2",
+    "chalk": "^5.3.0",
     "dotenv": "^16.4.5",
     "iron-session": "^8.0.1",
     "luxon": "^3.4.4",
@@ -26,7 +29,6 @@
     "react-dom": "18.2.0",
     "react-grid-gallery": "^1.0.1-alpha.0",
     "react-sliding-pane": "^7.3.0",
-    "s3-storage": "^4.1.0",
     "sharp": "^0.33.3",
     "slash": "^5.1.0",
     "stream-to-array": "^2.3.0",
@@ -40,7 +42,6 @@
     "@types/react": "^18.2.74",
     "find-up": "^7.0.0",
     "prettier": "^3.2.5",
-    "serverless-bundle": "^6.1.0",
     "serverless-esbuild": "^1.52.1",
     "tsx": "^4.7.2",
     "typescript": "^5.4.4"
@@ -48,5 +49,8 @@
   "prettier": {
     "useTabs": true,
     "tabWidth": 2
+  },
+  "optionalDependencies": {
+    "@img/sharp-win32-x64": "^0.33.3"
   }
 }

@@ -34,7 +34,7 @@ export async function handler(event: S3Event) {
 	preventRunningIfWrongFileUploaded(uploadObject);
 
 	const s3 = getS3Storage();
-	const bytes = await s3.get(uploadObject.key);
+	const bytes = await s3.getBuffer(uploadObject.key);
 	const timePlaceholder = await time(
 		async () => await handlePlaceholder(s3, prefix, uploadObject, bytes),
 	);

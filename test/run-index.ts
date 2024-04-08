@@ -18,11 +18,11 @@ void runTest(async () => {
 	try {
 		for (let [index, file] of files.entries()) {
 			console.log("==", index, "/", files.length, file.key);
-			if (thumbFile.existsKey(file.key)) {
+			if (thumbFile.existsKey(file.key) && thumbFile.get(file.key).metadata) {
 				// don't process already processed
 				continue;
 			}
-			const bytes = await s3.get(file.key);
+			const bytes = await s3.getBuffer(file.key);
 			let { css, base64, metadata } = await getPlaiceholder(bytes, {
 				autoOrient: true,
 				size: 8,

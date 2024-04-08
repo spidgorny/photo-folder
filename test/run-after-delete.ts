@@ -22,9 +22,8 @@ void runTest(async () => {
 		if (!exists) {
 			thumbFile.removeKey(entry.key);
 		}
-		delete entry.metadata.xmp;
-		thumbFile.put(entry);
 	}
+	console.log("after delete", thumbFile.thumbnails.length);
 	await thumbFile.save();
 
 	await s3.put(
