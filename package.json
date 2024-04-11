@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "sls:invoke:local": "cd upload-handler && npx serverless invoke local -f uploadHandler -p ./testEventS3.json",
+    "sls:invoke:local-asd": "cd upload-handler && npx serverless invoke local -f uploadHandler -p ./testEventS3-asd.json",
     "sls:deploy": "cd upload-handler && npx serverless deploy --verbose",
     "sls:logs": "cd upload-handler && npx serverless logs -f uploadHandler -t",
     "aws:logs": "aws logs tail --follow --region eu-central-1 /aws/lambda/upload-handler-dev-uploadHandler",
@@ -15,8 +16,8 @@
     "s3:thumbs:up": "aws s3 cp \"test/2024 Cyprus/.thumbnails.json\" \"s3://slawa-photo/2024 Cyprus/\""
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.550.0",
-    "@aws-sdk/lib-storage": "^3.550.0",
+    "@aws-sdk/client-s3": "^3.552.0",
+    "@aws-sdk/lib-storage": "^3.552.0",
     "axios": "^1.6.8",
     "bytes": "^3.1.2",
     "chalk": "^5.3.0",
@@ -27,6 +28,7 @@
     "plaiceholder": "^3.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-drag-drop-files": "^2.3.10",
     "react-grid-gallery": "^1.0.1-alpha.0",
     "react-sliding-pane": "^7.3.0",
     "sharp": "^0.33.3",
@@ -38,13 +40,12 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.137",
-    "@types/node": "20.12.5",
-    "@types/react": "^18.2.74",
+    "@types/node": "20.12.7",
+    "@types/react": "^18.2.75",
     "find-up": "^7.0.0",
     "prettier": "^3.2.5",
-    "serverless-esbuild": "^1.52.1",
     "tsx": "^4.7.2",
-    "typescript": "^5.4.4"
+    "typescript": "^5.4.5"
   },
   "prettier": {
     "useTabs": true,

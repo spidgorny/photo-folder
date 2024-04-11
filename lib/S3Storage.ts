@@ -1,13 +1,10 @@
 import invariant from "tiny-invariant";
-// import s3_storage from "s3-storage";
-import { promisify } from "node:util";
-import toArray from "stream-to-array";
 import {
+	_Object,
 	GetObjectCommand,
 	GetObjectCommandInput,
 	HeadObjectCommand,
 	ListObjectsV2Command,
-	ListObjectsV2CommandOutput,
 	PutObjectCommand,
 	PutObjectCommandInput,
 	S3Client,
@@ -36,6 +33,10 @@ export class S3Storage {
 	) {
 		this.s3 = new S3Client({
 			region: options.region,
+			credentials: {
+				accessKeyId: options.accessKeyId,
+				secretAccessKey: options.secretAccessKey,
+			},
 			// requestHandler: new FetchHttpHandler({}),
 		});
 		this.logger = new Logger("S3Storage");
@@ -48,11 +49,15 @@ export class S3Storage {
 				Prefix,
 			}),
 		);
-		let files = data.Contents.map((x) => ({
-			key: x.Key,
-			size: x.Size,
-			modified: x.LastModified?.toISOString(),
-		}));
+		let contents = data.Contents as _Object[];
+		let files = contents.map(
+			(x) =>
+				({
+					key: x.Key!,
+					size: x.Size!,
+					modified: x.LastModified?.toISOString(),
+				}) as S3File,
+		);
 		files = files.filter(
 			(file: S3File) =>
 				!file.key.split("/").some((file) => file.startsWith(".")),
@@ -138,7 +143,7 @@ export class S3Storage {
 				totalBytes += chunk.length;
 				onlyOncePerSecond(async () => {
 					self.logger.progress(
-						totalBytes / fileSize,
+						fileSize ? totalBytes / fileSize : totalBytes,
 						fileName,
 						totalBytes,
 						"/",
@@ -180,8 +185,7 @@ export class S3Storage {
 			Key: Key,
 			Body: bytes,
 		};
-		const res = await this.s3.send(new PutObjectCommand(params));
-		return res;
+		return await this.s3.send(new PutObjectCommand(params));
 	}
 }
 
@@ -192,9 +196,10 @@ export function getS3Storage() {
 		"missing BUCKET_SECRET_ACCESS_KEY",
 	);
 	invariant(process.env.BUCKET_NAME, "missing BUCKET_NAME");
+	console.log("BUCKET_ACCESS_KEY_ID", process.env.BUCKET_ACCESS_KEY_ID);
 	return new S3Storage(process.env.BUCKET_NAME, {
 		accessKeyId: process.env.BUCKET_ACCESS_KEY_ID,
 		secretAccessKey: process.env.BUCKET_SECRET_ACCESS_KEY,
-		region: process.env.AWS_DEFAULT_REGION,
+		region: process.env.AWS_DEFAULT_REGION!,
 	});
 }

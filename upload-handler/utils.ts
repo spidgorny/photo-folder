@@ -14,4 +14,5 @@ export type UploadObject = {
 	eTag: string;
 	versionId?: string | undefined;
 	sequencer: string;
+	prefix: string;
 };

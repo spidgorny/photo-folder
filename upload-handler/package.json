@@ -1,0 +1,14 @@
+{
+	"name": "photo-folder",
+	"version": "0.1.0",
+	"private": true,
+	"dependencies": {
+		"sharp": "^0.33.3"
+	},
+	"devDependencies": {
+		"serverless-esbuild": "^1.52.1"
+	},
+	"optionalDependencies": {
+		"@img/sharp-win32-x64": "^0.33.3"
+	}
+}

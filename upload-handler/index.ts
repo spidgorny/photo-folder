@@ -4,6 +4,7 @@ import { time, UploadObject, urlDecode } from "./utils.ts";
 import { handlePlaceholder } from "./handle-placeholder.ts";
 import { handleThumbnail } from "./handle-thumbnail.ts";
 import path from "path";
+import { Logger } from "../lib/logger.ts";
 
 function preventRunningIfWrongFileUploaded(uploadObject: UploadObject) {
 	if (uploadObject.key.includes("/.thumbnails/")) {
@@ -25,34 +26,46 @@ function preventRunningIfWrongFileUploaded(uploadObject: UploadObject) {
 }
 
 export async function handler(event: S3Event) {
-	console.log(event);
-	let uploadObject = event.Records[0].s3.object;
+	// console.log(event);
+	let uploadObject = event.Records[0].s3.object as UploadObject;
 	uploadObject.key = urlDecode(uploadObject.key);
-	console.log(uploadObject);
-	const prefix = uploadObject.key.split("/")[0];
-	console.log({ prefix });
-	preventRunningIfWrongFileUploaded(uploadObject);
+	const logger = new Logger(uploadObject.key);
+	try {
+		let envSorted = Object.fromEntries(
+			Object.entries(process.env).sort((a, b) => a[0].localeCompare(b[0])),
+		);
+		logger.log(envSorted);
+		logger.log(uploadObject);
+		const prefix = uploadObject.key.split("/")[0];
+		logger.log({ prefix });
+		preventRunningIfWrongFileUploaded(uploadObject);
 
-	const s3 = getS3Storage();
-	const bytes = await s3.getBuffer(uploadObject.key);
-	const timePlaceholder = await time(
-		async () => await handlePlaceholder(s3, prefix, uploadObject, bytes),
-	);
-	const timeThumbnail = await time(
-		async () => await handleThumbnail(s3, prefix, uploadObject, bytes),
-	);
+		const s3 = getS3Storage();
+		logger.log("getBuffer", uploadObject.key);
+		const bytes = await s3.getBuffer(uploadObject.key);
+		logger.log("handlePlaceholder");
+		const timePlaceholder = await time(
+			async () =>
+				await handlePlaceholder(s3, logger, prefix, uploadObject, bytes),
+		);
+		logger.log("handleThumbnail");
+		const timeThumbnail = await time(
+			async () =>
+				await handleThumbnail(s3, logger, prefix, uploadObject, bytes),
+		);
 
-	console.log({ timePlaceholder, timeThumbnail });
-	return {
-		statusCode: 200,
-		body: JSON.stringify(
-			{
-				uploadObject,
-				timePlaceholder,
-				timeThumbnail,
-			},
-			null,
-			2,
-		),
-	};
+		logger.log({ timePlaceholder, timeThumbnail });
+		let output = {
+			uploadObject,
+			timePlaceholder,
+			timeThumbnail,
+		};
+		logger.log(output);
+		return {
+			statusCode: 200,
+			body: JSON.stringify(output, null, 2),
+		};
+	} catch (e) {
+		logger.log("ERROR", e.message, e.stack.split("\n"));
+	}
 }

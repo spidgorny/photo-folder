@@ -1,0 +1,12 @@
+{
+  "Records": [
+    {
+      "s3": {
+        "object": {
+          "key": "asd/test.png",
+          "size": 221148
+        }
+      }
+    }
+  ]
+}
