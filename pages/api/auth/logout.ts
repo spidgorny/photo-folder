@@ -5,7 +5,7 @@ import { getMySession } from "./login";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
 	const session = await getMySession(req, res);
-	session.user = null;
+	session.user = undefined;
 	await session.save();
 	res.status(200).json({ status: "ok" });
 };

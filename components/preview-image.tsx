@@ -8,7 +8,9 @@ export function PreviewImage(
 	props: PropsWithChildren<{ prefix: string; file: S3File }>,
 ) {
 	// const { data, error } = useSWR("/api/s3/" + props.file.key, fetcher);
-	const aspectRatio = props.file.metadata.width / props.file.metadata.height;
+	const aspectRatio = props.file?.metadata?.height
+		? props.file?.metadata?.width / props.file?.metadata?.height
+		: 1;
 	return (
 		<div
 			id={props.file.key}

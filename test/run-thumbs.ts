@@ -25,7 +25,7 @@ void runTest(async () => {
 		const bytes = await s3.getBuffer(file.key);
 		const src = sharp(bytes);
 		let metadata = await src.metadata();
-		if (metadata.width > metadata.height) {
+		if (metadata.width && metadata.height && metadata.width > metadata.height) {
 			thumbnail = await src.resize({ width: 1200 }).toBuffer();
 		} else {
 			thumbnail = await src.resize({ height: 1200 }).toBuffer();

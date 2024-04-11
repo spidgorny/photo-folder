@@ -5,7 +5,7 @@ import invariant from "tiny-invariant";
 export async function getMySession(req: NextApiRequest, res: NextApiResponse) {
 	invariant(process.env.IRON_PASSWORD, "IRON_PASSWORD is not defined");
 	invariant(process.env.IRON_COOKIE_NAME, "IRON_COOKIE_NAME is not defined");
-	const session = await getIronSession<{ user: string }>(req, res, {
+	const session = await getIronSession<{ user?: string }>(req, res, {
 		password: process.env.IRON_PASSWORD,
 		cookieName: process.env.IRON_COOKIE_NAME,
 	});

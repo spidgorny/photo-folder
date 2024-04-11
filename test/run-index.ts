@@ -18,7 +18,7 @@ void runTest(async () => {
 	try {
 		for (let [index, file] of files.entries()) {
 			console.log("==", index, "/", files.length, file.key);
-			if (thumbFile.existsKey(file.key) && thumbFile.get(file.key).metadata) {
+			if (thumbFile.existsKey(file.key) && thumbFile.get(file.key)?.metadata) {
 				// don't process already processed
 				continue;
 			}
