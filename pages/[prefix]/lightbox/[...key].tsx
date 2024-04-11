@@ -26,29 +26,13 @@ function PreviewLoader(props: { prefix: string; fileKey: string[] }) {
 
 	const fileKey = (props?.fileKey as string[])?.join("/");
 	if (!data?.files) {
-		return (
-			<LightboxPreview
-				prefix={props.prefix}
-				files={[{ key: fileKey, size: 123, modified: "2020-01-01" }]}
-				slides={[
-					{
-						src: `/api/s3/jpg/${fileKey}`,
-						alt: fileKey,
-						srcSet: [
-							{ src: `/api/s3/thumb/${fileKey}`, width: 1280, height: 576 },
-							{ src: `/api/s3/jpg/${fileKey}`, width: 4000, height: 1800 },
-						],
-					},
-				]}
-				fileKey={fileKey}
-			/>
-		);
+		return "Loading";
 	}
 
-	const slides = data.files.map((x) => ({
+	const slides = data.files.map((x, index) => ({
 		src: `/api/s3/jpg/${x.key}`,
 		alt: x.key,
-		title: x.key,
+		title: `${x.key} [${index + 1}/${data.files.length}]`,
 		description: `${x.size} bytes, ${x.modified}`,
 		srcSet: [
 			{ src: `/api/s3/thumb/${fileKey}`, width: 1280, height: 576 },
@@ -57,6 +41,7 @@ function PreviewLoader(props: { prefix: string; fileKey: string[] }) {
 	}));
 	return (
 		<LightboxPreview
+			key={data?.files?.length}
 			prefix={props.prefix}
 			files={data.files}
 			slides={slides}

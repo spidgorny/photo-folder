@@ -1,6 +1,8 @@
 import invariant from "tiny-invariant";
 import {
 	_Object,
+	DeleteObjectCommand,
+	DeleteObjectCommandInput,
 	GetObjectCommand,
 	GetObjectCommandInput,
 	HeadObjectCommand,
@@ -18,6 +20,7 @@ import { Transform } from "stream";
 import http from "http";
 import { StreamingBlobPayloadOutputTypes } from "@smithy/types";
 import { onlyOncePerSecond } from "./date";
+import bytes from "bytes";
 
 export class S3Storage {
 	protected s3: S3Client;
@@ -187,6 +190,14 @@ export class S3Storage {
 		};
 		return await this.s3.send(new PutObjectCommand(params));
 	}
+
+	async remove(Key: string) {
+		const params: DeleteObjectCommandInput = {
+			Bucket: this.bucketName,
+			Key: Key,
+		};
+		return await this.s3.send(new DeleteObjectCommand(params));
+	}
 }
 
 export function getS3Storage() {
@@ -196,7 +207,7 @@ export function getS3Storage() {
 		"missing BUCKET_SECRET_ACCESS_KEY",
 	);
 	invariant(process.env.BUCKET_NAME, "missing BUCKET_NAME");
-	console.log("BUCKET_ACCESS_KEY_ID", process.env.BUCKET_ACCESS_KEY_ID);
+	// console.log("BUCKET_ACCESS_KEY_ID", process.env.BUCKET_ACCESS_KEY_ID);
 	return new S3Storage(process.env.BUCKET_NAME, {
 		accessKeyId: process.env.BUCKET_ACCESS_KEY_ID,
 		secretAccessKey: process.env.BUCKET_SECRET_ACCESS_KEY,
