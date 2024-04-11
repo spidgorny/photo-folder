@@ -1,22 +1,26 @@
+"use client";
 import { useParams } from "next/navigation";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import React from "react";
 import "yet-another-react-lightbox/plugins/captions.css";
-import { LightboxPreview } from "../../../components/lightbox-preview";
-import { useFiles } from "../../../components/use-files";
+import { LightboxPreview } from "../../../../components/lightbox-preview.tsx";
+import { useFiles } from "../../../../components/use-files.tsx";
+import { urlDecode } from "../../../../upload-handler/utils.ts";
 
 export default function PreviewPage() {
-	const params = useParams();
+	const params = useParams<{ prefix: string; key: string[] }>();
 	if (!params?.prefix) {
 		return (
 			<div className="flex justify-content-center py-5">Loading Params...</div>
 		);
 	}
+	let paramsKey = params.key.map((x) => urlDecode(x));
+	console.log("prefix", params.prefix, paramsKey);
 	return (
 		<PreviewLoader
 			prefix={params.prefix as string}
-			fileKey={params.key as string[]}
+			fileKey={paramsKey as string[]}
 		/>
 	);
 }
@@ -39,9 +43,10 @@ function PreviewLoader(props: { prefix: string; fileKey: string[] }) {
 			{ src: `/api/s3/jpg/${fileKey}`, width: 4000, height: 1800 },
 		],
 	}));
+
 	return (
 		<LightboxPreview
-			key={data?.files?.length}
+			// key={data?.files?.length}
 			prefix={props.prefix}
 			files={data.files}
 			slides={slides}

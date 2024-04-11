@@ -16,15 +16,15 @@
     "s3:thumbs:up": "aws s3 cp \"test/2024 Cyprus/.thumbnails.json\" \"s3://slawa-photo/2024 Cyprus/\""
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.552.0",
-    "@aws-sdk/lib-storage": "^3.552.0",
+    "@aws-sdk/client-s3": "^3.554.0",
+    "@aws-sdk/lib-storage": "^3.554.0",
     "axios": "^1.6.8",
     "bytes": "^3.1.2",
     "chalk": "^5.3.0",
     "dotenv": "^16.4.5",
     "iron-session": "^8.0.1",
     "luxon": "^3.4.4",
-    "next": "14.1.4",
+    "next": "14.2.0",
     "plaiceholder": "^3.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -41,7 +41,7 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.137",
     "@types/node": "20.12.7",
-    "@types/react": "^18.2.75",
+    "@types/react": "^18.2.76",
     "find-up": "^7.0.0",
     "prettier": "^3.2.5",
     "tsx": "^4.7.2",

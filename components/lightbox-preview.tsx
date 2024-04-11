@@ -39,10 +39,11 @@ export function LightboxPreview(props: {
 						if (!indexKey) {
 							return;
 						}
+						let newUrl = `/${props.prefix}/lightbox/${indexKey}`;
 						window.history.replaceState(
-							null,
+							{ ...window.history.state, as: newUrl, url: newUrl },
 							"",
-							`/${props.prefix}/lightbox/${indexKey}`,
+							newUrl,
 						);
 					},
 				}}

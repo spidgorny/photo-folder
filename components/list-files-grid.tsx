@@ -3,7 +3,7 @@ import { useFiles } from "./use-files";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { images } from "next/dist/build/webpack/config/blocks/images";
-import { useClientSession } from "../pages/[prefix]/main-header.tsx";
+import { useClientSession } from "../app/[prefix]/main-header.tsx";
 import axios from "axios";
 
 export function ListFilesGrid(props: { prefix: string }) {
@@ -47,7 +47,7 @@ export function ListFilesGrid(props: { prefix: string }) {
 	};
 
 	const onClick = (index: number, item: Image) => {
-		router.push(`/${props.prefix}/lightbox/` + encodeURIComponent(item.key!));
+		router.push(`/${props.prefix}/lightbox/` + item.key!);
 	};
 
 	const onlySelectedImages = selectedImages.filter((x) => x.isSelected);

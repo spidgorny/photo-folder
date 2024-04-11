@@ -2,7 +2,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getS3Storage } from "../../../../lib/S3Storage";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-	let queryKey = req.query.key as string[];
+	let queryKey = Array.isArray(req.query.key)
+		? req.query.key.flatMap((x) => x.split("/"))
+		: req.query?.key?.split("/") ?? [];
 	queryKey.splice(-1, 0, ".thumbnails");
 	const s3 = getS3Storage();
 	const bytes = await s3.getBuffer(queryKey.join("/"));

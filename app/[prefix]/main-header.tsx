@@ -1,3 +1,4 @@
+"use client";
 import useSWR from "swr";
 import { fetcher } from "../../lib/fetcher.tsx";
 import axios from "axios";
@@ -9,7 +10,7 @@ export function MainHeader() {
 	return (
 		<header className="bg-light p-2 d-flex justify-content-between">
 			<h4>
-				<Link href="/" className="text-decoration-none text-black">
+				<Link href="/public" className="text-decoration-none text-black">
 					Photo Folder (S3)
 				</Link>
 			</h4>
