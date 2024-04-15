@@ -3,8 +3,8 @@ import { useFiles } from "./use-files";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { images } from "next/dist/build/webpack/config/blocks/images";
-import { useClientSession } from "../app/[prefix]/main-header.tsx";
 import axios from "axios";
+import { useClientSession } from "../app/use-client-session.tsx";
 
 export function ListFilesGrid(props: { prefix: string }) {
 	const router = useRouter();

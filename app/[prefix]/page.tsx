@@ -3,10 +3,11 @@ import Head from "next/head";
 import { useParams } from "next/navigation";
 import { ListFilesGrid } from "../../components/list-files-grid.tsx";
 import "react-sliding-pane/dist/react-sliding-pane.css";
-import { MainHeader, useClientSession } from "./main-header.tsx";
+import { MainHeader } from "./main-header.tsx";
 import { FileUploader } from "react-drag-drop-files";
 import { useState } from "react";
 import axios from "axios";
+import { useClientSession } from "../use-client-session.tsx";
 
 export default function Home() {
 	const params = useParams();

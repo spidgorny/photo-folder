@@ -12,22 +12,24 @@ export function MakeFolder() {
 		console.log(formData);
 
 		const res = await axios.post("/api/s3/mkdir", formData);
-		console.log(res);
+		console.log(res.data);
 		router.push(`/${formData.name}`);
 	};
 
 	return (
-		<div className="container">
+		<div className="container py-3">
 			<form onSubmit={onSubmit}>
-				<input
-					name="name"
-					className="form-control"
-					placeholder="new folder name"
-					required
-				/>
-				<button type="submit" className="btn btn-primary">
-					New Folder
-				</button>
+				<div className="d-flex gap-3 justify-content-between">
+					<input
+						name="name"
+						className="form-control"
+						placeholder="new folder name"
+						required
+					/>
+					<button type="submit" className="btn btn-primary">
+						Folder
+					</button>
+				</div>
 			</form>
 		</div>
 	);

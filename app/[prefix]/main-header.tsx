@@ -1,10 +1,9 @@
 "use client";
-import useSWR from "swr";
-import { fetcher } from "../../lib/fetcher.tsx";
 import axios from "axios";
 import { useState } from "react";
 import SlidingPane from "react-sliding-pane";
 import Link from "next/link";
+import { useClientSession } from "../use-client-session.tsx";
 
 export function MainHeader() {
 	return (
@@ -17,11 +16,6 @@ export function MainHeader() {
 			<SignInOrOut />
 		</header>
 	);
-}
-
-export function useClientSession() {
-	const { isLoading, data, mutate } = useSWR("/api/auth/me", fetcher);
-	return { isLoading, ...data, mutate };
 }
 
 function SignInOrOut() {
