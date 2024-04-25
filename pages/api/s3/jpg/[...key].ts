@@ -11,5 +11,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 	res.status(200);
 	res.setHeader("cache-control", "public, immutable, max-age=31536000");
 	res.setHeader("content-type", "image/jpeg");
+	res.setHeader("content-length", bytes.length);
 	res.send(bytes);
 };
