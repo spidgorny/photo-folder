@@ -12,7 +12,7 @@ export async function getMySession(req: NextApiRequest, res: NextApiResponse) {
 	return session;
 }
 
-const validUsers = ["depidsvy@gmail.com"];
+const validUsers = ["depidsvy@gmail.com", "marina2stark@gmail.com"];
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
 	const session = await getMySession(req, res);

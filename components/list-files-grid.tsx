@@ -2,9 +2,9 @@ import { Gallery, Image } from "react-grid-gallery";
 import { useFiles } from "./use-files";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { images } from "next/dist/build/webpack/config/blocks/images";
 import axios from "axios";
 import { useClientSession } from "../app/use-client-session.tsx";
+import Image from "next/image";
 
 export function ListFilesGrid(props: { prefix: string }) {
 	const router = useRouter();
@@ -67,9 +67,25 @@ export function ListFilesGrid(props: { prefix: string }) {
 			)}
 
 			{onlySelectedImages.length > 0 && (
-				<div className="position-absolute w-100 bottom-0 border rounded left-0 bg-light p-3 d-flex justify-content-between">
-					Selected images: {onlySelectedImages.length}
-					<DeleteButton prefix={props.prefix} images={onlySelectedImages} />
+				<div className="position-fixed w-100 bottom-0 border rounded start-0 bg-light p-3 d-flex justify-content-between">
+					<div>
+						Selected images: {onlySelectedImages.length}
+						<div>
+							{onlySelectedImages.map((x) => (
+								<Image
+									src={x.src}
+									width={80}
+									height={80}
+									alt={x.src}
+									key={x.src}
+									className="object-cover"
+								/>
+							))}
+						</div>
+					</div>
+					<div>
+						<DeleteButton prefix={props.prefix} images={onlySelectedImages} />
+					</div>
 				</div>
 			)}
 		</div>
