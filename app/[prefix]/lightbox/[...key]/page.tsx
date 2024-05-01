@@ -20,17 +20,17 @@ export default function PreviewPage() {
 	return (
 		<PreviewLoader
 			prefix={params.prefix as string}
-			fileKey={paramsKey as string[]}
+			selectedFile={paramsKey as string[]}
 		/>
 	);
 }
 
-function PreviewLoader(props: { prefix: string; fileKey: string[] }) {
+function PreviewLoader(props: { prefix: string; selectedFile: string[] }) {
 	const { data, error, isLoading } = useFiles(props.prefix);
 
-	const fileKey = (props?.fileKey as string[])?.join("/");
+	const fileKey = (props?.selectedFile as string[])?.join("/");
 	if (!data?.files) {
-		return "Loading";
+		return "Loading...";
 	}
 
 	const slides = data.files.map((x, index) => ({
@@ -39,10 +39,11 @@ function PreviewLoader(props: { prefix: string; fileKey: string[] }) {
 		title: `${x.key} [${index + 1}/${data.files.length}]`,
 		description: `${x.size} bytes, ${x.modified}`,
 		srcSet: [
-			{ src: `/api/s3/thumb/${fileKey}`, width: 1280, height: 576 },
-			{ src: `/api/s3/jpg/${fileKey}`, width: 4000, height: 1800 },
+			{ src: `/api/s3/thumb/${x.key}`, width: 1280, height: 576 },
+			{ src: `/api/s3/jpg/${x.key}`, width: 4000, height: 1800 },
 		],
 	}));
+	console.table(slides, ["src"]);
 
 	return (
 		<LightboxPreview
