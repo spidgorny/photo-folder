@@ -12,6 +12,16 @@ plugins:
   - serverless-esbuild
 
 functions:
+  uploadHandlerApi:
+    handler: index.handlerApi
+    environment:
+      BUCKET_ACCESS_KEY_ID: ${env:BUCKET_ACCESS_KEY_ID}
+      BUCKET_SECRET_ACCESS_KEY: ${env:BUCKET_SECRET_ACCESS_KEY}
+      BUCKET_NAME: ${env:BUCKET_NAME}
+    events:
+      - httpApi:
+          method: POST
+          path: /handle-upload
   uploadHandler:
     handler: index.handler
     environment:

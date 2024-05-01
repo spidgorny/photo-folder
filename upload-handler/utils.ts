@@ -11,8 +11,8 @@ export async function time(code: () => any) {
 export type UploadObject = {
 	key: string;
 	size: number;
-	eTag: string;
+	eTag?: string;
 	versionId?: string | undefined;
-	sequencer: string;
-	prefix: string;
+	sequencer?: string;
+	prefix?: string;
 };

@@ -1,10 +1,11 @@
 import { S3Event } from "aws-lambda";
-import { getS3Storage } from "../lib/S3Storage";
+import { getS3Storage, S3Storage } from "../lib/S3Storage";
 import { time, UploadObject, urlDecode } from "./utils.ts";
 import { handlePlaceholder } from "./handle-placeholder.ts";
 import { handleThumbnail } from "./handle-thumbnail.ts";
 import path from "path";
 import { Logger } from "../lib/logger.ts";
+import { APIGatewayProxyEvent } from "aws-lambda/trigger/api-gateway-proxy";
 
 function preventRunningIfWrongFileUploaded(uploadObject: UploadObject) {
 	if (uploadObject.key.includes("/.thumbnails/")) {
@@ -25,6 +26,60 @@ function preventRunningIfWrongFileUploaded(uploadObject: UploadObject) {
 	}
 }
 
+async function handleUploadObject(
+	s3: S3Storage,
+	logger: Logger,
+	uploadObject: UploadObject,
+) {
+	const prefix = uploadObject.key.split("/")[0];
+	logger.log({ prefix });
+
+	logger.log("getBuffer", uploadObject.key);
+	const bytes = await s3.getBuffer(uploadObject.key);
+	logger.log("handlePlaceholder");
+	const timePlaceholder = await time(
+		async () =>
+			await handlePlaceholder(s3, logger, prefix, uploadObject, bytes),
+	);
+	logger.log("handleThumbnail");
+	const timeThumbnail = await time(
+		async () => await handleThumbnail(s3, logger, prefix, uploadObject, bytes),
+	);
+
+	logger.log({ timePlaceholder, timeThumbnail });
+	let output = {
+		uploadObject,
+		timePlaceholder,
+		timeThumbnail,
+	};
+	logger.log(output);
+	return output;
+}
+
+export async function handlerApi(event: APIGatewayProxyEvent) {
+	try {
+		const body = JSON.parse(event.body);
+		const file = body.file as string;
+		const logger = new Logger(file);
+
+		const s3 = getS3Storage();
+		const [uploadObject] = await s3.list(file);
+		const output = await handleUploadObject(s3, logger, uploadObject);
+
+		return {
+			status: "ok",
+			event,
+			output,
+		};
+	} catch (e) {
+		return {
+			status: "error",
+			message: e.message,
+			stack: e.stack?.split("\n"),
+		};
+	}
+}
+
 export async function handler(event: S3Event) {
 	// console.log(event);
 	let uploadObject = event.Records[0].s3.object as UploadObject;
@@ -36,35 +91,10 @@ export async function handler(event: S3Event) {
 		);
 		logger.log(envSorted);
 		logger.log(uploadObject);
-		const prefix = uploadObject.key.split("/")[0];
-		logger.log({ prefix });
 		preventRunningIfWrongFileUploaded(uploadObject);
 
 		const s3 = getS3Storage();
-		logger.log("getBuffer", uploadObject.key);
-		const bytes = await s3.getBuffer(uploadObject.key);
-		logger.log("handlePlaceholder");
-		const timePlaceholder = await time(
-			async () =>
-				await handlePlaceholder(s3, logger, prefix, uploadObject, bytes),
-		);
-		logger.log("handleThumbnail");
-		const timeThumbnail = await time(
-			async () =>
-				await handleThumbnail(s3, logger, prefix, uploadObject, bytes),
-		);
-
-		logger.log({ timePlaceholder, timeThumbnail });
-		let output = {
-			uploadObject,
-			timePlaceholder,
-			timeThumbnail,
-		};
-		logger.log(output);
-		return {
-			statusCode: 200,
-			body: JSON.stringify(output, null, 2),
-		};
+		return await handleUploadObject(s3, logger, uploadObject);
 	} catch (e) {
 		logger.log("ERROR", e.message, e.stack.split("\n"));
 	}

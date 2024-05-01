@@ -7,11 +7,6 @@
     "dev:turbo": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "sls:invoke:local": "cd upload-handler && npx serverless invoke local -f uploadHandler -p ./testEventS3.json",
-    "sls:invoke:local-asd": "cd upload-handler && npx serverless invoke local -f uploadHandler -p ./testEventS3-asd.json",
-    "sls:deploy": "cd upload-handler && npx serverless deploy --verbose",
-    "sls:logs": "cd upload-handler && npx serverless logs -f uploadHandler -t",
-    "aws:logs": "aws logs tail --follow --region eu-central-1 /aws/lambda/upload-handler-dev-uploadHandler",
     "s3:thumbs:down": "aws s3 cp s3://slawa-photo/2024 Cyprus/.thumbnails.json' 'test/2024 Cyprus/'",
     "s3:thumbs:up": "aws s3 cp \"test/2024 Cyprus/.thumbnails.json\" \"s3://slawa-photo/2024 Cyprus/\""
   },

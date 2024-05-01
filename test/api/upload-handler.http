@@ -1,0 +1,6 @@
+POST https://u7gkfc0ife.execute-api.eu-central-1.amazonaws.com/handle-upload
+Content-Type: application/json
+
+{
+  "file": "marina-paintings/1714556163408-18737092-63cd-4703-a203-a65e38ccd304.jpg"
+}
