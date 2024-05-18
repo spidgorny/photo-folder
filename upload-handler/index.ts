@@ -6,6 +6,7 @@ import { handleThumbnail } from "./handle-thumbnail.ts";
 import path from "path";
 import { Logger } from "../lib/logger.ts";
 import { APIGatewayProxyEvent } from "aws-lambda/trigger/api-gateway-proxy";
+import invariant from "tiny-invariant";
 
 function preventRunningIfWrongFileUploaded(uploadObject: UploadObject) {
 	if (uploadObject.key.includes("/.thumbnails/")) {
@@ -58,6 +59,8 @@ async function handleUploadObject(
 
 export async function handlerApi(event: APIGatewayProxyEvent) {
 	try {
+		invariant(event.httpMethod === "POST", "must be POST");
+		invariant(event.body, "event without body");
 		const body = JSON.parse(event.body);
 		const file = body.file as string;
 		const logger = new Logger(file);
