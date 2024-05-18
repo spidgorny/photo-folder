@@ -7,5 +7,5 @@ export function useFiles(prefix: string) {
 		`/api/s3/files?prefix=${prefix}`,
 		fetcher,
 	);
-	return { data, error, isLoading, mutate };
+	return { data, files: data?.files ?? [], error, isLoading, mutate };
 }

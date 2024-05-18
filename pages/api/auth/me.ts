@@ -1,6 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getIronSession } from "iron-session";
-import invariant from "tiny-invariant";
 import { getMySession } from "./login";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {

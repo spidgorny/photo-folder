@@ -1,9 +1,9 @@
 "use client";
 import axios from "axios";
 import { useState } from "react";
-import SlidingPane from "react-sliding-pane";
 import Link from "next/link";
 import { useClientSession } from "../use-client-session.tsx";
+import { MySlidingPane } from "../my-sliding-pane.tsx";
 
 export function MainHeader() {
 	return (
@@ -30,39 +30,23 @@ function SignInOrOut() {
 }
 
 function SignIn(props: { onSuccess: () => void }) {
-	const [openPanel, setOpenPanel] = useState(false);
 	return (
-		<div>
-			<button
-				onClick={() => setOpenPanel(true)}
-				className="btn btn-outline-primary"
-			>
-				Sign In
-			</button>
-			<SlidingPane
-				isOpen={openPanel}
-				width={"50%"}
-				onRequestClose={() => setOpenPanel(false)}
-			>
+		<MySlidingPane button="Sign In">
+			{({ close }) => (
 				<div>
 					<div>Sign-in with email:</div>
 					<SignInForm
 						onSuccess={() => {
-							setOpenPanel(false);
+							close();
 							props.onSuccess();
 						}}
 					/>
 					<div className="py-5 my-5 text-end">
-						<button
-							onClick={() => setOpenPanel(false)}
-							className="btn btn-outline-secondary"
-						>
-							close
-						</button>
+						<button className="btn btn-outline-secondary">close</button>
 					</div>
 				</div>
-			</SlidingPane>
-		</div>
+			)}
+		</MySlidingPane>
 	);
 }
 

@@ -2,9 +2,8 @@ import { Gallery, Image } from "react-grid-gallery";
 import { useFiles } from "./use-files";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import { useClientSession } from "../app/use-client-session.tsx";
-import Image from "next/image";
+import { SelectedImages } from "./selected-images.tsx";
 
 export function ListFilesGrid(props: { prefix: string }) {
 	const router = useRouter();
@@ -66,45 +65,10 @@ export function ListFilesGrid(props: { prefix: string }) {
 				/>
 			)}
 
-			{onlySelectedImages.length > 0 && (
-				<div className="position-fixed w-100 bottom-0 border rounded start-0 bg-light p-3 d-flex justify-content-between">
-					<div>
-						Selected images: {onlySelectedImages.length}
-						<div>
-							{onlySelectedImages.map((x) => (
-								<Image
-									src={x.src}
-									width={80}
-									height={80}
-									alt={x.src}
-									key={x.src}
-									className="object-cover"
-								/>
-							))}
-						</div>
-					</div>
-					<div>
-						<DeleteButton prefix={props.prefix} images={onlySelectedImages} />
-					</div>
-				</div>
-			)}
+			<SelectedImages
+				prefix={props.prefix}
+				selectedImages={onlySelectedImages}
+			/>
 		</div>
-	);
-}
-
-function DeleteButton(props: { prefix: string; images: Image[] }) {
-	const { mutate, data, error, isLoading } = useFiles(props.prefix);
-
-	const onClick = async () => {
-		let keys = props.images.map((x) => x.key);
-		console.log(keys);
-		await axios.delete("/api/s3/deleteMany", { data: { keys } });
-		await mutate();
-	};
-
-	return (
-		<button className="btn btn-danger" onClick={onClick}>
-			Delete
-		</button>
 	);
 }
