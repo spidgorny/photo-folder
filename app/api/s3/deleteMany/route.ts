@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getS3Storage, S3Storage } from "../../../../lib/S3Storage.ts";
-import { ThumbFile, ThumbFileS3 } from "../../../../lib/thumb-file.ts";
-import { S3File } from "../../../../lib/s3-file.ts";
-import invariant from "tiny-invariant";
+import { getS3Storage, S3Storage } from "@/lib/S3Storage.ts";
+import { ThumbFileS3 } from "@/lib/thumb-file.ts";
+import invariant from "@/lib/invariant";
 
 export async function DELETE(req: NextRequest) {
 	const formData = await req.json();
 	console.log(formData);
 	const keysToDelete = formData.keys as string[];
 	console.log({ keysToDelete });
-	invariant(keysToDelete.length);
+	invariant(keysToDelete.length, "keysToDelete length 0");
 	const s3 = getS3Storage();
 	const res = await Promise.all(
 		keysToDelete.map(async (key: string) => {

@@ -1,5 +1,5 @@
 import { runTest } from "./bootstrap";
-import invariant from "tiny-invariant";
+import invariant from "@/lib/invariant";
 import { getS3Storage } from "../lib/S3Storage";
 
 import { S3File } from "../lib/s3-file";

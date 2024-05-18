@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getIronSession } from "iron-session";
-import invariant from "tiny-invariant";
+import invariant from "@/lib/invariant";
 
 export async function getMySession(req: NextApiRequest, res: NextApiResponse) {
 	invariant(process.env.IRON_PASSWORD, "IRON_PASSWORD is not defined");

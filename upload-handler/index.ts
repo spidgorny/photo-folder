@@ -6,7 +6,7 @@ import { handleThumbnail } from "./handle-thumbnail.ts";
 import path from "path";
 import { Logger } from "../lib/logger.ts";
 import { APIGatewayProxyEvent } from "aws-lambda/trigger/api-gateway-proxy";
-import invariant from "tiny-invariant";
+import invariant from "../lib/invariant";
 
 function preventRunningIfWrongFileUploaded(uploadObject: UploadObject) {
 	if (uploadObject.key.includes("/.thumbnails/")) {

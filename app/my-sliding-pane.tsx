@@ -1,6 +1,6 @@
 import "react-sliding-pane/dist/react-sliding-pane.css";
 import SlidingPane from "react-sliding-pane";
-import { PropsWithChildren, ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 
 export function MySlidingPane(props: {
 	button: string;

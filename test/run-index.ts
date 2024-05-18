@@ -1,6 +1,6 @@
 import { runTest } from "./bootstrap";
 import { getPlaiceholder } from "plaiceholder";
-import invariant from "tiny-invariant";
+import invariant from "@/lib/invariant";
 import { getS3Storage } from "../lib/S3Storage";
 import { ThumbFileS3 } from "../lib/thumb-file";
 
