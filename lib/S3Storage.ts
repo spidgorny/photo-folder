@@ -20,7 +20,6 @@ import { Transform } from "stream";
 import http from "http";
 import { StreamingBlobPayloadOutputTypes } from "@smithy/types";
 import { onlyOncePerSecond } from "./date";
-import bytes from "bytes";
 
 export class S3Storage {
 	protected s3: S3Client;
