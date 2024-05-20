@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useFiles } from "./use-files.tsx";
+import { useThumbnails } from "../../components/use-thumbnails.tsx";
 import axios from "axios";
 import React from "react";
 
@@ -36,13 +36,15 @@ export function SelectedImages(props: {
 }
 
 function DeleteButton(props: { prefix: string; images: any[] }) {
-	const { mutate, data, error, isLoading } = useFiles(props.prefix);
+	const { mutateThumbnails, data, error, isLoading } = useThumbnails(
+		props.prefix,
+	);
 
 	const onClick = async () => {
 		let keys = props.images.map((x) => x.key);
 		console.log(keys);
 		await axios.delete("/api/s3/deleteMany", { data: { keys } });
-		await mutate();
+		await mutateThumbnails();
 	};
 
 	return (

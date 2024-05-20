@@ -3,7 +3,8 @@ import SlidingPane from "react-sliding-pane";
 import { ReactNode, useState } from "react";
 
 export function MySlidingPane(props: {
-	button: string;
+	title?: string;
+	button: ReactNode;
 	children: (withClose: { close: () => void }) => ReactNode;
 }) {
 	const [openPanel, setOpenPanel] = useState(false);
@@ -16,7 +17,12 @@ export function MySlidingPane(props: {
 			>
 				{props.button}
 			</button>
-			<SlidingPane isOpen={openPanel} width={"50%"} onRequestClose={close}>
+			<SlidingPane
+				isOpen={openPanel}
+				width={"50%"}
+				onRequestClose={close}
+				title={props.title}
+			>
 				{props.children({ close })}
 			</SlidingPane>
 		</div>

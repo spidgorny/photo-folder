@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import { getS3Storage } from "../../../../lib/S3Storage";
+import { getS3Storage } from "@/lib/S3Storage";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
 	let queryKey = Array.isArray(req.query.key)

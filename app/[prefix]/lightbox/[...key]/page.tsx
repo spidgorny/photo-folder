@@ -4,8 +4,8 @@ import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import React from "react";
 import "yet-another-react-lightbox/plugins/captions.css";
-import { LightboxPreview } from "../../../../components/lightbox-preview.tsx";
-import { useFiles } from "../../../../components/use-files.tsx";
+import { LightboxPreview } from "../lightbox-preview.tsx";
+import { useThumbnails } from "../../../../components/use-thumbnails.tsx";
 import { urlDecode } from "../../../../upload-handler/utils.ts";
 
 export default function PreviewPage() {
@@ -26,7 +26,7 @@ export default function PreviewPage() {
 }
 
 function PreviewLoader(props: { prefix: string; selectedFile: string[] }) {
-	const { data, error, isLoading } = useFiles(props.prefix);
+	const { data, error, isLoading } = useThumbnails(props.prefix);
 
 	const fileKey = (props?.selectedFile as string[])?.join("/");
 	if (!data?.files) {

@@ -8,4 +8,5 @@ export interface S3File {
 		width: number;
 		height: number;
 	};
+	created?: string | Date;
 }

@@ -1,5 +1,6 @@
 import { PropsWithChildren } from "react";
 import "../styles/globals.css";
+import { MainHeader } from "@/app/main-header.tsx";
 
 export default function Doc(props: PropsWithChildren) {
 	return (
@@ -16,6 +17,7 @@ export default function Doc(props: PropsWithChildren) {
 				/>
 			</head>
 			<body>
+				<MainHeader />
 				<main />
 				{props.children}
 			</body>

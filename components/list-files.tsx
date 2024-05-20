@@ -1,9 +1,9 @@
 import { PreviewImage } from "./preview-image";
-import { useFiles } from "./use-files";
+import { useThumbnails } from "./use-thumbnails.tsx";
 import { S3File } from "../lib/s3-file";
 
 export function ListFiles(props: { prefix: string }) {
-	const { data, error, isLoading } = useFiles(props.prefix);
+	const { data, error, isLoading } = useThumbnails(props.prefix);
 	if (error) return <div className="alert alert-danger">{error?.message}</div>;
 	if (!data) return <div>loading...</div>;
 	return (

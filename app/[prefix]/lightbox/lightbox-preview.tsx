@@ -4,7 +4,7 @@ import React from "react";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 
-import { S3File } from "../lib/s3-file";
+import { S3File } from "../../../lib/s3-file.ts";
 
 export function LightboxPreview(props: {
 	prefix: string;

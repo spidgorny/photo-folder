@@ -2,8 +2,8 @@
 import axios from "axios";
 import { useState } from "react";
 import Link from "next/link";
-import { useClientSession } from "../use-client-session.tsx";
-import { MySlidingPane } from "../my-sliding-pane.tsx";
+import { useClientSession } from "./use-client-session.tsx";
+import { MySlidingPane } from "./my-sliding-pane.tsx";
 
 export function MainHeader() {
 	return (

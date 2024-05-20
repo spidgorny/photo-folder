@@ -1,14 +1,15 @@
-import { Gallery, Image } from "react-grid-gallery";
-import { useFiles } from "./use-files";
+import { Gallery, Image, ThumbnailImageProps } from "react-grid-gallery";
+import { useThumbnails } from "../../components/use-thumbnails.tsx";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useClientSession } from "../app/use-client-session.tsx";
+import { useClientSession } from "../use-client-session.tsx";
 import { SelectedImages } from "./selected-images.tsx";
+import { default as NextImage } from "next/image";
 
 export function ListFilesGrid(props: { prefix: string }) {
 	const router = useRouter();
 	const session = useClientSession();
-	const { data, error, isLoading } = useFiles(props.prefix);
+	const { data, error, isLoading } = useThumbnails(props.prefix);
 
 	const images =
 		data?.files.map(
@@ -51,6 +52,29 @@ export function ListFilesGrid(props: { prefix: string }) {
 
 	const onlySelectedImages = selectedImages.filter((x) => x.isSelected);
 
+	const ImageComponent = (props: ThumbnailImageProps) => {
+		const [show, setShow] = useState(false);
+
+		const { title, ...otherProps } = props.imageProps;
+
+		return (
+			<div
+				style={{ ...props.imageProps.style, textAlign: "center" }}
+				onMouseOver={() => setShow(true)}
+				onMouseOut={() => setShow(false)}
+			>
+				<NextImage
+					priority={false}
+					fetchPriority="low"
+					title={title ?? ""}
+					width={512}
+					height={512}
+					{...otherProps}
+				/>
+			</div>
+		);
+	};
+
 	return (
 		<div>
 			{error && <div className="alert alert-danger">{error?.message}</div>}
@@ -62,6 +86,7 @@ export function ListFilesGrid(props: { prefix: string }) {
 					onSelect={handleSelect}
 					onClick={onClick}
 					enableImageSelection={session?.user}
+					thumbnailImageComponent={ImageComponent}
 				/>
 			)}
 
