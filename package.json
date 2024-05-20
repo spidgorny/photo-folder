@@ -33,6 +33,7 @@
     "spidgorny-react-helpers": "github:spidgorny/react-helpers",
     "stream-to-array": "^2.3.0",
     "swr": "^2.2.5",
+    "ts-exif-parser": "^0.2.2",
     "yet-another-react-lightbox": "^3.18.0"
   },
   "devDependencies": {
