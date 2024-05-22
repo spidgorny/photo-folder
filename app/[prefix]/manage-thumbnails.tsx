@@ -5,7 +5,6 @@ import { sortBy } from "spidgorny-react-helpers/lib/array.ts";
 import { reindexFile, updateThumbnailFile } from "@/app/[prefix]/actions.ts";
 import { useWorking } from "spidgorny-react-helpers/use-working.tsx";
 import { S3File } from "@/lib/s3-file.ts";
-import axios from "axios";
 
 export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 	const { files, mutateThumbnails } = useThumbnails(props.prefix);

@@ -5,23 +5,23 @@ import React from "react";
 
 export function SelectedImages(props: {
 	prefix: string;
-	selectedImages: any[];
+	selectedImages: string[];
 }) {
 	return (
 		<div>
 			{props.selectedImages.length > 0 && (
-				<div className="position-fixed w-100 bottom-0 border rounded start-0 bg-light p-3 d-flex justify-content-between">
+				<div className="position-fixed w-100 bottom-0 border rounded start-0 bg-dark text-white p-3 d-flex justify-content-between">
 					<div>
 						Selected images: {props.selectedImages.length}
 						<div>
 							{props.selectedImages.map((x) => (
 								<Image
-									src={x.src}
+									src={x}
 									width={80}
 									height={80}
-									alt={x.src}
-									key={x.src}
-									className="object-cover"
+									alt={x}
+									key={x}
+									className="object-cover border rounded mx-1"
 								/>
 							))}
 						</div>

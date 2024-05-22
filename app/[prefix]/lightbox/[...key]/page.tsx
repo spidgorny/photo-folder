@@ -4,7 +4,7 @@ import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import React from "react";
 import "yet-another-react-lightbox/plugins/captions.css";
-import { LightboxPreview } from "../lightbox-preview.tsx";
+import { LightboxPreview } from "./lightbox-preview.tsx";
 import { useThumbnails } from "../../../../components/use-thumbnails.tsx";
 import { urlDecode } from "../../../../upload-handler/utils.ts";
 
@@ -43,7 +43,6 @@ function PreviewLoader(props: { prefix: string; selectedFile: string[] }) {
 			{ src: `/api/s3/jpg/${x.key}`, width: 4000, height: 1800 },
 		],
 	}));
-	console.table(slides, ["src"]);
 
 	return (
 		<LightboxPreview

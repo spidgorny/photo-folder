@@ -4,7 +4,9 @@ import React from "react";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 
-import { S3File } from "../../../lib/s3-file.ts";
+import { S3File } from "@/lib/s3-file.ts";
+import { useKeyStroke } from "@react-hooks-library/core";
+import { useSelectedImages } from "@/app/[prefix]/lightbox/[...key]/use-selected-images.tsx";
 
 export function LightboxPreview(props: {
 	prefix: string;
@@ -22,6 +24,13 @@ export function LightboxPreview(props: {
 		captions: { ref: captionsRef },
 		plugins: [Thumbnails, Captions],
 	};
+	const { list: selectedImages, push } = useSelectedImages<string>();
+	useKeyStroke(["Backspace", "Delete", "d", "D", "x", "X"], (e) => {
+		e.preventDefault();
+		console.log("Del", props.fileKey);
+		push(props.fileKey);
+	});
+
 	return (
 		<div>
 			<Lightbox
