@@ -12,7 +12,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 			const parts = file.key.match(/20(\d\d)(\d\d)(\d\d)_(\d\d)(\d\d)(\d\d)/);
 			const created = parts
 				? new Date(
-						`20${parts[1]}-${parts[2]}-${parts[3]} ${parts[4]}-${parts[5]}-${parts[6]}`,
+						`20${parts[1]}-${parts[2]}-${parts[3]} ${parts[4]}-${parts[5]}-${parts[6]}Z`,
 					)
 				: undefined;
 			return { ...file, created };

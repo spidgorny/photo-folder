@@ -94,7 +94,9 @@ const FileRow = (props: {
 			<td>{props.file.key}</td>
 			<td>{props.file.size}</td>
 			<td align="right" className="font-monospace">
-				{new Date(props.file.created ?? props.file.modified).toISOString()}
+				{new Date(props.file.created ?? props.file.modified)
+					.toISOString()
+					.substring(0, 19)}
 			</td>
 		</tr>
 	);

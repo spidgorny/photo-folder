@@ -1,34 +1,77 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Photo Folder from S3
 
-## Getting Started
+Next.JS project (+ Lambda functions to extract metadata from images) to browse and manage the files uploaded to the 
+S3 bucket.
 
-First, run the development server:
+You will need an S3 bucket with folders of images. You can create the bucket with a `serverless` project in 
+[upload-handler](). It will also install the lambda triggers that would run after each new uploaded image to extract 
+metadata and store them in the `.thumbnails.json` file. It will also extract the thumbnail of the uploaded 
+image and store it in the `.thumbnails/` subdirectory.
 
-```bash
-npm run dev
-# or
-yarn dev
+S3 structure:
+
+```
+/
+    - folder-name/
+        - .thumbnails.json
+        - .thumbnails/
+            - IMG_20240101_101010.jpg
+        - IMG_20240101_101010.jpg
+        - ...more images (and more thumbnails)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+I use the [S3 Drive](https://s3drive.app/) app to upload images into S3 bucket from Android phone.
 
-You can start editing the page by modifying `pages/index.ts`. The page auto-updates as you edit the file.
+Configure the AWS access to the bucket in `.env` file then run the Next.JS project to have an UI. 
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+![img.png](docs/img.png)
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+You can:
 
-## Learn More
+* see image thumbnails in a grid
+* click image to see full screen view
+* use [Left] and [Right] keys to browse previous/next images
+* Press [Delete] or [X] to select images and put them into delete queue
+* Delete queue will be shown at the bottom of the screen
+* Delete image from the delete queue
+* Sort images by date/time
+* If the files have an ISO date in the name, this data will be used instead of the timestamp of modification
 
-To learn more about Next.js, take a look at the following resources:
+## Thumbnails.JSON
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This is an array of image information with the following properties:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+```
+[
+  {
+    "key": "2024 Cyprus/2024-03-30_09_41_32_411_0.jpg",
+    "size": 443429,
+    "modified": "2024-04-03T05:44:57.000Z",
+    "base64": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAECAIAAAA8r+mnAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAb0lEQVR4nAFkAJv/AD5beUR6tC1pnjRtokd4qWWTxHef04av4gDk5+1zfYlFVmgZPFknVn0ZS28STHcsY48AZ2FYPjMl2se0ppeLjIV9PURMu8LIABQcADo5MrmtoIV9cq6jl97Kt+HOuv/433RlVLzBLzeAPN9GAAAAAElFTkSuQmCC",
+    "metadata": {
+      "width": 2400,
+      "height": 1080,
+      "format": "jpeg",
+      "size": 443429,
+      "space": "srgb",
+      "channels": 3,
+      "depth": "uchar",
+      "density": 72,
+      "chromaSubsampling": "4:2:0",
+      "isProgressive": false,
+      "hasProfile": true,
+      "hasAlpha": false,
+      "orientation": 1
+    }
+  }
+]
+```
 
-## Deploy on Vercel
+* base64 is the 8x8 image that can be used as the placeholder while the thumbnail is loading. It does not allow to 
+  distinguish what is on the photo, but gives the sense of colors of that image.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Todo
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+* [ ] sort files by date
+* [ ] extract EXIF information as well
+* 
