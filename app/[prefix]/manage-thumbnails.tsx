@@ -25,14 +25,16 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 		<div>
 			<h5>Uploads without Thumbnails ({uploadsWithoutThumbnails.length})</h5>
 			<table className="table">
-				{uploadsWithoutThumbnails.map((file) => (
-					<FileRow
-						key={file.key}
-						prefix={props.prefix}
-						file={file}
-						thumbList={files}
-					/>
-				))}
+				<tbody>
+					{uploadsWithoutThumbnails.map((file) => (
+						<FileRow
+							key={file.key}
+							prefix={props.prefix}
+							file={file}
+							thumbList={files}
+						/>
+					))}
+				</tbody>
 			</table>
 			<div className="d-flex justify-content-between">
 				<h5>Thumbnails {files.length}</h5>
@@ -47,14 +49,16 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 				</SaveButton>
 			</div>
 			<table className="table">
-				{files.map((file) => (
-					<FileRow
-						key={file.key}
-						prefix={props.prefix}
-						file={file}
-						thumbList={files}
-					/>
-				))}
+				<tbody>
+					{files.map((file) => (
+						<FileRow
+							key={file.key}
+							prefix={props.prefix}
+							file={file}
+							thumbList={files}
+						/>
+					))}
+				</tbody>
 			</table>
 		</div>
 	);

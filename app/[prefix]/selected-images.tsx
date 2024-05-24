@@ -2,11 +2,13 @@ import Image from "next/image";
 import { useThumbnails } from "../../components/use-thumbnails.tsx";
 import axios from "axios";
 import React from "react";
+import { useSelectedImages } from "@/app/[prefix]/lightbox/[...key]/use-selected-images.tsx";
 
 export function SelectedImages(props: {
 	prefix: string;
 	selectedImages: string[];
 }) {
+	const { removeBy } = useSelectedImages<string>();
 	return (
 		<div>
 			{props.selectedImages.length > 0 && (
@@ -14,15 +16,24 @@ export function SelectedImages(props: {
 					<div>
 						Selected images: {props.selectedImages.length}
 						<div>
-							{props.selectedImages.map((x) => (
-								<Image
-									src={x}
-									width={80}
-									height={80}
-									alt={x}
-									key={x}
-									className="object-cover border rounded mx-1"
-								/>
+							{props.selectedImages.map((imageUrl) => (
+								<div className="position-relative d-inline-block">
+									<Image
+										src={imageUrl}
+										width={80}
+										height={80}
+										alt={imageUrl}
+										key={imageUrl}
+										className="object-cover border rounded mx-1"
+									/>
+									<button
+										type="button"
+										className="position-absolute btn-close bg-white rounded"
+										aria-label="Close"
+										style={{ top: 0, right: 5 }}
+										onClick={() => removeBy((x) => imageUrl.includes(x))}
+									/>
+								</div>
 							))}
 						</div>
 					</div>

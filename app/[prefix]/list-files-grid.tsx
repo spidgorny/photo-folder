@@ -1,6 +1,6 @@
 import { Gallery, Image, ThumbnailImageProps } from "react-grid-gallery";
 import { useThumbnails } from "../../components/use-thumbnails.tsx";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useClientSession } from "../use-client-session.tsx";
 import { SelectedImages } from "./selected-images.tsx";
@@ -10,7 +10,7 @@ import { useSelectedImages } from "@/app/[prefix]/lightbox/[...key]/use-selected
 export function ListFilesGrid(props: { prefix: string }) {
 	const router = useRouter();
 	const session = useClientSession();
-	const { data, error, isLoading } = useThumbnails(props.prefix);
+	const { data, error } = useThumbnails(props.prefix);
 
 	const images =
 		data?.files.map(
@@ -27,14 +27,14 @@ export function ListFilesGrid(props: { prefix: string }) {
 						// { value: "People", title: "People" },
 					],
 					// alt: "Boats (Jeshu John - designerspics.com)",
-				}) as Image,
+				}) as Image & { key: string },
 		) ?? [];
 
 	const { list: selectedImages, push, removeBy } = useSelectedImages<string>();
 
 	const handleSelect = (
 		index: number,
-		item: Image,
+		item: Image & { key: string },
 		event: React.MouseEvent<HTMLElement, MouseEvent>,
 	) => {
 		console.log(index, item);
@@ -72,7 +72,7 @@ export function ListFilesGrid(props: { prefix: string }) {
 		);
 	};
 
-	console.log("selectedImages", selectedImages);
+	// console.log("selectedImages", selectedImages);
 	const imagesWithSelected = images.map((image) => {
 		return {
 			...image,

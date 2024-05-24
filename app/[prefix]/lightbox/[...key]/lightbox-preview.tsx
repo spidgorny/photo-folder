@@ -24,11 +24,14 @@ export function LightboxPreview(props: {
 		captions: { ref: captionsRef },
 		plugins: [Thumbnails, Captions],
 	};
+
+	// DELETE
 	const { list: selectedImages, push } = useSelectedImages<string>();
 	useKeyStroke(["Backspace", "Delete", "d", "D", "x", "X"], (e) => {
 		e.preventDefault();
 		console.log("Del", props.fileKey);
 		push(props.fileKey);
+		router.push(`/${props.prefix}?key=${props.fileKey}#${props.fileKey}`);
 	});
 
 	return (

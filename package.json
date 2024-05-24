@@ -2,7 +2,7 @@
   "name": "photo-folder",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "npm:^1.18.0",
+  "packageManager": "npm@10.5.1",
   "scripts": {
     "dev": "next dev",
     "dev:turbo": "next dev --turbo",
@@ -12,10 +12,10 @@
     "s3:thumbs:up": "aws s3 cp \"test/2024 Cyprus/.thumbnails.json\" \"s3://slawa-photo/2024 Cyprus/\""
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.577.0",
-    "@aws-sdk/lib-storage": "^3.578.0",
+    "@aws-sdk/client-s3": "^3.583.0",
+    "@aws-sdk/lib-storage": "^3.583.0",
     "@react-hooks-library/core": "^0.6.2",
-    "axios": "^1.6.8",
+    "axios": "^1.7.2",
     "bytes": "^3.1.2",
     "chalk": "^5.3.0",
     "classnames": "^2.5.1",
@@ -37,15 +37,15 @@
     "swr": "^2.2.5",
     "ts-exif-parser": "^0.2.2",
     "use-session-storage-state": "^18.2.0",
-    "yet-another-react-lightbox": "^3.18.0"
+    "yet-another-react-lightbox": "^3.19.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.138",
     "@types/node": "20.12.12",
-    "@types/react": "^18.3.2",
+    "@types/react": "^18.3.3",
     "find-up": "^7.0.0",
     "prettier": "^3.2.5",
-    "tsx": "^4.10.5",
+    "tsx": "^4.11.0",
     "typescript": "^5.4.5"
   },
   "prettier": {
