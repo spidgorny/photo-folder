@@ -2,7 +2,7 @@ import { Gallery, Image, ThumbnailImageProps } from "react-grid-gallery";
 import { useThumbnails } from "../../components/use-thumbnails.tsx";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useClientSession } from "../use-client-session.tsx";
+import { useClientSession } from "../../components/use-client-session.tsx";
 import { SelectedImages } from "./selected-images.tsx";
 import { default as NextImage } from "next/image";
 import { useSelectedImages } from "@/app/[prefix]/lightbox/[...key]/use-selected-images.tsx";
@@ -17,11 +17,13 @@ export function ListFilesGrid(props: { prefix: string }) {
 			(file) =>
 				({
 					key: file.key,
+					id: file.key.split("/").slice(-1)[0],
+					title: file.key.split("/").slice(-1)[0],
 					src: `/api/s3/thumb/${file.key}`,
 					width: file.metadata?.width,
 					height: file.metadata?.height,
 					isSelected: false,
-					caption: file.key,
+					caption: file.key.split("/").slice(-1)[0],
 					tags: [
 						// { value: "Ocean", title: "Ocean" },
 						// { value: "People", title: "People" },
@@ -50,15 +52,16 @@ export function ListFilesGrid(props: { prefix: string }) {
 	};
 
 	const ImageComponent = (props: ThumbnailImageProps) => {
-		const [show, setShow] = useState(false);
+		// const [show, setShow] = useState(false);
 
-		const { title, ...otherProps } = props.imageProps;
+		const { title, id, ...otherProps } = props.imageProps;
 
 		return (
 			<div
 				style={{ ...props.imageProps.style, textAlign: "center" }}
-				onMouseOver={() => setShow(true)}
-				onMouseOut={() => setShow(false)}
+				// onMouseOver={() => setShow(true)}
+				// onMouseOut={() => setShow(false)}
+				id={id ?? title}
 			>
 				<NextImage
 					priority={false}

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getS3Storage } from "../../../lib/S3Storage";
+import { getS3Storage } from "@/lib/S3Storage.ts";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
 	const prefix = req.query.prefix as string;

@@ -10,11 +10,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 		let files = JSON.parse(bytes) as S3File[];
 		files = files.map((file) => {
 			const parts = file.key.match(/20(\d\d)(\d\d)(\d\d)_(\d\d)(\d\d)(\d\d)/);
-			const created = parts
-				? new Date(
-						`20${parts[1]}-${parts[2]}-${parts[3]} ${parts[4]}-${parts[5]}-${parts[6]}Z`,
-					)
-				: undefined;
+			let sFormat = `20${parts[1]}-${parts[2]}-${parts[3]}T${parts[4]}:${parts[5]}:${parts[6]}Z`;
+			const created = parts ? new Date(sFormat) : undefined;
 			return { ...file, created };
 		});
 		return res.status(200).json({ files });

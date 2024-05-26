@@ -17,6 +17,12 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 		await mutateThumbnails();
 	});
 
+	const isPerfectlySorted =
+		files
+			.toSorted(sortBy((x) => x.created ?? x.modified))
+			.map((x) => x.key)
+			.join(",") === files.map((x) => x.key).join(",");
+
 	const uploadsWithoutThumbnails = uploads.filter(
 		(file) => !files.some((x) => x.key === file.key),
 	);
@@ -39,17 +45,19 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 			<div className="d-flex justify-content-between">
 				<h5>Thumbnails {files.length}</h5>
 				<SaveButton
+					className="gap-2 align-items-center"
 					onClick={async () => {
 						await sortByTime(null);
 						return;
 					}}
 					isWorking={isWorking}
+					disabled={isPerfectlySorted}
 				>
 					Sort By Time
 				</SaveButton>
 			</div>
 			<table className="table">
-				<tbody>
+				<tbody style={{ fontSize: "10pt" }}>
 					{files.map((file) => (
 						<FileRow
 							key={file.key}
@@ -91,7 +99,7 @@ const FileRow = (props: {
 			<td>
 				<img src={props.file.base64} width={32} height={32} />
 			</td>
-			<td>{props.file.key}</td>
+			<td>{props.file.key.split("/").slice(-1)[0]}</td>
 			<td>{props.file.size}</td>
 			<td align="right" className="font-monospace">
 				{new Date(props.file.created ?? props.file.modified)

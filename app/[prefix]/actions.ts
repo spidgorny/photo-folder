@@ -11,12 +11,12 @@ export async function updateThumbnailFile(fileName: string, files: S3File[]) {
 	const bytes = await s3.getString(fileName);
 	const oldJson = JSON.parse(bytes);
 	const newJson = JSON.stringify(files);
-	console.log({
-		existing: bytes.length,
-		newJson: newJson.length,
-		oldLength: oldJson.length,
-		newLength: files.length,
-	});
+	// console.log({
+	// 	existing: bytes.length,
+	// 	newJson: newJson.length,
+	// 	oldLength: oldJson.length,
+	// 	newLength: files.length,
+	// });
 	console.log(oldJson[0], files[0]);
 	// invariant(bytes.length === newJson.length, "wrong files size");
 	return await s3.put(fileName, newJson);

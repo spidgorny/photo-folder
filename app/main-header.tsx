@@ -2,14 +2,14 @@
 import axios from "axios";
 import { useState } from "react";
 import Link from "next/link";
-import { useClientSession } from "./use-client-session.tsx";
-import { MySlidingPane } from "./my-sliding-pane.tsx";
+import { useClientSession } from "../components/use-client-session.tsx";
+import { MySlidingPane } from "../components/my-sliding-pane.tsx";
 
 export function MainHeader() {
 	return (
 		<header className="bg-light p-2 d-flex justify-content-between">
 			<h4>
-				<Link href="/public" className="text-decoration-none text-black">
+				<Link href="/" className="text-decoration-none text-black">
 					Photo Folder (S3)
 				</Link>
 			</h4>
