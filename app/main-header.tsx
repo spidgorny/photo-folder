@@ -79,6 +79,7 @@ function SignInForm(props: { onSuccess: () => void }) {
 					className="form-control"
 					id="floatingInput"
 					placeholder="name@example.com"
+					autoFocus
 				/>
 				<label htmlFor="floatingInput">Email address</label>
 			</div>

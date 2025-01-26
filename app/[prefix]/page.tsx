@@ -1,9 +1,9 @@
 "use client";
 import { useParams } from "next/navigation";
 import { ListFilesGrid } from "./list-files-grid.tsx";
-import { useClientSession } from "../../components/use-client-session.tsx";
+import { useClientSession } from "@components/use-client-session.tsx";
 import { DropArea } from "./drop-area.tsx";
-import { useFiles, useThumbnails } from "../../components/use-thumbnails.tsx";
+import { useFiles, useThumbnails } from "@components/use-thumbnails.tsx";
 import { MySlidingPane } from "@/components/my-sliding-pane.tsx";
 import { ManageThumbnails } from "@/app/[prefix]/manage-thumbnails.tsx";
 

@@ -2,7 +2,6 @@
 
 import { getS3Storage } from "@/lib/S3Storage.ts";
 import { S3File } from "@/lib/s3-file.ts";
-import invariant from "@/lib/invariant.ts";
 import axios from "axios";
 
 export async function updateThumbnailFile(fileName: string, files: S3File[]) {
