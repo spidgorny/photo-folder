@@ -5,6 +5,7 @@ import { sortBy } from "spidgorny-react-helpers/lib/array.ts";
 import { reindexFile, updateThumbnailFile } from "@/app/[prefix]/actions.ts";
 import { useWorking } from "spidgorny-react-helpers/use-working.tsx";
 import { S3File } from "@/lib/s3-file.ts";
+import bytes from "bytes";
 
 export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 	const { files, mutateThumbnails } = useThumbnails(props.prefix);
@@ -29,7 +30,9 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 
 	return (
 		<div>
-			<h5>Uploads without Thumbnails ({uploadsWithoutThumbnails.length})</h5>
+			<h5 onClick={() => console.table(uploadsWithoutThumbnails)}>
+				Uploads without Thumbnails ({uploadsWithoutThumbnails.length})
+			</h5>
 			<table className="table">
 				<tbody>
 					{uploadsWithoutThumbnails.map((file) => (
@@ -45,7 +48,7 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 			<div className="d-flex justify-content-between">
 				<h5>Thumbnails {files.length}</h5>
 				<SaveButton
-					className="gap-2 align-items-center"
+					className="gap-2 align-items-center items-align-center"
 					onClick={async () => {
 						await sortByTime(null);
 						return;
@@ -57,6 +60,14 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 				</SaveButton>
 			</div>
 			<table className="table">
+				<thead>
+					<tr>
+						<th colSpan={2}>Thumbn.</th>
+						<th>File</th>
+						<th>Size</th>
+						<th className="text-end">Created/Modified</th>
+					</tr>
+				</thead>
 				<tbody style={{ fontSize: "10pt" }}>
 					{files.map((file) => (
 						<FileRow
@@ -97,10 +108,10 @@ const FileRow = (props: {
 				)}
 			</td>
 			<td>
-				<img src={props.file.base64} width={32} height={32} />
+				<img src={props.file.base64} width={32} height={32} alt="thumb" />
 			</td>
 			<td>{props.file.key.split("/").slice(-1)[0]}</td>
-			<td>{props.file.size}</td>
+			<td>{bytes(props.file.size)}</td>
 			<td align="right" className="font-monospace">
 				{new Date(props.file.created ?? props.file.modified)
 					.toISOString()

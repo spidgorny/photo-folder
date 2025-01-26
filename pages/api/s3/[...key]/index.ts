@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getPlaiceholder } from "plaiceholder";
-import { getS3Storage } from "../../../../lib/S3Storage";
+import { getS3Storage } from "@lib/S3Storage.ts";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
 	let queryKey = req.query.key as string[];
