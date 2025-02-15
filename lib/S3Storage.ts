@@ -7,6 +7,7 @@ import {
 	GetObjectCommandInput,
 	HeadObjectCommand,
 	ListObjectsV2Command,
+	ListObjectsV2CommandOutput,
 	PutObjectCommand,
 	PutObjectCommandInput,
 	S3Client,
@@ -70,21 +71,20 @@ export class S3Storage {
 	}
 
 	async listFolders(Prefix?: string): Promise<S3File[]> {
-		const data = await this.s3.send(
+		const data: ListObjectsV2CommandOutput = await this.s3.send(
 			new ListObjectsV2Command({
 				Bucket: this.bucketName,
 				Prefix,
 				Delimiter: "/",
 			}),
 		);
-		let contents = data.CommonPrefixes as _Object[];
-		let files = contents.map(
+		let contents = data.CommonPrefixes ?? [];
+		return contents.map(
 			(x) =>
 				({
 					key: x.Prefix,
 				}) as S3File,
 		);
-		return files;
 	}
 
 	async uploadS3File(Key: string, filePath: string) {

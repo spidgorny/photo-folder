@@ -9,22 +9,22 @@ export interface SessionData {
 	validPasswords?: string[];
 }
 
-let sessionOptions = {
-	password: process.env.IRON_PASSWORD,
-	cookieName: process.env.IRON_COOKIE_NAME,
+let sessionOptions = () => {
+	invariant(process.env.IRON_PASSWORD, "IRON_PASSWORD is not defined");
+	invariant(process.env.IRON_COOKIE_NAME, "IRON_COOKIE_NAME is not defined");
+	return {
+		password: process.env.IRON_PASSWORD,
+		cookieName: process.env.IRON_COOKIE_NAME,
+	};
 };
 
 export async function getMySession(
 	req: NextApiRequest | NextRequest,
 	res: NextApiResponse | NextResponse,
 ) {
-	invariant(process.env.IRON_PASSWORD, "IRON_PASSWORD is not defined");
-	invariant(process.env.IRON_COOKIE_NAME, "IRON_COOKIE_NAME is not defined");
-	return await getIronSession<SessionData>(req, res, sessionOptions);
+	return await getIronSession<SessionData>(req, res, sessionOptions());
 }
 
 export async function getBackendSession() {
-	invariant(process.env.IRON_PASSWORD, "IRON_PASSWORD is not defined");
-	invariant(process.env.IRON_COOKIE_NAME, "IRON_COOKIE_NAME is not defined");
-	return await getIronSession<SessionData>(await cookies(), sessionOptions);
+	return await getIronSession<SessionData>(await cookies(), sessionOptions());
 }
