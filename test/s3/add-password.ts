@@ -6,7 +6,7 @@ import path from "path";
 
 void runTest(async () => {
 	const s3 = getS3Storage();
-	let prefix = "nordlingen";
+	let prefix = "2025-portugal-best";
 	let password = await getPasswordFor(prefix);
 	if (password) {
 		console.log("password", password);
