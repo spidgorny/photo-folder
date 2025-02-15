@@ -3,6 +3,7 @@
 import { getBackendSession } from "@lib/session.ts";
 import { getPasswordFor } from "@/app/api/s3/files/[prefix]/getThumbnailsFallbackToFiles.ts";
 import { revalidatePath } from "next/cache";
+import invariant from "@/lib/invariant.ts";
 
 export const handleSubmit = async (formData: FormData, prefix: string) => {
 	const session = await getBackendSession();
