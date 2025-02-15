@@ -1,5 +1,6 @@
 import { getS3Storage } from "@lib/S3Storage.ts";
 import { S3File } from "@lib/s3-file.ts";
+import path from "node:path";
 
 export async function getThumbnailsFallbackToFiles(prefix: string) {
 	const s3 = getS3Storage();
@@ -23,13 +24,14 @@ export async function getThumbnailsFallbackToFiles(prefix: string) {
 }
 
 export async function getPasswordFor(prefix: string) {
+	let passwordFileName = path.posix.join(prefix, ".password.json");
 	try {
 		const s3 = getS3Storage();
-		const bytes = await s3.getString(`${prefix}/.password.json`);
+		const bytes = await s3.getString(passwordFileName);
 		const { password } = JSON.parse(bytes);
 		return password;
 	} catch (err) {
-		console.error("ERROR in getPasswordFor", err.message);
+		console.error(`ERROR in getPasswordFor(${passwordFileName})`, err.message);
 		return undefined;
 	}
 }
