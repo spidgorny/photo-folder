@@ -29,7 +29,7 @@ export async function getPasswordFor(prefix: string) {
 		const { password } = JSON.parse(bytes);
 		return password;
 	} catch (err) {
-		console.error(err);
+		console.error("ERROR in getPasswordFor", err.message);
 		return undefined;
 	}
 }

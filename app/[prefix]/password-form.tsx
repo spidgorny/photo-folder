@@ -1,7 +1,8 @@
 "use client";
 import React, { useState } from "react";
+import { handleSubmit } from "./handle-password";
 
-export default function PasswordForm({ prefix }: { prefix: string }) {
+export function PasswordForm({ prefix }: { prefix: string }) {
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
 

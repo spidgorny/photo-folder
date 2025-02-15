@@ -4,7 +4,7 @@ import { getBackendSession } from "@lib/session.ts";
 import { getPasswordFor } from "@/app/api/s3/files/[prefix]/getThumbnailsFallbackToFiles.ts";
 import { revalidatePath } from "next/cache";
 
-const handleSubmit = async (formData: FormData, prefix: string) => {
+export const handleSubmit = async (formData: FormData, prefix: string) => {
 	const session = await getBackendSession();
 	const correctPassword = await getPasswordFor(prefix);
 	console.log(formData);
