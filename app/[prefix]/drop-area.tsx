@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import axios from "axios";
 import { FileUploader } from "react-drag-drop-files";
@@ -23,8 +24,8 @@ export function DropArea(props: { prefix: string }) {
 		console.log(formData);
 		const res = await axios.post(`/api/s3/upload`, formData, {
 			headers: {
-				"Content-Type": "multipart/form-data"
-			}
+				"Content-Type": "multipart/form-data",
+			},
 		});
 		console.log(res);
 	};

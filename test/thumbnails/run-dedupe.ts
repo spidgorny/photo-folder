@@ -1,5 +1,5 @@
-import { runTest } from "./bootstrap";
-import { ThumbFile } from "../lib/thumb-file";
+import { runTest } from "../bootstrap.ts";
+import { ThumbFile } from "@lib/thumb-file.ts";
 
 void runTest(async () => {
 	const prefix = "2024 Cyprus";

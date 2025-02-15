@@ -11,8 +11,8 @@
     "s3:thumbs:up": "aws s3 cp \"test/2024 Cyprus/.thumbnails.json\" \"s3://slawa-photo/2024 Cyprus/\""
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.735.0",
-    "@aws-sdk/lib-storage": "^3.735.0",
+    "@aws-sdk/client-s3": "^3.749.0",
+    "@aws-sdk/lib-storage": "^3.749.0",
     "@react-hooks-library/core": "^0.6.2",
     "axios": "^1.7.9",
     "bytes": "^3.1.2",
@@ -21,10 +21,10 @@
     "dotenv": "^16.4.7",
     "iron-session": "^8.0.4",
     "luxon": "^3.5.0",
-    "next": "15.1.6",
+    "next": "15.1.7",
     "plaiceholder": "^3.0.0",
     "react": "19.0.0",
-    "react-bootstrap": "^2.10.8",
+    "react-bootstrap": "^2.10.9",
     "react-dom": "19.0.0",
     "react-drag-drop-files": "^2.4.0",
     "react-grid-gallery": "^1.0.1",
@@ -33,17 +33,17 @@
     "slash": "^5.1.0",
     "spidgorny-react-helpers": "github:spidgorny/react-helpers",
     "stream-to-array": "^2.3.0",
-    "swr": "^2.3.0",
+    "swr": "^2.3.2",
     "ts-exif-parser": "^0.2.2",
     "use-session-storage-state": "^19.0.1",
     "yet-another-react-lightbox": "^3.21.7"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.147",
-    "@types/node": "22.10.10",
+    "@types/node": "22.13.4",
     "@types/react": "^19.0.8",
     "find-up": "^7.0.0",
-    "prettier": "^3.4.2",
+    "prettier": "^3.5.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   },
@@ -54,5 +54,5 @@
   "optionalDependencies": {
     "@img/sharp-win32-x64": "^0.33.5"
   },
-  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
+  "packageManager": "yarn@1.22.22"
 }

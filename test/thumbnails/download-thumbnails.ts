@@ -1,4 +1,4 @@
-import { runTest } from "./bootstrap";
+import { runTest } from "../bootstrap.ts";
 import { getS3Storage } from "@lib/S3Storage.ts";
 import fs from "fs";
 
