@@ -2,7 +2,6 @@
 
 import { getS3Storage } from "@/lib/S3Storage.ts";
 import { S3File } from "@/lib/s3-file.ts";
-import invariant from "@/lib/invariant.ts";
 
 export async function updateThumbnailFile(fileName: string, files: S3File[]) {
 	files = files.map((x) => ({ ...x, created: undefined }));
@@ -10,12 +9,12 @@ export async function updateThumbnailFile(fileName: string, files: S3File[]) {
 	const bytes = await s3.getString(fileName);
 	const oldJson = JSON.parse(bytes);
 	const newJson = JSON.stringify(files);
-	console.log({
-		existing: bytes.length,
-		newJson: newJson.length,
-		oldLength: oldJson.length,
-		newLength: files.length,
-	});
+	// console.log({
+	// 	existing: bytes.length,
+	// 	newJson: newJson.length,
+	// 	oldLength: oldJson.length,
+	// 	newLength: files.length,
+	// });
 	console.log(oldJson[0], files[0]);
 	// invariant(bytes.length === newJson.length, "wrong files size");
 	return await s3.put(fileName, newJson);
@@ -41,6 +40,6 @@ export async function reindexFile(fileKey: string) {
 		}
 		console.log(await response.json());
 	} catch (err) {
-		console.error("AXIOS ERROR", err);
+		console.error("UPLOAD ERROR", err);
 	}
 }

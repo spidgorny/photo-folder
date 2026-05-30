@@ -25,42 +25,42 @@ export function LightboxPreview(props: {
 		plugins: [Thumbnails, Captions],
 	};
 
+	let fileKeyShort = props.fileKey.split("/").slice(-1)[0];
+
 	// DELETE
 	const { list: selectedImages, push } = useSelectedImages<string>();
 	useKeyStroke(["Backspace", "Delete", "d", "D", "x", "X"], (e) => {
 		e.preventDefault();
 		console.log("Del", props.fileKey);
 		push(props.fileKey);
-		router.push(`/${props.prefix}?key=${props.fileKey}#${props.fileKey}`);
+		router.push(`/${props.prefix}?key=${fileKeyShort}#${fileKeyShort}`);
 	});
 
 	return (
-		<div>
-			<Lightbox
-				key={index}
-				open={true}
-				close={() =>
-					router.push(`/${props.prefix}?key=${props.fileKey}#${props.fileKey}`)
-				}
-				slides={props.slides}
-				index={index}
-				on={{
-					view: ({ index }: { index: number }) => {
-						// console.log(index, "/", props.files.length, props.files[index]);
-						const indexKey = props.files[index]?.key;
-						if (!indexKey) {
-							return;
-						}
-						let newUrl = `/${props.prefix}/lightbox/${indexKey}`;
-						window.history.replaceState(
-							{ ...window.history.state, as: newUrl, url: newUrl },
-							"",
-							newUrl,
-						);
-					},
-				}}
-				{...moreProps}
-			/>
-		</div>
+		<Lightbox
+			key={index}
+			open={true}
+			close={() =>
+				router.push(`/${props.prefix}?key=${fileKeyShort}#${fileKeyShort}`)
+			}
+			slides={props.slides}
+			index={index}
+			on={{
+				view: ({ index }: { index: number }) => {
+					// console.log(index, "/", props.files.length, props.files[index]);
+					const indexKey = props.files[index]?.key;
+					if (!indexKey) {
+						return;
+					}
+					let newUrl = `/${props.prefix}/lightbox/${indexKey}`;
+					window.history.replaceState(
+						{ ...window.history.state, as: newUrl, url: newUrl },
+						"",
+						newUrl,
+					);
+				},
+			}}
+			{...moreProps}
+		/>
 	);
 }

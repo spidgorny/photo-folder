@@ -1,10 +1,10 @@
-import { runTest } from "./bootstrap";
+import { runTest } from "../bootstrap.ts";
 import path from "path";
-import invariant from "@/lib/invariant";
-import { getS3Storage } from "../lib/S3Storage";
+import invariant from "@lib/invariant.ts";
+import { getS3Storage } from "@lib/S3Storage.ts";
 import sharp from "sharp";
 
-import { S3File } from "../lib/s3-file";
+import { S3File } from "@lib/s3-file.ts";
 
 void runTest(async () => {
 	const s3 = getS3Storage();

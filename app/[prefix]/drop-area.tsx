@@ -1,3 +1,4 @@
+"use client";
 import { FileUploader } from "react-drag-drop-files";
 
 export function DropArea(props: { prefix: string }) {

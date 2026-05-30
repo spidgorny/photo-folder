@@ -7,6 +7,7 @@ import {
 	GetObjectCommandInput,
 	HeadObjectCommand,
 	ListObjectsV2Command,
+	ListObjectsV2CommandOutput,
 	PutObjectCommand,
 	PutObjectCommandInput,
 	S3Client,
@@ -51,7 +52,8 @@ export class S3Storage {
 				Prefix,
 			}),
 		);
-		let contents = data.Contents as _Object[];
+		console.log(data);
+		let contents = (data.Contents ?? []) as _Object[];
 		let files = contents.map(
 			(x) =>
 				({
@@ -60,11 +62,29 @@ export class S3Storage {
 					modified: x.LastModified?.toISOString(),
 				}) as S3File,
 		);
+		// remove hidden dot files
 		files = files.filter(
 			(file: S3File) =>
 				!file.key.split("/").some((file) => file.startsWith(".")),
 		);
 		return files;
+	}
+
+	async listFolders(Prefix?: string): Promise<S3File[]> {
+		const data: ListObjectsV2CommandOutput = await this.s3.send(
+			new ListObjectsV2Command({
+				Bucket: this.bucketName,
+				Prefix,
+				Delimiter: "/",
+			}),
+		);
+		let contents = data.CommonPrefixes ?? [];
+		return contents.map(
+			(x) =>
+				({
+					key: x.Prefix,
+				}) as S3File,
+		);
 	}
 
 	async uploadS3File(Key: string, filePath: string) {

@@ -1,11 +1,17 @@
-import { Gallery, Image, ThumbnailImageProps } from "react-grid-gallery";
-import { useThumbnails } from "../../components/use-thumbnails.tsx";
-import React, { useState } from "react";
+"use client";
+import {
+	Gallery,
+	Image,
+	ThumbnailImageProps,
+} from "@components/react-grid-gallery/src";
+import { useThumbnails } from "@components/use-thumbnails.tsx";
+import React from "react";
 import { useRouter } from "next/navigation";
-import { useClientSession } from "../use-client-session.tsx";
+import { useClientSession } from "@components/use-client-session.tsx";
 import { SelectedImages } from "./selected-images.tsx";
 import { default as NextImage } from "next/image";
 import { useSelectedImages } from "@/app/[prefix]/lightbox/[...key]/use-selected-images.tsx";
+import { ImageExtended } from "react-grid-gallery";
 
 export function ListFilesGrid(props: { prefix: string }) {
 	const router = useRouter();
@@ -17,11 +23,13 @@ export function ListFilesGrid(props: { prefix: string }) {
 			(file) =>
 				({
 					key: file.key,
+					id: file.key.split("/").slice(-1)[0],
+					title: file.key.split("/").slice(-1)[0],
 					src: `/api/s3/thumb/${file.key}`,
 					width: file.metadata?.width,
 					height: file.metadata?.height,
 					isSelected: false,
-					caption: file.key,
+					caption: file.key.split("/").slice(-1)[0],
 					tags: [
 						// { value: "Ocean", title: "Ocean" },
 						// { value: "People", title: "People" },
@@ -30,7 +38,7 @@ export function ListFilesGrid(props: { prefix: string }) {
 				}) as Image & { key: string },
 		) ?? [];
 
-	const { list: selectedImages, push, removeBy } = useSelectedImages<string>();
+	const { list: selectedImages, push, removeBy } = useSelectedImages<Image>();
 
 	const handleSelect = (
 		index: number,
@@ -38,10 +46,10 @@ export function ListFilesGrid(props: { prefix: string }) {
 		event: React.MouseEvent<HTMLElement, MouseEvent>,
 	) => {
 		console.log(index, item);
-		if (selectedImages.includes(item.key)) {
-			removeBy((x: string) => x === item.key);
+		if (selectedImages.some((x) => x.key === item.key)) {
+			removeBy((x: Image) => x.key === item.key);
 		} else {
-			push(item.key as string);
+			push(item);
 		}
 	};
 
@@ -49,34 +57,11 @@ export function ListFilesGrid(props: { prefix: string }) {
 		router.push(`/${props.prefix}/lightbox/` + item.key!);
 	};
 
-	const ImageComponent = (props: ThumbnailImageProps) => {
-		const [show, setShow] = useState(false);
-
-		const { title, ...otherProps } = props.imageProps;
-
-		return (
-			<div
-				style={{ ...props.imageProps.style, textAlign: "center" }}
-				onMouseOver={() => setShow(true)}
-				onMouseOut={() => setShow(false)}
-			>
-				<NextImage
-					priority={false}
-					fetchPriority="low"
-					title={title ?? ""}
-					width={512}
-					height={512}
-					{...otherProps}
-				/>
-			</div>
-		);
-	};
-
 	// console.log("selectedImages", selectedImages);
 	const imagesWithSelected = images.map((image) => {
 		return {
 			...image,
-			isSelected: selectedImages.includes(image.key),
+			isSelected: selectedImages.some((x) => x.key === image.key),
 		};
 	});
 
@@ -95,10 +80,36 @@ export function ListFilesGrid(props: { prefix: string }) {
 				/>
 			)}
 
-			<SelectedImages
-				prefix={props.prefix}
-				selectedImages={selectedImages.map((x) => `/api/s3/thumb/${x}`)}
+			<div
+				style={{ marginTop: 200 }}
+				title="For SelectedImages to not overlap the gallery"
 			/>
+
+			<SelectedImages prefix={props.prefix} selectedImages={selectedImages} />
 		</div>
 	);
 }
+
+const ImageComponent = (props: ThumbnailImageProps<ImageExtended<Image>>) => {
+	// const [show, setShow] = useState(false);
+
+	const { title, key, ...otherProps } = props.imageProps;
+
+	return (
+		<div
+			style={{ ...props.imageProps.style, textAlign: "center" }}
+			// onMouseOver={() => setShow(true)}
+			// onMouseOut={() => setShow(false)}
+			id={String(key ?? title)}
+		>
+			<NextImage
+				priority={false}
+				fetchPriority="low"
+				title={title ?? ""}
+				width={512}
+				height={512}
+				{...otherProps}
+			/>
+		</div>
+	);
+};
