@@ -2,7 +2,7 @@
   "name": "photo-folder",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "npm@10.5.1",
+  "packageManager": "npm@11.16.0",
   "scripts": {
     "dev": "next dev",
     "dev:turbo": "next dev --turbo",
@@ -12,47 +12,47 @@
     "s3:thumbs:up": "aws s3 cp \"test/2024 Cyprus/.thumbnails.json\" \"s3://slawa-photo/2024 Cyprus/\""
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.583.0",
-    "@aws-sdk/lib-storage": "^3.583.0",
+    "@aws-sdk/client-s3": "^3.1057.0",
+    "@aws-sdk/lib-storage": "^3.1057.0",
     "@react-hooks-library/core": "^0.6.2",
-    "axios": "^1.7.2",
+    "axios": "^1.16.1",
     "bytes": "^3.1.2",
-    "chalk": "^5.3.0",
+    "chalk": "^5.6.2",
     "classnames": "^2.5.1",
-    "dotenv": "^16.4.5",
-    "iron-session": "^8.0.1",
-    "luxon": "^3.4.4",
-    "next": "14.2.3",
+    "dotenv": "^17.4.2",
+    "iron-session": "^8.0.4",
+    "luxon": "^3.7.2",
+    "next": "16.2.6",
     "plaiceholder": "^3.0.0",
-    "react": "18.3.1",
-    "react-bootstrap": "^2.10.2",
-    "react-dom": "18.3.1",
-    "react-drag-drop-files": "^2.3.10",
+    "react": "19.2.6",
+    "react-bootstrap": "^2.10.10",
+    "react-dom": "19.2.6",
+    "react-drag-drop-files": "^3.1.0",
     "react-grid-gallery": "^1.0.1",
     "react-sliding-pane": "^7.3.0",
-    "sharp": "^0.33.4",
+    "sharp": "^0.34.5",
     "slash": "^5.1.0",
     "spidgorny-react-helpers": "github:spidgorny/react-helpers",
     "stream-to-array": "^2.3.0",
-    "swr": "^2.2.5",
+    "swr": "^2.4.1",
     "ts-exif-parser": "^0.2.2",
-    "use-session-storage-state": "^18.2.0",
-    "yet-another-react-lightbox": "^3.19.0"
+    "use-session-storage-state": "^19.0.1",
+    "yet-another-react-lightbox": "^3.32.0"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.138",
-    "@types/node": "20.12.12",
-    "@types/react": "^18.3.3",
-    "find-up": "^7.0.0",
-    "prettier": "^3.2.5",
-    "tsx": "^4.11.0",
-    "typescript": "^5.4.5"
+    "@types/aws-lambda": "^8.10.161",
+    "@types/node": "25.9.1",
+    "@types/react": "^19.2.15",
+    "find-up": "^8.0.0",
+    "prettier": "^3.8.3",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3"
   },
   "prettier": {
     "useTabs": true,
     "tabWidth": 2
   },
   "optionalDependencies": {
-    "@img/sharp-win32-x64": "^0.33.4"
+    "@img/sharp-win32-x64": "^0.34.5"
   }
 }
