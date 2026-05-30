@@ -1,7 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { FormEvent } from "react";
-import axios from "axios";
 
 export function MakeFolder() {
 	const router = useRouter();
@@ -11,8 +10,17 @@ export function MakeFolder() {
 		const formData = Object.fromEntries(new FormData(form).entries());
 		console.log(formData);
 
-		const res = await axios.post("/api/s3/mkdir", formData);
-		console.log(res.data);
+		const response = await fetch("/api/s3/mkdir", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(formData),
+		});
+		if (!response.ok) {
+			throw new Error(response.statusText);
+		}
+		console.log(await response.json());
 		router.push(`/${formData.name}`);
 	};
 

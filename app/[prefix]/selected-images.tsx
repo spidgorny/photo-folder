@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { useThumbnails } from "../../components/use-thumbnails.tsx";
-import axios from "axios";
 import React from "react";
 import { useSelectedImages } from "@/app/[prefix]/lightbox/[...key]/use-selected-images.tsx";
 
@@ -54,7 +53,16 @@ function DeleteButton(props: { prefix: string; images: any[] }) {
 	const onClick = async () => {
 		let keys = props.images.map((x) => x.key);
 		console.log(keys);
-		await axios.delete("/api/s3/deleteMany", { data: { keys } });
+		const response = await fetch("/api/s3/deleteMany", {
+			method: "DELETE",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ keys }),
+		});
+		if (!response.ok) {
+			throw new Error(response.statusText);
+		}
 		await mutateThumbnails();
 	};
 

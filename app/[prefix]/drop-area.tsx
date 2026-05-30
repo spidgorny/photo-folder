@@ -1,19 +1,17 @@
-import { useState } from "react";
-import axios from "axios";
 import { FileUploader } from "react-drag-drop-files";
 
 export function DropArea(props: { prefix: string }) {
 	const fileTypes = ["JPG", "PNG", "GIF"];
-	const [files, setFiles] = useState<FileList | null>(null);
+	type UploadValue = File | File[];
 
-	const handleChange = (file: FileList) => {
+	const handleChange = (file: UploadValue) => {
 		// console.log(file);
-		setFiles(file);
+		console.log(file);
 	};
 
-	const onDrop = async (files: FileList) => {
+	const onDrop = async (files: UploadValue) => {
 		console.log(files);
-		const aFiles = Array.from(files);
+		const aFiles = Array.isArray(files) ? files : [files];
 		console.log(aFiles);
 		let formData = new FormData();
 		formData.append("prefix", props.prefix);
@@ -21,12 +19,14 @@ export function DropArea(props: { prefix: string }) {
 			formData.append("file", file);
 		});
 		console.log(formData);
-		const res = await axios.post(`/api/s3/upload`, formData, {
-			headers: {
-				"Content-Type": "multipart/form-data"
-			}
+		const response = await fetch(`/api/s3/upload`, {
+			method: "POST",
+			body: formData,
 		});
-		console.log(res);
+		if (!response.ok) {
+			throw new Error(response.statusText);
+		}
+		console.log(response.status);
 	};
 
 	return (

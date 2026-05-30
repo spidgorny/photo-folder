@@ -3,7 +3,6 @@
 import { getS3Storage } from "@/lib/S3Storage.ts";
 import { S3File } from "@/lib/s3-file.ts";
 import invariant from "@/lib/invariant.ts";
-import axios from "axios";
 
 export async function updateThumbnailFile(fileName: string, files: S3File[]) {
 	files = files.map((x) => ({ ...x, created: undefined }));
@@ -30,8 +29,17 @@ export async function reindexFile(fileKey: string) {
 			file: fileKey,
 		};
 		console.log(apiUrl, payload);
-		const res = await axios.post(apiUrl, payload);
-		console.log(res.data);
+		const response = await fetch(apiUrl, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(payload),
+		});
+		if (!response.ok) {
+			throw new Error(response.statusText);
+		}
+		console.log(await response.json());
 	} catch (err) {
 		console.error("AXIOS ERROR", err);
 	}

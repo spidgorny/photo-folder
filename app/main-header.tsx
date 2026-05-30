@@ -1,6 +1,5 @@
 "use client";
-import axios from "axios";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useClientSession } from "./use-client-session.tsx";
 import { MySlidingPane } from "./my-sliding-pane.tsx";
@@ -53,20 +52,31 @@ function SignIn(props: { onSuccess: () => void }) {
 function SignInForm(props: { onSuccess: () => void }) {
 	const [error, setError] = useState<Error | null>(null);
 
-	const signIn = async (e: any) => {
+	const signIn = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setError(null);
-		const data = Object.fromEntries(new FormData(e.target).entries());
+		const data = Object.fromEntries(new FormData(e.currentTarget).entries());
 		console.log("sign in", data);
 		try {
-			const res = await axios.post("/api/auth/login", data);
-			console.log("res", res);
+			const response = await fetch("/api/auth/login", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			});
+			const payload =
+				response.headers.get("content-type")?.includes("application/json")
+					? ((await response.json()) as { status?: string })
+					: null;
+			if (!response.ok) {
+				throw new Error(payload?.status ?? response.statusText);
+			}
+			console.log("res", payload);
 			props.onSuccess();
-		} catch (e) {
-			console.error(e);
-			setError(
-				e?.response?.data?.status ? new Error(e?.response?.data?.status) : e,
-			);
+		} catch (err) {
+			console.error(err);
+			setError(err instanceof Error ? err : new Error("Sign in failed"));
 		}
 	};
 
@@ -94,8 +104,13 @@ function SignInForm(props: { onSuccess: () => void }) {
 
 function SignOut(props: { onSuccess: () => void }) {
 	const signOut = async () => {
-		const res = await axios.post("/api/auth/logout");
-		console.log("res", res);
+		const response = await fetch("/api/auth/logout", {
+			method: "POST",
+		});
+		if (!response.ok) {
+			throw new Error(response.statusText);
+		}
+		console.log("res", response.status);
 		props.onSuccess();
 	};
 
