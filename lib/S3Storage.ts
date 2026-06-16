@@ -23,7 +23,7 @@ import { StreamingBlobPayloadOutputTypes } from "@smithy/types";
 import { onlyOncePerSecond } from "./date";
 
 export class S3Storage {
-	protected s3: S3Client;
+	public s3: S3Client;  /* made public for presign route */
 	protected logger: Logger;
 
 	constructor(

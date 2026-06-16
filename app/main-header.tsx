@@ -33,15 +33,17 @@ function SignIn(props: { onSuccess: () => void }) {
 		<MySlidingPane button="Sign In">
 			{({ close }) => (
 				<div>
-					<div>Sign-in with email:</div>
+					<div className="mb-3">Sign in with your email (Google account recommended):</div>
 					<SignInForm
 						onSuccess={() => {
 							close();
 							props.onSuccess();
 						}}
 					/>
-					<div className="py-5 my-5 text-end">
-						<button className="btn btn-outline-secondary">close</button>
+					<div className="py-4 text-end">
+						<button className="btn btn-outline-secondary" onClick={close}>
+							Close
+						</button>
 					</div>
 				</div>
 			)}
@@ -51,32 +53,36 @@ function SignIn(props: { onSuccess: () => void }) {
 
 function SignInForm(props: { onSuccess: () => void }) {
 	const [error, setError] = useState<Error | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const signIn = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setError(null);
-		const data = Object.fromEntries(new FormData(e.currentTarget).entries());
-		console.log("sign in", data);
+		setIsLoading(true);
+
+		const formData = new FormData(e.currentTarget);
+		const email = formData.get("email") as string;
+
 		try {
 			const response = await fetch("/api/auth/login", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify(data),
+				body: JSON.stringify({ email, provider: "email" }),
 			});
-			const payload =
-				response.headers.get("content-type")?.includes("application/json")
-					? ((await response.json()) as { status?: string })
-					: null;
+
 			if (!response.ok) {
-				throw new Error(payload?.status ?? response.statusText);
+				const errData = await response.json().catch(() => ({}));
+				throw new Error(errData.error || response.statusText);
 			}
-			console.log("res", payload);
+
 			props.onSuccess();
 		} catch (err) {
 			console.error(err);
 			setError(err instanceof Error ? err : new Error("Sign in failed"));
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -90,15 +96,25 @@ function SignInForm(props: { onSuccess: () => void }) {
 					id="floatingInput"
 					placeholder="name@example.com"
 					autoFocus
+					disabled={isLoading}
 				/>
-				<label htmlFor="floatingInput">Email address</label>
+				<label htmlFor="floatingInput">Your email address</label>
 			</div>
 
-			<button className="btn btn-primary w-100 py-2" type="submit">
-				Sign in
+			<button 
+				className="btn btn-primary w-100 py-2" 
+				type="submit"
+				disabled={isLoading}
+			>
+				{isLoading ? "Signing in..." : "Sign In"}
 			</button>
 
 			{error && <div className="alert alert-danger mt-3">{error.message}</div>}
+			
+			<div className="text-muted small mt-4">
+				This now uses the new JWT-based authentication system.<br/>
+				Use the same email you previously used or any email listed in your VALID_USERS.
+			</div>
 		</form>
 	);
 }
@@ -109,9 +125,8 @@ function SignOut(props: { onSuccess: () => void }) {
 			method: "POST",
 		});
 		if (!response.ok) {
-			throw new Error(response.statusText);
+			console.warn("Logout may have failed");
 		}
-		console.log("res", response.status);
 		props.onSuccess();
 	};
 
