@@ -1,15 +1,12 @@
 service: upload-handler
-frameworkVersion: '3'
+frameworkVersion: '4'
 useDotenv: true
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs22.x
   region: eu-central-1
   profile: default
-
-plugins:
-  - serverless-esbuild
 
 functions:
   uploadHandlerApi:
@@ -45,13 +42,3 @@ functions:
             - suffix: .png
           existing: true
           forceDeploy: true
-
-custom:
-  esbuild:
-    bundle: true
-    minify: false
-    external:
-      - sharp
-    packagerOptions:
-      scripts:
-        - npm install --os=linux --cpu=x64 sharp@latest
