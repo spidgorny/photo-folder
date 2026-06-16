@@ -31,7 +31,8 @@ export async function getPasswordFor(prefix: string) {
 		const { password } = JSON.parse(bytes);
 		return password;
 	} catch (err) {
-		console.error(`ERROR in getPasswordFor(${passwordFileName})`, err.message);
+		console.error(`ERROR in getPasswordFor(${passwordFileName})`, err);
+		/** Return undefined on any failure during password retrieval.*/
 		return undefined;
 	}
 }

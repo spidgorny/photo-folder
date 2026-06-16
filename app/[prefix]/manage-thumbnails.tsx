@@ -1,8 +1,12 @@
 import { useFiles, useThumbnails } from "@/components/use-thumbnails.tsx";
-import React from "react";
+import React, { useState } from "react";
 import { SaveButton } from "spidgorny-react-helpers/save-button.tsx";
 import { sortBy } from "spidgorny-react-helpers/lib/array.ts";
-import { reindexFile, updateThumbnailFile, regenerateMissingThumbnails } from "@/app/[prefix]/actions.ts";
+import {
+	reindexFile,
+	updateThumbnailFile,
+	regenerateMissingThumbnails,
+} from "@/app/[prefix]/actions.ts";
 import { useWorking } from "spidgorny-react-helpers/use-working.tsx";
 import { S3File } from "@/lib/s3-file.ts";
 import bytes from "bytes";
@@ -20,10 +24,14 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 
 	const regenerateMissing = wrapWorking(async () => {
 		const missingCount = uploads.filter(
-			(file) => !files.some((x) => x.key === file.key)
+			(file) => !files.some((x) => x.key === file.key),
 		).length;
 
-		if (!confirm(`Regenerate thumbnails for all ${missingCount} missing files? This may take a while.`)) {
+		if (
+			!confirm(
+				`Regenerate thumbnails for all ${missingCount} missing files? This may take a while.`,
+			)
+		) {
 			return;
 		}
 
@@ -46,7 +54,10 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 		<div>
 			<div className="d-flex justify-content-between align-items-center mb-3">
 				<h5>Manage Thumbnails — {props.prefix}</h5>
-				<button className="btn btn-sm btn-outline-secondary" onClick={props.close}>
+				<button
+					className="btn btn-sm btn-outline-secondary"
+					onClick={props.close}
+				>
 					Close
 				</button>
 			</div>
@@ -57,11 +68,14 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 					className="btn btn-success btn-lg mb-2"
 					disabled={isWorking || uploadsWithoutThumbnails.length === 0}
 				>
-					🔄 Regenerate All Missing Thumbnails ({uploadsWithoutThumbnails.length})
+					🔄 Regenerate All Missing Thumbnails (
+					{uploadsWithoutThumbnails.length})
 				</button>
 				<small className="text-muted d-block">
-					Calls the Lambda handler for every file that is missing from <code>.thumbnails.json</code>.
-					<br/>Use this after bulk uploads or if thumbnails are incomplete.
+					Calls the Lambda handler for every file that is missing from{" "}
+					<code>.thumbnails.json</code>.
+					<br />
+					Use this after bulk uploads or if thumbnails are incomplete.
 				</small>
 			</div>
 
@@ -117,15 +131,32 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 	);
 }
 
+export function useWorkingWithError(code: () => {}) {
+	const { isWorking, wrapWorking } = useWorking();
+	const { error, setError } = useState<Error | null>(null);
+
+	const run = wrapWorking(async () => {
+		try {
+			code();
+		} catch (e) {
+			setError(error);
+		}
+	});
+
+	return { isWorking, run };
+}
+
 const FileRow = (props: {
 	prefix: string;
 	file: S3File;
 	thumbList: S3File[];
 }) => {
 	const { mutateThumbnails } = useThumbnails(props.prefix);
-	const { isWorking, wrapWorking } = useWorking();
-
-	const reindex = wrapWorking(async () => {
+	const {
+		isWorking,
+		run: reindex,
+		error,
+	} = useWorkingWithError(async () => {
 		await reindexFile(props.file.key);
 		await mutateThumbnails();
 	});
@@ -133,28 +164,33 @@ const FileRow = (props: {
 	const hasThumbnail = props.thumbList.some((x) => props.file.key === x.key);
 
 	return (
-		<tr>
-			<td>
-				{hasThumbnail ? (
-					"✅"
-				) : (
-					<SaveButton onClick={() => reindex(null)} isWorking={isWorking} >
-						🔴 Regenerate
-					</SaveButton>
-				)}
-			</td>
-			<td>
-				{props.file.base64 && (
-					<img src={props.file.base64} width={32} height={32} alt="thumb" />
-				)}
-			</td>
-			<td>{props.file.key.split("/").slice(-1)[0]}</td>
-			<td>{bytes(props.file.size)}</td>
-			<td align="right" className="font-monospace text-nowrap">
-				{new Date(props.file.created ?? props.file.modified)
-					.toISOString()
-					.substring(0, 19)}
-			</td>
-		</tr>
+		<>
+			<tr>
+				<td>
+					<button onClick={() => reindex(null)}>
+						{isWorking ? "..." : hasThumbnail ? "✅" : "🔴"}
+					</button>
+				</td>
+				<td>
+					{props.file.base64 && (
+						<img src={props.file.base64} width={32} height={32} alt="thumb" />
+					)}
+				</td>
+				<td>{props.file.key.split("/").slice(-1)[0]}</td>
+				<td>{bytes(props.file.size)}</td>
+				<td align="right" className="font-monospace text-nowrap">
+					{new Date(props.file.created ?? props.file.modified)
+						.toISOString()
+						.substring(0, 19)}
+				</td>
+			</tr>
+			{error && (
+				<tr>
+					<td colSpan={9}>
+						{error.code} {error.message}
+					</td>
+				</tr>
+			)}
+		</>
 	);
 };

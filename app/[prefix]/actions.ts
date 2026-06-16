@@ -2,6 +2,9 @@
 
 import axios from "axios";
 import { getS3Storage } from "@/lib/S3Storage.ts";
+import invariant from "@/lib/invariant";
+import { S3File } from "@/lib/s3-file";
+import AxiosError from "axios-error";
 
 export async function updateThumbnailFile(fileName: string, files: S3File[]) {
 	files = files.map((x) => ({ ...x, created: undefined }));
@@ -15,32 +18,25 @@ export async function updateThumbnailFile(fileName: string, files: S3File[]) {
 
 export async function reindexFile(fileKey: string) {
 	try {
-    const apiUrl = process.env.LAMBDA_HANDLE_UPLOAD;
-    invariant(apiUrl, 'LAMBDA_HANDLE_UPLOAD missing');
+		const apiUrl = process.env.LAMBDA_HANDLE_UPLOAD;
+		invariant(apiUrl, "LAMBDA_HANDLE_UPLOAD missing");
 		let payload = {
 			file: fileKey,
 		};
-		console.log(apiUrl, payload);
-		const response = await fetch(apiUrl, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(payload),
+		console.log("POST", apiUrl, payload);
+		const response = await axios.post(apiUrl, payload, {
+			headers: { "Content-Type": "application/json" },
 		});
-		if (!response.ok) {
-			throw new Error(response.statusText);
-		}
-		console.log(await response.json());
+		console.log("lambda <", response.data);
 	} catch (err) {
-		console.error("UPLOAD ERROR", err);
+		console.error("UPLOAD ERROR", new AxiosError(err));
 	}
 }
 
 // New function: trigger thumbnail generation for all missing files
 export async function regenerateMissingThumbnails(prefix: string) {
 	const s3 = getS3Storage();
-	
+
 	// Get all uploaded files
 	const allFiles = await s3.list(prefix);
 	const uploads = allFiles.filter((f) => !f.key.endsWith("/"));
