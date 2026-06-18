@@ -23,15 +23,24 @@ export async function reindexFile(fileKey: string) {
 		let payload = {
 			file: fileKey,
 		};
-		console.log("POST", apiUrl, payload);
+		console.log("[ReindexFile] POST to Lambda:", apiUrl, "with payload:", payload);
 		const response = await axios.post(apiUrl, payload, { headers: { "Content-Type": "application/json" } });
   if (response.status !== 200) {
-    console.error('Lambda upload failed', response.status, response.data);
+    console.error('[ReindexFile] Lambda upload failed', response.status, response.data);
     throw new Error(`Lambda upload failed with status ${response.status}`);
   }
-  console.log('lambda <', response.data);
+  console.log('[ReindexFile] Lambda response:', response.data);
 	} catch (err) {
-		console.error("UPLOAD ERROR", new AxiosError(err));
+		console.error("[ReindexFile] UPLOAD ERROR:", new AxiosError(err));
+		if (axios.isAxiosError(err)) {
+			console.error("[ReindexFile] Axios error details:", {
+				status: err.response?.status,
+				statusText: err.response?.statusText,
+				data: err.response?.data,
+				url: err.config?.url,
+			});
+		}
+		throw err;
 	}
 }
 

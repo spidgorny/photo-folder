@@ -6,10 +6,10 @@ import { MySlidingPane } from "../components/my-sliding-pane.tsx";
 
 export function MainHeader() {
 	return (
-		<header className="bg-light p-2 d-flex justify-content-between">
-			<h4>
-				<Link href="/" className="text-decoration-none text-black">
-					Photo Folder (S3)
+		<header className="bg-white border-bottom p-3 d-flex justify-content-between align-items-center shadow-sm">
+			<h4 className="m-0">
+				<Link href="/" className="text-decoration-none text-dark">
+					📷 Photo Folder
 				</Link>
 			</h4>
 			<SignInOrOut />
@@ -120,19 +120,46 @@ function SignInForm(props: { onSuccess: () => void }) {
 }
 
 function SignOut(props: { onSuccess: () => void }) {
+	const session = useClientSession();
+	const [isLoggingOut, setIsLoggingOut] = useState(false);
+
 	const signOut = async () => {
-		const response = await fetch("/api/auth/logout", {
-			method: "POST",
-		});
-		if (!response.ok) {
-			console.warn("Logout may have failed");
+		setIsLoggingOut(true);
+		try {
+			const response = await fetch("/api/auth/logout", {
+				method: "POST",
+			});
+			if (!response.ok) {
+				console.warn("Logout may have failed");
+			}
+			props.onSuccess();
+		} finally {
+			setIsLoggingOut(false);
 		}
-		props.onSuccess();
 	};
 
+	const userEmail = typeof session.user === 'string' ? session.user : '';
+	const userInitial = userEmail?.charAt(0)?.toUpperCase() || "U";
+
 	return (
-		<button onClick={signOut} className="btn btn-outline-secondary">
-			Sign Out
-		</button>
+		<div className="d-flex align-items-center gap-2">
+			<div
+				className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+				style={{ width: "36px", height: "36px", fontSize: "14px" }}
+				title={userEmail || "User"}
+			>
+				{userInitial}
+			</div>
+			<span className="text-muted small d-none d-md-inline">
+				{userEmail || "User"}
+			</span>
+			<button
+				onClick={signOut}
+				className="btn btn-outline-danger btn-sm"
+				disabled={isLoggingOut}
+			>
+				{isLoggingOut ? "Signing out..." : "Sign Out"}
+			</button>
+		</div>
 	);
 }

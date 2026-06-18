@@ -12,11 +12,14 @@ import {
 import { useWorking } from "spidgorny-react-helpers/use-working.tsx";
 import { S3File } from "@/lib/s3-file.ts";
 import bytes from "bytes";
+import { useClientSession } from "@/components/use-client-session.tsx";
 
 export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 	const { files, mutateThumbnails } = useThumbnails(props.prefix);
 	const { uploads } = useFiles(props.prefix);
 	const { isWorking, wrapWorking } = useWorking();
+	const session = useClientSession();
+	const isAuthenticated = !!session.user;
 
 	const sortByTime = wrapWorking(async () => {
 		const sorted = files.toSorted(sortBy((x) => x.created ?? x.modified));
@@ -68,7 +71,8 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 				<button
 					onClick={regenerateMissing}
 					className="btn btn-success btn-lg mb-2"
-					disabled={isWorking || uploadsWithoutThumbnails.length === 0}
+					disabled={isWorking || uploadsWithoutThumbnails.length === 0 || !isAuthenticated}
+					title={!isAuthenticated ? "Please sign in to regenerate thumbnails" : undefined}
 				>
 					🔄 Regenerate All Missing Thumbnails (
 					{uploadsWithoutThumbnails.length})
@@ -78,6 +82,12 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 					<code>.thumbnails.json</code>.
 					<br />
 					Use this after bulk uploads or if thumbnails are incomplete.
+					{!isAuthenticated && (
+						<>
+							<br />
+							<strong className="text-danger">⚠️ Sign in required to regenerate thumbnails</strong>
+						</>
+					)}
 				</small>
 			</div>
 
@@ -155,7 +165,11 @@ const FileRow = (props: {
 	  const { mutateThumbnails } = useThumbnails(props.prefix);
   const [isWorking, setIsWorking] = React.useState(false);
   const [error, setError] = React.useState<Error | null>(null);
+  const session = useClientSession();
+  const isAuthenticated = !!session.user;
+
   const reindex = async () => {
+    if (!isAuthenticated) return;
     setIsWorking(true);
     setError(null);
     try {
@@ -174,7 +188,12 @@ const FileRow = (props: {
 		<>
 			<tr>
 				<td>
-					<button onClick={reindex} disabled={isWorking} className="btn btn-sm">
+					<button
+						onClick={reindex}
+						disabled={isWorking || !isAuthenticated}
+						className="btn btn-sm"
+						title={!isAuthenticated ? "Please sign in to regenerate thumbnails" : undefined}
+					>
 						{isWorking ? (
 							<Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
 						) : hasThumbnail ? "✅" : "🔴"}

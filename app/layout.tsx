@@ -1,6 +1,7 @@
 // app/layout.tsx
 import 'bootstrap/dist/css/bootstrap.css';
-import { AuthProvider } from '@/components/providers/AuthContext'; 
+import { AuthProvider } from '@/components/providers/AuthContext';
+import { MainHeader } from './main-header';
 // Import other necessary providers (e.g., Redux, ThemeContextProvider)
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -8,7 +9,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         {/* The AuthProvider wraps the entire application area */}
-        <AuthProvider> 
+        <AuthProvider>
+          <MainHeader />
           {children}
         </AuthProvider>
       </body>
