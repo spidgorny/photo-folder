@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
 	const formData = await req.formData();
 	console.log(formData);
 	const files = formData.getAll("file") as File[];
-	console.log(files);
+	// console.log(files);
 
 	const prefix = formData.get("prefix") as string;
 	console.log({ prefix });

@@ -1,5 +1,5 @@
 import { useFiles, useThumbnails } from "@/components/use-thumbnails.tsx";
-import { Tooltip, Spinner, OverlayTrigger } from "react-bootstrap";
+import { Spinner } from "react-bootstrap";
 import axios from "axios";
 import React, { useState } from "react";
 import { SaveButton } from "spidgorny-react-helpers/save-button.tsx";
@@ -170,27 +170,32 @@ const FileRow = (props: {
 
 	const hasThumbnail = props.thumbList.some((x) => props.file.key === x.key);
 
-	    return (<tr>
-			<td>
-				{error && (
-					<Tooltip id={`tooltip-${props.file.key}`} style={{ display: 'block', marginBottom: '4px' }}>
-						{error.message}
-					</Tooltip>
-				)}
-				<button onClick={reindex} disabled={isWorking} className="btn btn-sm">
-					{isWorking ? (
-						<Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-					) : hasThumbnail ? "✅" : "🔴"}
-				</button>
-			</td>
-          <td>{props.file.base64 && (
-            <img src={props.file.base64} width={32} height={32} alt="thumb" />
-          )}</td>
-          <td>{props.file.key.split("/").slice(-1)[0]}</td>
-          <td>{bytes(props.file.size)}</td>
-          <td align="right" className="font-monospace text-nowrap">
-            {new Date(props.file.created ?? props.file.modified).toISOString().substring(0, 19)}
-          </td>
-        </tr>
-      );
+	return (
+		<>
+			<tr>
+				<td>
+					<button onClick={reindex} disabled={isWorking} className="btn btn-sm">
+						{isWorking ? (
+							<Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+						) : hasThumbnail ? "✅" : "🔴"}
+					</button>
+				</td>
+				<td>{props.file.base64 && (
+					<img src={props.file.base64} width={32} height={32} alt="thumb" />
+				)}</td>
+				<td>{props.file.key.split("/").slice(-1)[0]}</td>
+				<td>{bytes(props.file.size)}</td>
+				<td align="right" className="font-monospace text-nowrap">
+					{new Date(props.file.created ?? props.file.modified).toISOString().substring(0, 19)}
+				</td>
+			</tr>
+			{error && (
+				<tr>
+					<td colSpan={99} className="text-danger small py-1 px-2">
+						⚠️ {error.message}
+					</td>
+				</tr>
+			)}
+		</>
+	);
 };
