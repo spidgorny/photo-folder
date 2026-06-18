@@ -5,6 +5,10 @@
     "moduleResolution": "nodenext",
     "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   }
 }

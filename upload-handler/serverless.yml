@@ -8,23 +8,42 @@ provider:
   region: eu-central-1
   profile: default
 
+package:
+  individually: false
+
+build:
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    exclude: ['aws-sdk']
+    target: node22
+    resolveExtensions: ['.ts', '.js']
+    external:
+      - '@aws-sdk/client-s3'
+      - '@aws-sdk/lib-storage'
+      - '@aws-sdk/s3-request-presigner'
+      - sharp
+
 functions:
   uploadHandlerApi:
-    handler: index.handlerApi
+    handler: src/index.handlerApi
     environment:
       BUCKET_ACCESS_KEY_ID: ${env:BUCKET_ACCESS_KEY_ID}
       BUCKET_SECRET_ACCESS_KEY: ${env:BUCKET_SECRET_ACCESS_KEY}
       BUCKET_NAME: ${env:BUCKET_NAME}
+      THUMBNAIL_SIZE: ${env:THUMBNAIL_SIZE}
     events:
       - httpApi:
           method: POST
           path: /handle-upload
   uploadHandler:
-    handler: index.handler
+    handler: src/index.handler
     environment:
       BUCKET_ACCESS_KEY_ID: ${env:BUCKET_ACCESS_KEY_ID}
       BUCKET_SECRET_ACCESS_KEY: ${env:BUCKET_SECRET_ACCESS_KEY}
       BUCKET_NAME: ${env:BUCKET_NAME}
+      THUMBNAIL_SIZE: ${env:THUMBNAIL_SIZE}
     events:
       - s3:
           event: s3:ObjectCreated:*

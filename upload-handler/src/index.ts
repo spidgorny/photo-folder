@@ -4,7 +4,7 @@ import { time, UploadObject, urlDecode } from "./utils.ts";
 import { handlePlaceholder } from "./handle-placeholder.ts";
 import { handleThumbnail } from "./handle-thumbnail.ts";
 import path from "path";
-import { Logger } from "../lib/logger.ts";
+import { Logger } from "../lib/logger";
 import { APIGatewayProxyEvent } from "aws-lambda/trigger/api-gateway-proxy";
 import invariant from "../lib/invariant";
 import { handleUploadObject, preventRunningIfWrongFileUploaded } from "./handle-upload";

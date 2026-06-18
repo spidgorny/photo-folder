@@ -8,10 +8,20 @@
 		"sls:deploy": "npx serverless deploy --verbose",
 		"sls:logs": "npx serverless logs -f uploadHandler -t --verbose",
 		"aws:logs": "aws logs tail --follow --region eu-central-1 /aws/lambda/upload-handler-dev-uploadHandler",
-		"aws:logs:api": "aws logs tail --follow --region eu-central-1 /aws/lambda/upload-handler-dev-uploadHandlerApi"
+		"aws:logs:api": "aws logs tail --follow --region eu-central-1 /aws/lambda/upload-handler-dev-uploadHandlerApi",
+		"test:local": "npm run sls:invoke:local-asd",
+		"test:lambda": "npx serverless invoke -f uploadHandler -p ./testEventS3-asd.json"
 	},
 	"dependencies": {
-		"sharp": "^0.33.3"
+		"@aws-sdk/client-s3": "^3.1071.0",
+		"@aws-sdk/lib-storage": "^3.1071.0",
+		"@aws-sdk/s3-request-presigner": "^3.1071.0",
+		"@smithy/types": "^3.0.0",
+		"axios": "^1.18.0",
+		"bytes": "^3.1.2",
+		"chalk": "^5.6.2",
+		"luxon": "^3.7.2",
+		"sharp": "^0.33.5"
 	},
 	"devDependencies": {
 		"serverless-esbuild": "^1.52.1"

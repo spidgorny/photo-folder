@@ -15,10 +15,12 @@ export async function handleThumbnail(
 	logger.log("original", bytes.length);
 	const src = sharp(bytes);
 	let metadata = await src.metadata();
+	const thumbnailSize = parseInt(process.env.THUMBNAIL_SIZE || "500", 10);
+	logger.log("thumbnailSize", thumbnailSize);
 	if (metadata.width && metadata.height && metadata.width > metadata.height) {
-		thumbnail = await src.resize({ width: 1200 }).toBuffer();
+		thumbnail = await src.resize({ width: thumbnailSize }).toBuffer();
 	} else {
-		thumbnail = await src.resize({ height: 1200 }).toBuffer();
+		thumbnail = await src.resize({ height: thumbnailSize }).toBuffer();
 	}
 	const thumbPath = `${prefix}/.thumbnails/${path.basename(uploadObject.key)}`;
 	logger.log("saving", thumbPath, thumbnail.length);

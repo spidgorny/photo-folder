@@ -1,8 +1,8 @@
-import { S3Storage } from "../lib/S3Storage.ts";
-import { ThumbFileS3 } from "../lib/thumb-file.ts";
+import { S3Storage } from "../lib/S3Storage";
+import { ThumbFileS3 } from "../lib/thumb-file";
 import { getPlaiceholder } from "plaiceholder";
 import { UploadObject } from "./utils.ts";
-import { Logger } from "../lib/logger.ts";
+import { Logger } from "../lib/logger";
 import { ExifParserFactory } from "ts-exif-parser";
 
 export async function handlePlaceholder(

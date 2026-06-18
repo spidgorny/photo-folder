@@ -1,7 +1,7 @@
 import path from "node:path";
 import { time, UploadObject } from "./utils.ts";
-import { S3Storage } from "../lib/S3Storage.ts";
-import { Logger } from "../lib/logger.ts";
+import { S3Storage } from "../lib/S3Storage";
+import { Logger } from "../lib/logger";
 import { handlePlaceholder } from "./handle-placeholder.ts";
 import { handleThumbnail } from "./handle-thumbnail.ts";
 
