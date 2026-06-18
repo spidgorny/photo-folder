@@ -1,5 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { readFileSync } from "fs";
+import { join } from "path";
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.IRON_PASSWORD!;
 const JWT_ISSUER = "photo-folder";
@@ -78,8 +80,16 @@ export async function getAuthenticatedUser(req: Request): Promise<JWTPayload> {
 
 // For backward compatibility with existing VALID_USERS
 export function isValidUser(email: string): boolean {
-	const validUsers = process.env.VALID_USERS
-		? JSON.parse(process.env.VALID_USERS)
-		: [];
-	return validUsers.includes(email);
+	// Try to read from JSON file first
+	try {
+		const allowedUsersPath = join(process.cwd(), "allowed-users.json");
+		const allowedUsers = JSON.parse(readFileSync(allowedUsersPath, "utf-8"));
+		return allowedUsers.includes(email);
+	} catch (err) {
+		// Fallback to environment variable if file doesn't exist
+		const validUsers = process.env.VALID_USERS
+			? JSON.parse(process.env.VALID_USERS)
+			: [];
+		return validUsers.includes(email);
+	}
 }
