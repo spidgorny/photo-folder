@@ -11,14 +11,29 @@ authorName: 'Serverless, inc.'
 authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
 -->
 
-# Serverless Framework AWS NodeJS Example
+# Upload Handler Lambda
 
-This template demonstrates how to deploy a NodeJS function running on AWS Lambda using the traditional Serverless
-Framework. The deployed function does not include any event definitions as well as any kind of persistence (database).
-For more advanced configurations check out the [examples repo](https://github.com/serverless/examples/) which includes
-integrations with SQS, DynamoDB or examples of functions that are triggered in `cron`-like manner. For details about
-configuration of specific `events`, please refer to
-our [documentation](https://www.serverless.com/framework/docs/providers/aws/events/).
+This Lambda function processes images uploaded to S3 by generating thumbnails, placeholders, and extracting EXIF metadata.
+
+## Sharp Lambda Layer Setup
+
+This function uses the Sharp library for image processing. Since Sharp requires platform-specific native binaries, we use a prebuilt Lambda layer:
+
+```bash
+# Download the prebuilt sharp layer for Linux x64
+curl -L -o release-x64.zip https://github.com/cbschuld/sharp-aws-lambda-layer/releases/latest/download/release-x64.zip
+
+# Publish the layer to AWS Lambda
+aws lambda publish-layer-version \
+  --layer-name sharp-lambda-x64 \
+  --description "Sharp Layer for x86_64" \
+  --license-info "Apache-2.0" \
+  --zip-file fileb://release-x64.zip \
+  --compatible-runtimes nodejs18.x nodejs20.x nodejs22.x nodejs24.x \
+  --compatible-architectures x86_64
+```
+
+After publishing, update the layer ARN in `serverless.yml` to match your AWS account and region.
 
 ## Usage
 

@@ -8,6 +8,10 @@ async function testUpload() {
     console.log(`Testing upload for: ${filePath}`);
     const response = await axios.post(endpoint, {
       file: filePath
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
     console.log('Success!');
     console.log('Status:', response.status);

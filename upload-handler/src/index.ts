@@ -11,7 +11,9 @@ import { handleUploadObject, preventRunningIfWrongFileUploaded } from "./handle-
 
 export async function handlerApi(event: APIGatewayProxyEvent) {
 	try {
-		invariant(event.httpMethod === "POST", "must be POST");
+		// HTTP API Gateway v2 uses requestContext.http.method, API Gateway v1 uses httpMethod
+		const httpMethod = (event as any).requestContext?.http?.method || event.httpMethod;
+		invariant(httpMethod === "POST", "must be POST");
 		invariant(event.body, "event without body");
 		console.log("API Event", event.body);
 		const body = JSON.parse(event.body);
