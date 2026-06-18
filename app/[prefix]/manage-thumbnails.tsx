@@ -159,7 +159,7 @@ const FileRow = (props: {
     setIsWorking(true);
     setError(null);
     try {
-      await axios.post('/api/reindex', { prefix: props.prefix, key: props.file.key });
+      await axios.post('/api/reindex', { prefix: props.prefix, key: props.file.key }, { withCredentials: true });
       await mutateThumbnails();
     } catch (e) {
       setError(e as Error);

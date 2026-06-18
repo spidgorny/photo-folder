@@ -3,10 +3,15 @@ import { reindexFile } from '@/app/[prefix]/actions.ts';
 import { getAuthenticatedUser } from '@/lib/auth.ts';
 
 export async function POST(req: NextRequest) {
+  // Authenticate via Bearer header or access_token cookie
+  let user;
   try {
-    // Optionally enforce authentication
-    const session = await getAuthenticatedUser(req);
-    // Ensure user is authorized (this example assumes any logged-in user is allowed)
+    user = await getAuthenticatedUser(req);
+  } catch {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
     const { prefix, key } = await req.json();
     if (!prefix || !key) {
       return NextResponse.json({ error: 'Missing prefix or key' }, { status: 400 });
