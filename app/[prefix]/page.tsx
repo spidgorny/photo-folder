@@ -1,7 +1,5 @@
 "use server";
 import { ListFilesGrid } from "./list-files-grid.tsx";
-import { DropArea } from "./drop-area.tsx";
-import { CountFiles } from "@/app/[prefix]/count-files.tsx";
 import { getBackendSession } from "@/lib/session.ts";
 import invariant from "@/lib/invariant.ts";
 import { notFound } from "next/navigation";
@@ -37,16 +35,7 @@ export default async function Home({
 		return (
 			<main className="container-fluid">
 				{!prefix && <div>Loading...</div>}
-				{prefix && (
-					<div>
-						<div className="d-flex justify-content-between">
-							<h4>{prefix}</h4>
-							{session.user && <DropArea prefix={prefix} />}
-							<CountFiles prefix={prefix} />
-						</div>
-						<ListFilesGrid prefix={prefix} />
-					</div>
-				)}
+				{prefix && <ListFilesGrid prefix={prefix} />}
 			</main>
 		);
 	} catch (e) {

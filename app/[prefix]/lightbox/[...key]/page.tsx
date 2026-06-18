@@ -6,7 +6,7 @@ import React from "react";
 import "yet-another-react-lightbox/plugins/captions.css";
 import { LightboxPreview } from "./lightbox-preview.tsx";
 import { useThumbnails } from "@/components/use-thumbnails.tsx";
-import { urlDecode } from "@/upload-handler/utils.ts";
+import { urlDecode } from "@/upload-handler/src/utils.ts";
 
 export default function PreviewPage() {
 	const params = useParams<{ prefix: string; key: string[] }>();
