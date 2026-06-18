@@ -1,4 +1,5 @@
 import { MainHeader } from '../main-header';
+import { FolderHeaderWrapper } from './folder-header-wrapper.tsx';
 
 export default function FolderLayout({
 	children,
@@ -9,24 +10,7 @@ export default function FolderLayout({
 }) {
 	return (
 		<>
-			<FolderHeaderWrapper params={params}>
-				{children}
-			</FolderHeaderWrapper>
-		</>
-	);
-}
-
-async function FolderHeaderWrapper({
-	children,
-	params,
-}: {
-	children: React.ReactNode;
-	params: Promise<{ prefix: string }>;
-}) {
-	const { prefix } = await params;
-	return (
-		<>
-			<MainHeader folderContext={{ prefix }} />
+			<FolderHeaderWrapper params={params} />
 			{children}
 		</>
 	);

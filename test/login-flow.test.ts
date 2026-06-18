@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://photo-folder.vercel.app';
 
 // Update this with an email from your allowed-users.json
-const TEST_EMAIL = 'user@example.com';
+const TEST_EMAIL = 'spidgorny@gmail.com';
 
 async function testLoginFlow() {
 	console.log('🧪 Testing Android Login Flow...\n');
