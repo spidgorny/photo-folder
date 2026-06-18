@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './styles';
+import * as styles from './styles';
 
 type ActionButtonsProps = {
   fileKey: string;
@@ -30,12 +30,12 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
   };
 
   return (
-    <div style={styles.actionButtonsContainer}>
+    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
       <button
         onClick={handleGenerate}
         disabled={isGenerating}
         aria-label={`Attempt to generate thumbnail for ${fileKey}`}
-        className={`${styles.generateButton} ${isGenerating ? styles.generating : ''}`}
+        style={{ marginRight: '8px' }}
       >
         {isGenerating ? 'Processing...' : '🖼️ Generate'}
       </button>

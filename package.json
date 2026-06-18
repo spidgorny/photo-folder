@@ -13,11 +13,12 @@
 		"s3:thumbs:up": "aws s3 cp \"test/2024 Cyprus/.thumbnails.json\" \"s3://slawa-photo/2024 Cyprus/\""
 	},
 	"dependencies": {
-		"@aws-sdk/client-s3": "^3.1070.0",
-		"@aws-sdk/lib-storage": "^3.1070.0",
-		"@aws-sdk/s3-request-presigner": "^3.1070.0",
+		"@aws-sdk/client-s3": "^3.1071.0",
+		"@aws-sdk/lib-storage": "^3.1071.0",
+		"@aws-sdk/s3-request-presigner": "^3.1071.0",
 		"@react-hooks-library/core": "^0.6.2",
 		"axios-error": "^1.0.4",
+		"bootstrap": "^5.3.8",
 		"bytes": "^3.1.2",
 		"chalk": "^5.6.2",
 		"classnames": "^2.5.1",
@@ -27,6 +28,7 @@
 		"jose": "^6.2.3",
 		"luxon": "^3.7.2",
 		"next": "16.2.9",
+		"next-auth": "^4.24.14",
 		"plaiceholder": "^3.0.0",
 		"react": "19.2.7",
 		"react-bootstrap": "^2.10.10",
@@ -59,5 +61,11 @@
 	},
 	"optionalDependencies": {
 		"@img/sharp-win32-x64": "^0.35.1"
+	},
+	"allowScripts": {
+		"esbuild@0.28.0": true,
+		"fsevents@2.3.3": true,
+		"sharp@0.34.5": true,
+		"sharp@0.35.1": true
 	}
 }

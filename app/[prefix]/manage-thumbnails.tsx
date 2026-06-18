@@ -1,4 +1,6 @@
 import { useFiles, useThumbnails } from "@/components/use-thumbnails.tsx";
+import { Tooltip, Spinner, OverlayTrigger } from "react-bootstrap";
+import axios from "axios";
 import React, { useState } from "react";
 import { SaveButton } from "spidgorny-react-helpers/save-button.tsx";
 import { sortBy } from "spidgorny-react-helpers/lib/array.ts";
@@ -114,8 +116,7 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 						<th>File</th>
 						<th>Size</th>
 						<th className="text-end">Date</th>
-					</tr>
-				</thead>
+					</tr></thead>
 				<tbody style={{ fontSize: "10pt" }}>
 					{files.map((file) => (
 						<FileRow
@@ -133,17 +134,17 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 
 export function useWorkingWithError(code: () => {}) {
 	const { isWorking, wrapWorking } = useWorking();
-	const { error, setError } = useState<Error | null>(null);
+	const [ error, setError ] = useState<Error | null>(null);
 
 	const run = wrapWorking(async () => {
 		try {
-			code();
+			await code();
 		} catch (e) {
-			setError(error);
+			setError(e as Error);
 		}
 	});
 
-	return { isWorking, run };
+	return { isWorking, run, error };
 }
 
 const FileRow = (props: {
@@ -151,46 +152,45 @@ const FileRow = (props: {
 	file: S3File;
 	thumbList: S3File[];
 }) => {
-	const { mutateThumbnails } = useThumbnails(props.prefix);
-	const {
-		isWorking,
-		run: reindex,
-		error,
-	} = useWorkingWithError(async () => {
-		await reindexFile(props.file.key);
-		await mutateThumbnails();
-	});
+	  const { mutateThumbnails } = useThumbnails(props.prefix);
+  const [isWorking, setIsWorking] = React.useState(false);
+  const [error, setError] = React.useState<Error | null>(null);
+  const reindex = async () => {
+    setIsWorking(true);
+    setError(null);
+    try {
+      await axios.post('/api/reindex', { prefix: props.prefix, key: props.file.key });
+      await mutateThumbnails();
+    } catch (e) {
+      setError(e as Error);
+    } finally {
+      setIsWorking(false);
+    }
+  };
 
 	const hasThumbnail = props.thumbList.some((x) => props.file.key === x.key);
 
-	return (
-		<>
-			<tr>
-				<td>
-					<button onClick={() => reindex(null)}>
-						{isWorking ? "..." : hasThumbnail ? "✅" : "🔴"}
-					</button>
-				</td>
-				<td>
-					{props.file.base64 && (
-						<img src={props.file.base64} width={32} height={32} alt="thumb" />
-					)}
-				</td>
-				<td>{props.file.key.split("/").slice(-1)[0]}</td>
-				<td>{bytes(props.file.size)}</td>
-				<td align="right" className="font-monospace text-nowrap">
-					{new Date(props.file.created ?? props.file.modified)
-						.toISOString()
-						.substring(0, 19)}
-				</td>
-			</tr>
-			{error && (
-				<tr>
-					<td colSpan={9}>
-						{error.code} {error.message}
-					</td>
-				</tr>
-			)}
-		</>
-	);
+	    return (<tr>
+			<td>
+				{error && (
+					<Tooltip id={`tooltip-${props.file.key}`} style={{ display: 'block', marginBottom: '4px' }}>
+						{error.message}
+					</Tooltip>
+				)}
+				<button onClick={reindex} disabled={isWorking} className="btn btn-sm">
+					{isWorking ? (
+						<Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+					) : hasThumbnail ? "✅" : "🔴"}
+				</button>
+			</td>
+          <td>{props.file.base64 && (
+            <img src={props.file.base64} width={32} height={32} alt="thumb" />
+          )}</td>
+          <td>{props.file.key.split("/").slice(-1)[0]}</td>
+          <td>{bytes(props.file.size)}</td>
+          <td align="right" className="font-monospace text-nowrap">
+            {new Date(props.file.created ?? props.file.modified).toISOString().substring(0, 19)}
+          </td>
+        </tr>
+      );
 };

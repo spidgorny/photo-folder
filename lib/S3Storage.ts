@@ -12,6 +12,7 @@ import {
 	PutObjectCommandInput,
 	S3Client,
 } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { S3File } from "./s3-file";
 import fs from "fs";
 import { Progress, Upload } from "@aws-sdk/lib-storage";
@@ -199,6 +200,19 @@ export class S3Storage {
 		invariant(res.Body, "res.Body not there in GetObjectCommand");
 
 		return Buffer.from(await res.Body.transformToByteArray());
+	}
+
+	async getPresignUrl(key: string, contentType: string): Promise<string> {
+		// Generate a presigned URL for uploading an object via PUT
+		// Using AWS SDK v3 getSignedUrl utility
+		const command = new PutObjectCommand({
+			Bucket: this.bucketName,
+			Key: key,
+			ContentType: contentType,
+		});
+		// Default expiration 3600 seconds (1 hour)
+		const url = await getSignedUrl(this.s3, command, { expiresIn: 3600 });
+		return url;
 	}
 
 	async put(Key: string, bytes: string | Buffer) {

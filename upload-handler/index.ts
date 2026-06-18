@@ -7,10 +7,7 @@ import path from "path";
 import { Logger } from "../lib/logger.ts";
 import { APIGatewayProxyEvent } from "aws-lambda/trigger/api-gateway-proxy";
 import invariant from "../lib/invariant";
-import {
-	handleUploadObject,
-	preventRunningIfWrongFileUploaded,
-} from "handle-upload.ts";
+import { handleUploadObject, preventRunningIfWrongFileUploaded } from "./handle-upload";
 
 export async function handlerApi(event: APIGatewayProxyEvent) {
 	try {
@@ -22,7 +19,11 @@ export async function handlerApi(event: APIGatewayProxyEvent) {
 		const logger = new Logger(file);
 
 		const s3 = getS3Storage();
-		const [uploadObject] = await s3.list(file);
+		const possible = await s3.list(file);
+		const uploadObject = possible.find((o) => o.key === file);
+		if (!uploadObject) {
+			return { status: "error", message: `File ${file} not found` };
+		}
 		const output = await handleUploadObject(s3, logger, uploadObject);
 
 		return {
@@ -56,7 +57,8 @@ export async function handler(event: S3Event) {
 		const s3 = getS3Storage();
 		return await handleUploadObject(s3, logger, uploadObject);
 	} catch (e) {
-		invariant(e instanceof Error, "error is not Error");
-		logger.log("ERROR", e.message, e.stack.split("\n"));
+    invariant(e instanceof Error, "error is not Error");
+		// @ts-ignore
+		logger.log("ERROR", e.message, e.stack?.split("\n"));
 	}
 }

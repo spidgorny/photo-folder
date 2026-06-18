@@ -35,10 +35,8 @@ This file contains instructions, conventions, and context for AI coding agents (
 
 ## Coding Conventions
 
-### File Organization
-- `app/` — App Router (new pages and APIs)
-- `pages/api/` — Legacy APIs (still used for some S3 endpoints)
-- `lib/` — Shared utilities (`auth.ts`, `S3Storage.ts`, `session.ts`)
+/pages/ — DEPRECATED. Pages components are now legacy code slated for removal after migration.
+/pages/ — DEPRECATED. Pages components are now legacy code slated for removal after migration.
 - `components/` — Reusable React components
 - `upload-handler/` — Serverless Lambda for thumbnail generation
 

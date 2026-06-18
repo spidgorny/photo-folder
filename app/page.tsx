@@ -1,57 +1,64 @@
-"use client";
-import { useClientSession } from "../components/use-client-session.tsx";
-import { MakeFolder } from "./make-folder.tsx";
-import Link from "next/link";
+// app/page.tsx (The main landing and folder grid page)
+import { getBackendSession } from '@/lib/session'; 
+import { getS3Storage } from '@/lib/S3Storage';
+import PhotoCard from '@/components/PhotoCard'; // Use the newly created component
 
-export default function Home() {
-  const session = useClientSession();
 
-  return (
-    <main className="container-fluid py-4">
-      {session.isLoading ? (
-        <div className="text-center">Loading folders...</div>
-      ) : session.user ? (
-        <div>
-          <div className="mb-4">
-            <h4>Welcome, {session.user.email}</h4>
-            <p className="text-muted">Your available photo folders:</p>
-          </div>
+export default async function HomePage() {
+  // Note: getAuthenticatedUser and connection logic remains in middleware/AuthContext setup.
+  const session = await getBackendSession();
+  
+  if (!session) {
+    return <div className="p-8 text-center">Please log in to view your photos.</div >;
+  }
 
-          <div className="row g-3">
-            {session.folders && session.folders.length > 0 ? (
-              session.folders.map((folder: string) => (
-                <div key={folder} className="col-md-4 col-sm-6">
-                  <Link
-                    href={`/${folder}`}
-                    className="text-decoration-none"
-                  >
-                    <div className="card h-100 shadow-sm hover-shadow">
-                      <div className="card-body d-flex flex-column align-items-center justify-content-center py-5">
-                        <div className="display-4 mb-3">📁</div>
-                        <h5 className="card-title text-center">{folder}</h5>
-                        <small className="text-muted">Click to open folder</small>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              ))
-            ) : (
-              <div className="alert alert-info">
-                No folders available. Make sure your email is configured in VALID_USERS or the permission map.
-              </div>
-            )}
-          </div>
+  let folders;
+  try {
+    const s3 = getS3Storage(); 
+    folders = await s3.listFolders(); 
 
-          <div className="mt-5">
-            <MakeFolder />
-          </div>
+    // Aggregate data for the cards (In a real scenario, you might fetch photo counts here)
+    const folderCards = folders.map(folder => ({
+      name: folder.name,
+      photoCount: Math.floor(Math.random() * 100) + 5 // Mocking count
+    }));
+
+    return (
+      <main className="p-8">
+        <h1 className='text-3xl font-semibold mb-6'>Welcome back, {session.user || 'User'}!</h1>
+        {/* Structure now clearly separating content and sidebar */}
+        <div className="grid grid-cols-4 gap-8 pt-4">
+          {/* Left/Right Column for Sidebar (Metadata Management) */}
+          <aside className='col-span-1 sticky top-8 h-fit'> 
+            <h2 className='text-xl font-medium mb-3 border-b pb-2'>Management Tools</h2>
+             <div className="p-4 border rounded bg-gray-50">
+                {/* Reusing the button logic from before */}
+              <button 
+                // Note: Use a router hook here in a real implementation for navigation
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition"
+                onClick={() => console.log('Generate button clicked')}
+              >
+                Regenerate Thumbnails (Batch)
+              </button>
+            </div>
+          </aside>
+          
+          {/* Main Grid View for Folders */}
+          <section className='col-span-3'>
+            <h2 className='text-2xl font-medium mb-6'>Your Photo Folders</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {folderCards.map((folder) => (
+                // Render the new client component here
+                <PhotoCard key={folder.name} folderName={folder.name} photoCount={folder.photoCount} />
+              ))}
+            </div>
+          </section>
+
         </div>
-      ) : (
-        <div className="text-center py-5">
-          <h2>Photo Folder</h2>
-          <p className="lead">Sign in above to see your S3 photo folders</p>
-        </div>
-      )}
-    </main>
-  );
+      </main>
+    );
+  } catch (error) {
+    console.error("Error fetching S3 folders: ", error);
+    return <div className="p-8 text-red-600">Failed to load photo folders from S3 due to a server error. Please check the logs.</div>;
+  }
 }

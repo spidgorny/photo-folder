@@ -1,9 +1,9 @@
 import path from "node:path";
-import { time, UploadObject } from "utils";
-import { S3Storage } from "../lib/S3Storage";
-import { Logger } from "../lib/logger";
-import { handlePlaceholder } from "handle-placeholder";
-import { handleThumbnail } from "handle-thumbnail";
+import { time, UploadObject } from "./utils.ts";
+import { S3Storage } from "../lib/S3Storage.ts";
+import { Logger } from "../lib/logger.ts";
+import { handlePlaceholder } from "./handle-placeholder.ts";
+import { handleThumbnail } from "./handle-thumbnail.ts";
 
 export function preventRunningIfWrongFileUploaded(uploadObject: UploadObject) {
 	if (uploadObject.key.includes("/.thumbnails/")) {

@@ -31,6 +31,10 @@ export async function getPasswordFor(prefix: string) {
 		const { password } = JSON.parse(bytes);
 		return password;
 	} catch (err) {
+		// Treat missing .password.json as no password required
+		if (err && (err.name === 'NoSuchKey' || err.$metadata?.httpStatusCode === 404)) {
+			return undefined;
+		}
 		console.error(`ERROR in getPasswordFor(${passwordFileName})`, err);
 		/** Return undefined on any failure during password retrieval.*/
 		return undefined;
