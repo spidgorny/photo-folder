@@ -8,3 +8,4 @@ jspm_packages
 .env
 IMG-20240329-WA0000.jpg
 .esbuild/
+release-x64.zip

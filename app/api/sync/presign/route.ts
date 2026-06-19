@@ -1,42 +1,56 @@
-// app/api/sync/presign/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-// Assuming local imports for utility functions like getS3Storage and JWT logic are available
+import path from 'path';
 import { getAuthenticatedUser } from '@/lib/auth';
 import { getS3Storage } from '@/lib/S3Storage';
 
-/**
- * Handles POST requests to generate presigned URLs for file uploads.
- * Replaces logic previously in pages/api/sync/presign.ts
- */
+function normalizeKey(key: string) {
+  return key.replace(/^\/+/, '').replace(/\/+/g, '/');
+}
+
+function isAllowedKey(key: string, allowedPrefixes?: string[]) {
+  if (!allowedPrefixes?.length) return true;
+  return allowedPrefixes.some((prefix) => {
+    const normalizedPrefix = prefix.replace(/^\/+|\/+$/g, '');
+    return key === normalizedPrefix || key.startsWith(`${normalizedPrefix}/`);
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
-    // 1. Authentication & Authorization Check (Same as /api/auth/me)
-    // In a real setup, getAuthenticatedUser() must be called here to authorize the user requesting the URL.
-    const user = await getAuthenticatedUser(request); // Placeholder function
-    if (!user) {
-      return new NextResponse('Unauthorized', { status: 401 });
+    const user = await getAuthenticatedUser(request);
+    const body = await request.json();
+    const rawKey = body.key ?? (body.prefix && body.filename ? `${body.prefix}/${body.filename}` : undefined);
+    const contentType = body.content_type ?? body.contentType;
+
+    if (!rawKey || !contentType) {
+      return NextResponse.json({ error: 'Missing required parameters: key/content_type.' }, { status: 400 });
     }
 
-    // 2. Get file details from request body (e.g., File name, folder prefix, intended data type)
-    const { key, content_type } = await request.json();
-    
-    if (!key || !content_type) {
-      return new NextResponse('Missing required parameters: key or content_type.', { status: 400 });
+    const key = normalizeKey(String(rawKey));
+    if (!key || key.includes('..') || path.basename(key).startsWith('.')) {
+      return NextResponse.json({ error: 'Invalid upload key.' }, { status: 400 });
     }
 
-    // 3. Generate the presigned URL using the S3 utility wrapper
-    const s3 = getS3Storage(); // Get S3 storage instance
-    const signedUrl = await s3.getPresignUrl(key, content_type);
+    if (!String(contentType).startsWith('image/')) {
+      return NextResponse.json({ error: 'Only image uploads are allowed.' }, { status: 400 });
+    }
+
+    if (!isAllowedKey(key, user.allowedPrefixes)) {
+      return NextResponse.json({ error: 'Not allowed to upload to this folder.' }, { status: 403 });
+    }
+
+    const s3 = getS3Storage();
+    const presignedUrl = await s3.getPresignUrl(key, String(contentType));
 
     return NextResponse.json({
       success: true,
-      presignedUrl: signedUrl,
-      message: 'Successfully generated presigned URL.',
+      key,
+      presignedUrl,
+      expiresIn: 3600,
     });
-
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating pre-signed URL:', error);
-    // Log the actual error for debugging
-    return new NextResponse(`Failed to generate signed URL due to server error.`, { status: 500 });
+    const status = error?.message?.includes('token') || error?.message?.includes('authentication') ? 401 : 500;
+    return NextResponse.json({ error: status === 401 ? error.message : 'Failed to generate signed URL.' }, { status });
   }
 }

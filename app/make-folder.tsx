@@ -1,9 +1,11 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 
 export function MakeFolder() {
 	const router = useRouter();
+	const [showForm, setShowForm] = useState(false);
+
 	const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		let form = e.target as HTMLFormElement;
@@ -21,8 +23,22 @@ export function MakeFolder() {
 			throw new Error(response.statusText);
 		}
 		console.log(await response.json());
+		setShowForm(false);
 		router.push(`/${formData.name}`);
 	};
+
+	if (!showForm) {
+		return (
+			<div className="container py-3">
+				<button
+					onClick={() => setShowForm(true)}
+					className="btn btn-primary"
+				>
+					+ Create Folder
+				</button>
+			</div>
+		);
+	}
 
 	return (
 		<div className="container py-3">
@@ -33,9 +49,17 @@ export function MakeFolder() {
 						className="form-control"
 						placeholder="new folder name"
 						required
+						autoFocus
 					/>
 					<button type="submit" className="btn btn-primary">
-						Folder
+						Create
+					</button>
+					<button
+						type="button"
+						onClick={() => setShowForm(false)}
+						className="btn btn-secondary"
+					>
+						Cancel
 					</button>
 				</div>
 			</form>

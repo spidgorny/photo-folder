@@ -1,3 +1,4 @@
+"use client";
 import NextImage from "next/image";
 import { useThumbnails } from "@components/use-thumbnails.tsx";
 import React from "react";

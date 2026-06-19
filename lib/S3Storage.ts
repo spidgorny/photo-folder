@@ -53,7 +53,7 @@ export class S3Storage {
 				Prefix,
 			}),
 		);
-		console.log(data);
+		// console.log(data);
 		let contents = (data.Contents ?? []) as _Object[];
 		let files = contents.map(
 			(x) =>
