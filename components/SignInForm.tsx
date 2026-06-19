@@ -41,28 +41,29 @@ export function SignInForm({ onSuccess }: SignInFormProps) {
   };
 
   return (
-    <form onSubmit={signIn} className="p-6">
-      <div className="mb-4">
-        <label className="block mb-2 text-sm font-medium text-gray-700">Your email address</label>
+    <form onSubmit={signIn}>
+      <div className="form-floating mb-3">
         <input
           type="email"
           name="email"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+          className="form-control"
+          id="floatingInput"
           placeholder="name@example.com"
           autoFocus
           disabled={isLoading}
         />
+        <label htmlFor="floatingInput">Your email address</label>
       </div>
 
       <button
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition shadow-md"
+        className="btn btn-primary w-100 py-2"
         type="submit"
         disabled={isLoading}
       >
         {isLoading ? "Signing in..." : "Sign In"}
       </button>
 
-      {error && <div className="mt-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">{error.message}</div>}
+      {error && <div className="alert alert-danger mt-3">{error.message}</div>}
     </form>
   );
 }

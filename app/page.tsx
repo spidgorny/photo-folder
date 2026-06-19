@@ -18,13 +18,13 @@ export default function HomePage() {
 
   if (error || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
         <div className="text-center p-8">
-          <h1 className="text-3xl font-semibold mb-4 text-gray-800">Photo Folder</h1>
-          <p className="mb-6 text-gray-600">Please log in to view your photos.</p>
+          <h1 className="display-6 fw-semibold mb-4">Photo Folder</h1>
+          <p className="mb-6 text-muted">Please log in to view your photos.</p>
           <button
             onClick={() => setShowSignIn(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition shadow-md"
+            className="btn btn-primary btn-lg px-5"
           >
             Sign In
           </button>
@@ -49,7 +49,7 @@ export default function HomePage() {
 
   return (
     <main className="p-8">
-      <h1 className='text-3xl font-semibold mb-6'>Welcome back, {user || 'User'}!</h1>
+      <h1 className='text-3xl font-semibold mb-6'>Welcome back, {user?.email || user?.userId || 'User'}!</h1>
       {/* Structure now clearly separating content and sidebar */}
       <div className="grid grid-cols-4 gap-8 pt-4">
         {/* Left/Right Column for Sidebar (Metadata Management) */}

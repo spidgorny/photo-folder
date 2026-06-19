@@ -18,20 +18,14 @@ export default function PhotoCard({ folderName, photoCount = 0 }: PhotoCardProps
   }
 
   // Placeholder for thumbnail image source (we assume Image is configured)
-  const placeholderUrl = `s3-bucket-name.com/${encodeURIComponent(folderName)}/thumb.jpg`;
+  // Using a colored div as placeholder instead of invalid URL
+  const placeholderColor = `hsl(${Math.random() * 360}, 70%, 80%)`;
 
   return (
     <div className="bg-white shadow border rounded hover:ring-2 ring-blue-200 transition duration-150 cursor-pointer p-4 flex flex-col">
       {/* Image Placeholder */}
-      <div className="w-full h-32 bg-gray-200 mb-3 relative overflow-hidden">
-        {/* Using Next.js Image component for optimization */}
-        <Image 
-          src={placeholderUrl} 
-          alt={`Thumbnail for ${folderName}`} 
-          layout="fill" // Use modern layout props
-          objectFit="cover" 
-          priority 
-        />
+      <div className="w-full h-32 mb-3 relative overflow-hidden flex items-center justify-content-center" style={{ backgroundColor: placeholderColor }}>
+        <div className="text-gray-600 text-4xl">📷</div>
       </div>
 
       {/* Content */}
