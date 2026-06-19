@@ -3,17 +3,8 @@ import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useClientSession } from "@/components/use-client-session.tsx";
 import { MySlidingPane } from "@/components/my-sliding-pane.tsx";
-import { DropArea } from "@/app/[prefix]/drop-area.tsx";
-import { CountFiles } from "@/app/[prefix]/count-files.tsx";
-import { ManageThumbnails } from "@/app/[prefix]/manage-thumbnails.tsx";
 
-interface MainHeaderProps {
-	folderContext?: {
-		prefix: string;
-	};
-}
-
-export function MainHeader({ folderContext }: MainHeaderProps) {
+export function MainHeader() {
 	return (
 		<header className="bg-white border-bottom shadow-sm">
 			<div className="container-fluid">
@@ -24,32 +15,27 @@ export function MainHeader({ folderContext }: MainHeaderProps) {
 								📷 Photo Folder
 							</Link>
 						</h4>
-						{folderContext && (
-							<div className="d-flex align-items-center">
-								<span className="text-muted">/</span>
-								<h5 className="m-0 ms-2">{folderContext.prefix}</h5>
-							</div>
-						)}
 					</div>
-					<SignInOrOut folderContext={folderContext} />
+					<SignInOrOut />
 				</div>
 			</div>
 		</header>
 	);
 }
 
-function SignInOrOut({ folderContext }: { folderContext?: { prefix: string } }) {
+function SignInOrOut() {
 	const session = useClientSession();
 	if (session.isLoading) {
 		return <div>Loading...</div>;
 	}
 	if (session.user) {
-		return <SignOut onSuccess={() => session.mutate()} folderContext={folderContext} />;
+		return <SignOut />;
 	}
-	return <SignIn onSuccess={() => session.mutate()} />;
+	return <SignIn />;
 }
 
-function SignIn(props: { onSuccess: () => void }) {
+function SignIn() {
+	const session = useClientSession();
 	return (
 		<MySlidingPane button="Sign In">
 			{({ close }) => (
@@ -58,7 +44,7 @@ function SignIn(props: { onSuccess: () => void }) {
 					<SignInForm
 						onSuccess={() => {
 							close();
-							props.onSuccess();
+							session.mutate();
 						}}
 					/>
 					<div className="py-4 text-end">
@@ -140,7 +126,7 @@ function SignInForm(props: { onSuccess: () => void }) {
 	);
 }
 
-function SignOut(props: { onSuccess: () => void; folderContext?: { prefix: string } }) {
+function SignOut() {
 	const session = useClientSession();
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -153,7 +139,7 @@ function SignOut(props: { onSuccess: () => void; folderContext?: { prefix: strin
 			if (!response.ok) {
 				console.warn("Logout may have failed");
 			}
-			props.onSuccess();
+			session.mutate();
 		} finally {
 			setIsLoggingOut(false);
 		}
@@ -163,43 +149,24 @@ function SignOut(props: { onSuccess: () => void; folderContext?: { prefix: strin
 	const userInitial = userEmail?.charAt(0)?.toUpperCase() || "U";
 
 	return (
-		<div className="d-flex align-items-center gap-3">
-			{props.folderContext && (
-				<>
-					<FolderActions prefix={props.folderContext.prefix} />
-				</>
-			)}
-			<div className="d-flex align-items-center gap-2">
-				<div
-					className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-					style={{ width: "36px", height: "36px", fontSize: "14px" }}
-					title={userEmail || "User"}
-				>
-					{userInitial}
-				</div>
-				<span className="text-muted small d-none d-md-inline">
-					{userEmail || "User"}
-				</span>
-				<button
-					onClick={signOut}
-					className="btn btn-outline-danger btn-sm"
-					disabled={isLoggingOut}
-				>
-					{isLoggingOut ? "Signing out..." : "Sign Out"}
-				</button>
+		<div className="d-flex align-items-center gap-2">
+			<div
+				className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+				style={{ width: "36px", height: "36px", fontSize: "14px" }}
+				title={userEmail || "User"}
+			>
+				{userInitial}
 			</div>
-		</div>
-	);
-}
-
-function FolderActions({ prefix }: { prefix: string }) {
-	return (
-		<div className="d-flex gap-2 align-items-center">
-			<DropArea prefix={prefix} />
-			<MySlidingPane button="🖼️ Thumbnails" title="Manage Thumbnails">
-				{({ close }) => <ManageThumbnails prefix={prefix} close={close} />}
-			</MySlidingPane>
-			<CountFiles prefix={prefix} />
+			<span className="text-muted small d-none d-md-inline">
+				{userEmail || "User"}
+			</span>
+			<button
+				onClick={signOut}
+				className="btn btn-outline-danger btn-sm"
+				disabled={isLoggingOut}
+			>
+				{isLoggingOut ? "Signing out..." : "Sign Out"}
+			</button>
 		</div>
 	);
 }
