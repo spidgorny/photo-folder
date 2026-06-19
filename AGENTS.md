@@ -53,9 +53,11 @@ This file contains instructions, conventions, and context for AI coding agents (
    - All S3 operations go through `getS3Storage()` from `lib/S3Storage.ts`.
 
 3. **Frontend**
-   - Use `useClientSession()` (SWR) for user and folder data.
+   - **Data Fetching**: Use SWR for all client-side data fetching. Use `useClientSession()` hook for user and folder data.
    - Prefer server components when possible.
    - Folder list on home page (`/`) should show nice cards linking to `/{prefix}`.
+   - **Styling**: Use Bootstrap CSS classes (loaded in `app/layout.tsx`). Do NOT use Tailwind classes.
+   - Use Bootstrap grid system (`container`, `row`, `col-*`, `card`, `btn`, etc.) for layouts.
 
 4. **Flutter Mobile App** (future)
    - Use JWT from `/api/auth/login`.

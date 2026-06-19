@@ -48,37 +48,22 @@ export default function HomePage() {
   })) || [];
 
   return (
-    <main className="p-8">
-      <h1 className='text-3xl font-semibold mb-6'>Welcome back, {user?.email || user?.userId || 'User'}!</h1>
-      {/* Structure now clearly separating content and sidebar */}
-      <div className="grid grid-cols-4 gap-8 pt-4">
-        {/* Left/Right Column for Sidebar (Metadata Management) */}
-        <aside className='col-span-1 sticky top-8 h-fit'> 
-          <h2 className='text-xl font-medium mb-3 border-b pb-2'>Management Tools</h2>
-           <div className="p-4 border rounded bg-gray-50">
-              {/* Reusing the button logic from before */}
-            <button 
-              // Note: Use a router hook here in a real implementation for navigation
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition"
-              onClick={() => console.log('Generate button clicked')}
-            >
-              Regenerate Thumbnails (Batch)
-            </button>
-          </div>
-        </aside>
-        
-        {/* Main Grid View for Folders */}
-        <section className='col-span-3'>
-          <h2 className='text-2xl font-medium mb-6'>Your Photo Folders</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {folderCards.map((folder) => (
-              // Render the new client component here
-              <PhotoCard key={folder.name} folderName={folder.name} photoCount={folder.photoCount} />
-            ))}
-          </div>
-        </section>
-
+    <main className="container py-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1 className='h3 mb-0'>Welcome back, {user?.email || user?.userId || 'User'}!</h1>
       </div>
+      
+      {/* Main Grid View for Folders */}
+      <section>
+        <h2 className='h4 mb-4'>Your Photo Folders</h2>
+        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+          {folderCards.map((folder) => (
+            <div className="col" key={folder.name}>
+              <PhotoCard folderName={folder.name} photoCount={folder.photoCount} />
+            </div>
+          ))}
+        </div>
+      </section>
     </main>
   );
 }

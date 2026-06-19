@@ -2,7 +2,7 @@
 'use client'; // Must be a Client Component because it handles user interaction (onClick)
 
 import { useAuth } from '@/components/providers/AuthContext';
-import Image from 'next/image'; 
+import { useRouter } from 'next/navigation'; 
 
 interface PhotoCardProps {
   folderName: string;
@@ -12,6 +12,7 @@ interface PhotoCardProps {
 export default function PhotoCard({ folderName, photoCount = 0 }: PhotoCardProps) {
   // Use the custom hook to ensure authentication is active before showing content.
   const { user } = useAuth();
+  const router = useRouter();
 
   if (!user) {
     return null; // Don't render until authenticated in the parent page logic
@@ -22,24 +23,25 @@ export default function PhotoCard({ folderName, photoCount = 0 }: PhotoCardProps
   const placeholderColor = `hsl(${Math.random() * 360}, 70%, 80%)`;
 
   return (
-    <div className="bg-white shadow border rounded hover:ring-2 ring-blue-200 transition duration-150 cursor-pointer p-4 flex flex-col">
+    <div className="card h-100">
       {/* Image Placeholder */}
-      <div className="w-full h-32 mb-3 relative overflow-hidden flex items-center justify-content-center" style={{ backgroundColor: placeholderColor }}>
-        <div className="text-gray-600 text-4xl">📷</div>
+      <div className="card-img-top d-flex align-items-center justify-content-center" style={{ height: '150px', backgroundColor: placeholderColor }}>
+        <div className="display-6">📷</div>
       </div>
 
-      {/* Content */}
-      <h3 className="text-md font-medium text-gray-800 truncate">{folderName}</h3>
-      <p className="text-sm text-gray-500 mb-2">{photoCount} photos</p>
-      
-      {/* Action Button */}
-      <button 
-        className="mt-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-1.5 px-3 rounded transition"
-        // This click handler demonstrates client activity using the context/state.
-        onClick={() => console.log(`Navigating to folder: ${folderName}`)}
-      >
-        View Folder →
-      </button>
+      <div className="card-body d-flex flex-column">
+        {/* Content */}
+        <h5 className="card-title text-truncate">{folderName}</h5>
+        <p className="card-text text-muted">{photoCount} photos</p>
+        
+        {/* Action Button */}
+        <button 
+          className="btn btn-primary mt-auto"
+          onClick={() => router.push(`/${folderName}`)}
+        >
+          View Folder →
+        </button>
+      </div>
     </div>
   );
 }

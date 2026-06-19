@@ -56,7 +56,7 @@ export async function GET() {
     funFacts: {
       totalCores: cpuCount,
       memoryPerCore: formatBytes(os.totalmem() / cpuCount),
-      nodeArchitecture: process.config.target || 'unknown',
+      nodeArchitecture: process.arch || 'unknown',
       isDocker: checkDocker(),
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
