@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useThumbnails } from "@/components/use-thumbnails.tsx";
 
@@ -18,6 +18,17 @@ export function UploadSidebar({ isOpen, onClose }: UploadSidebarProps) {
 	const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
 	const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 	const dragCounter = useRef(0);
+
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === "Escape" && isOpen) {
+				onClose();
+			}
+		};
+
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [isOpen, onClose]);
 
 	const handleDragEnter = useCallback((e: React.DragEvent) => {
 		e.preventDefault();

@@ -1,6 +1,6 @@
 import "react-sliding-pane/dist/react-sliding-pane.css";
 import SlidingPane from "react-sliding-pane";
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 
 export function MySlidingPane(props: {
 	title?: string;
@@ -9,6 +9,18 @@ export function MySlidingPane(props: {
 }) {
 	const [openPanel, setOpenPanel] = useState(false);
 	const close = () => setOpenPanel(false);
+
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === "Escape" && openPanel) {
+				close();
+			}
+		};
+
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [openPanel, close]);
+
 	return (
 		<div>
 			<button
