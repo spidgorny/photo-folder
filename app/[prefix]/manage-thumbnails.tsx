@@ -88,48 +88,24 @@ alert("Sorted! The order will be saved to S3.");
 						disabled={isWorking || (uploadsWithoutThumbnails.length === 0 && filesWithoutBase64.length === 0) || !isAuthenticated}
 						title={!isAuthenticated ? "Please sign in to regenerate thumbnails" : undefined}
 					>
-						🔄 Regenerate All Missing Thumbnails (
-						{uploadsWithoutThumbnails.length + filesWithoutBase64.length})
+						{isWorking ? (
+							<>
+								<Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+								Regenerating...
+							</>
+						) : (
+							<>
+								🔄 Regenerate All Missing Thumbnails (
+								{uploadsWithoutThumbnails.length + filesWithoutBase64.length})
+							</>
+						)}
 					</button>
-					{regenerationProgress.total > 0 && (
-						<div>
-							<div className="d-flex justify-content-between mb-1">
-								<small className="text-muted">
-									{regenerationProgress.processing.length > 0 && (
-										<>Processing: {regenerationProgress.processing.join(', ')} </>
-									)}
-								</small>
-								<small className="text-muted">
-									{regenerationProgress.completed} / {regenerationProgress.total}
-								</small>
-							</div>
-							<div className="d-flex" style={{ height: '20px' }}>
-								<div
-									style={{
-										width: `${(regenerationProgress.completed / regenerationProgress.total) * 100}%`,
-										backgroundColor: '#198754',
-										transition: 'width 0.3s ease',
-									}}
-								/>
-								<div
-									style={{
-										width: `${(regenerationProgress.processing.length / regenerationProgress.total) * 100}%`,
-										backgroundColor: '#ffc107',
-										transition: 'width 0.3s ease',
-									}}
-								/>
-							</div>
-							<div className="d-flex gap-2 mt-1">
-								<small className="text-muted">
-									<span style={{ color: '#198754' }}>●</span> Completed: {regenerationProgress.completed}
-								</small>
-								<small className="text-muted">
-									<span style={{ color: '#ffc107' }}>●</span> Processing: {regenerationProgress.processing.length}
-								</small>
-								<small className="text-muted">
-									<span style={{ color: '#6c757d' }}>●</span> Remaining: {regenerationProgress.total - regenerationProgress.completed - regenerationProgress.processing.length}
-								</small>
-							</div>
+					{isWorking && (
+						<div className="alert alert-info mt-2 mb-0">
+							<small>
+								<Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+								Regenerating thumbnails for {uploadsWithoutThumbnails.length + filesWithoutBase64.length} files. This may take a while...
+							</small>
 						</div>
 					)}
 					<small className="text-muted">
