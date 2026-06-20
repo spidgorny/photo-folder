@@ -25,6 +25,15 @@
 	z-index: 1 !important;
 }
 
+/* Ensure sliding pane is above all content */
+.sliding-pane {
+	z-index: 99999 !important;
+}
+
+.sliding-pane__overlay {
+	z-index: 99998 !important;
+}
+
 /* Fix lightbox thumbnail sizing */
 .yarl__thumbnails {
 	height: 120px !important;
