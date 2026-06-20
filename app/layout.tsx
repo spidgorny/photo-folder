@@ -18,16 +18,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 // Required metadata for Next.js build tools, replacing _document logic
 export async function generateMetadata(): Promise<{
-    title: string; description: string; openGraph: {
-        images: string[]; // Define or use an appropriate path
+    metadataBase: URL;
+    title: string;
+    description: string;
+    openGraph: {
+        images: string[];
         title: string;
     };
 }> {
   return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
     title: 'Photo Folder Management',
     description: 'Browse and upload photos to S3.',
     openGraph: {
-      images: ['/og-image.png'], // Define or use an appropriate path
+      images: ['/og-image.png'],
       title: 'Photos Folder - Photo Manager',
     },
   };
