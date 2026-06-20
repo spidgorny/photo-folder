@@ -1,6 +1,7 @@
 "use client";
 import { useState, useCallback, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { useThumbnails } from "@/components/use-thumbnails.tsx";
 
 interface UploadSidebarProps {
 	isOpen: boolean;
@@ -10,6 +11,7 @@ interface UploadSidebarProps {
 export function UploadSidebar({ isOpen, onClose }: UploadSidebarProps) {
 	const pathname = usePathname();
 	const folderName = pathname?.split('/').slice(-1)[0] || '';
+	const { mutateThumbnails } = useThumbnails(folderName);
 	const [isDragging, setIsDragging] = useState(false);
 	const [uploading, setUploading] = useState(false);
 	const [uploadProgress, setUploadProgress] = useState(0);
@@ -94,6 +96,9 @@ export function UploadSidebar({ isOpen, onClose }: UploadSidebarProps) {
 
 		setUploading(false);
 		setSelectedFiles([]);
+
+		// Force SWR to revalidate and refresh the thumbnail cache
+		mutateThumbnails();
 	};
 
 	const handleClear = () => {
