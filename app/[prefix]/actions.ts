@@ -29,19 +29,29 @@ export async function reindexFile(fileKey: string) {
   }
   console.log('[ReindexFile] Lambda response:', response.data);
 	} catch (err) {
-		console.error("[ReindexFile] UPLOAD ERROR:", new AxiosError(err));
 		if (axios.isAxiosError(err)) {
 			console.error("[ReindexFile] Axios error details:", {
+				message: err.message,
 				status: err.response?.status,
 				statusText: err.response?.statusText,
 				data: err.response?.data,
 				url: err.config?.url,
+				method: err.config?.method,
+				headers: err.config?.headers,
 			});
 			const errorMessage = `Failed to regenerate thumbnail for ${fileKey}: ${err.response?.status} ${err.response?.statusText} - ${JSON.stringify(err.response?.data)}`;
 			throw new Error(errorMessage);
+		} else if (err instanceof Error) {
+			console.error("[ReindexFile] Error:", {
+				message: err.message,
+				stack: err.stack,
+				name: err.name,
+			});
+			throw new Error(`Failed to regenerate thumbnail for ${fileKey}: ${err.message}`);
+		} else {
+			console.error("[ReindexFile] Unknown error:", err);
+			throw new Error(`Failed to regenerate thumbnail for ${fileKey}: ${String(err)}`);
 		}
-		const errorMessage = `Failed to regenerate thumbnail for ${fileKey}: ${err instanceof Error ? err.message : String(err)}`;
-		throw new Error(errorMessage);
 	}
 }
 
