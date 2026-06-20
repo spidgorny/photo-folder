@@ -5,15 +5,15 @@
 
 /* Fix z-index for thumbnail manager sliding pane */
 .slide-pane {
-	z-index: 99999 !important;
+	z-index: 999999 !important;
 }
 
 .slide-pane__content {
-	z-index: 99999 !important;
+	z-index: 999999 !important;
 }
 
 .slide-pane__overlay {
-	z-index: 99998 !important;
+	z-index: 999998 !important;
 }
 
 /* Lower z-index for gallery components to prevent overlapping */
@@ -27,11 +27,28 @@
 
 /* Ensure sliding pane is above all content */
 .sliding-pane {
-	z-index: 99999 !important;
+	z-index: 999999 !important;
 }
 
 .sliding-pane__overlay {
-	z-index: 99998 !important;
+	z-index: 999998 !important;
+}
+
+/* Specific class for thumbnail management pane */
+.thumbnail-management-pane {
+	z-index: 999999 !important;
+}
+
+.thumbnail-management-pane .slide-pane {
+	z-index: 999999 !important;
+}
+
+.thumbnail-management-pane .slide-pane__content {
+	z-index: 999999 !important;
+}
+
+.thumbnail-management-pane .slide-pane__overlay {
+	z-index: 999998 !important;
 }
 
 /* Fix lightbox thumbnail sizing */

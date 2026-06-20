@@ -5,6 +5,7 @@ import { useState } from 'react';
 import SlidingPane from "react-sliding-pane";
 import "react-sliding-pane/dist/react-sliding-pane.css";
 import { ManageThumbnails } from './manage-thumbnails';
+import { createPortal } from 'react-dom';
 
 export default function FolderLayout({
 	children,
@@ -19,14 +20,18 @@ export default function FolderLayout({
 		<>
 			<MainHeader onOpenThumbnailManager={() => setShowThumbnailManager(true)} />
 			{children}
-			<SlidingPane
-				isOpen={showThumbnailManager}
-				width="600px"
-				onRequestClose={() => setShowThumbnailManager(false)}
-				title="Thumbnail Management"
-			>
-				<ManageThumbnails prefix={folderName} close={() => setShowThumbnailManager(false)} />
-			</SlidingPane>
+			{typeof document !== 'undefined' && createPortal(
+				<SlidingPane
+					isOpen={showThumbnailManager}
+					width="600px"
+					onRequestClose={() => setShowThumbnailManager(false)}
+					title="Thumbnail Management"
+					className="thumbnail-management-pane"
+				>
+					<ManageThumbnails prefix={folderName} close={() => setShowThumbnailManager(false)} />
+				</SlidingPane>,
+				document.body
+			)}
 		</>
 	);
 }
