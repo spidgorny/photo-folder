@@ -81,7 +81,7 @@ function DeleteButton(props: {
 	};
 
 	return (
-		<button className="btn btn-danger" >
+		<button className="btn btn-danger" onClick={onClick}>
 			Delete
 		</button>
 	);
