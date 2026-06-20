@@ -27,6 +27,8 @@ build:
 functions:
   uploadHandlerApi:
     handler: src/index.handlerApi
+    memorySize: 1024
+    timeout: 30
     layers:
       - arn:aws:lambda:eu-central-1:508606145348:layer:sharp-lambda-x64:1
     package:
@@ -44,6 +46,8 @@ functions:
           path: /handle-upload
   uploadHandler:
     handler: src/index.handler
+    memorySize: 1024
+    timeout: 30
     layers:
       - arn:aws:lambda:eu-central-1:508606145348:layer:sharp-lambda-x64:1
     environment:
