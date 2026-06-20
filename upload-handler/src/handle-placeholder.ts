@@ -23,6 +23,9 @@ export async function handlePlaceholder(
 	delete metadata.icc;
 	delete metadata.exif;
 	delete metadata.xmp;
+	if ('gainMap' in metadata) {
+		delete (metadata as any).gainMap;
+	}
 	const modified = new Date().toISOString();
 
 	const exif = ExifParserFactory.create(bytes)

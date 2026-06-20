@@ -81,9 +81,17 @@ export class ThumbFileS3 extends ThumbFile {
 	}
 
 	async save() {
+		const replacer = (key: string, value: any) => {
+			// Convert Buffer to base64 string
+			if (value && value.type === 'Buffer' && Array.isArray(value.data)) {
+				return Buffer.from(value.data).toString('base64');
+			}
+			return value;
+		};
+
 		await this.s3.put(
 			this.thumbnailFilePath,
-			JSON.stringify(this.thumbnails, null, 2),
+			JSON.stringify(this.thumbnails, replacer, 2),
 		);
 	}
 }
