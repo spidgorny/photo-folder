@@ -250,6 +250,9 @@ const FileRow = (props: {
 	return (
 		<>
 			<tr>
+				<td>{props.file.base64 && (
+					<img src={props.file.base64} width={48} height={48} alt="thumb" style={{ objectFit: 'cover' }} />
+				)}</td>
 				<td>
 					<button
 						onClick={reindex}
@@ -262,9 +265,6 @@ const FileRow = (props: {
 						) : hasThumbnail ? "✅" : "🔴"}
 					</button>
 				</td>
-				<td>{props.file.base64 && (
-					<img src={props.file.base64} width={32} height={32} alt="thumb" />
-				)}</td>
 				<td>{props.file.key.split("/").slice(-1)[0]}</td>
 				<td>{bytes(props.file.size)}</td>
 				<td align="right" className="font-monospace text-nowrap">
@@ -273,7 +273,7 @@ const FileRow = (props: {
 			</tr>
 			{error && (
 				<tr>
-					<td colSpan={99} className="text-danger small py-1 px-2">
+					<td colSpan={5} className="text-danger small py-1 px-2">
 						⚠️ {error.message}
 					</td>
 				</tr>
