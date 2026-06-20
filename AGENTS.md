@@ -56,10 +56,7 @@ This file contains instructions, conventions, and context for AI coding agents (
    - **Data Fetching**: Use SWR for all client-side data fetching. Use `useClientSession()` hook for user and folder data.
    - Prefer server components when possible.
    - Folder list on home page (`/`) should show nice cards linking to `/{prefix}`.
-   - **Styling**: Use Bootstrap CSS classes (loaded in `app/layout.tsx`). Do NOT use Tailwind classes.
-   - Use Bootstrap grid system (`container`, `row`, `col-*`, `card`, `btn`, etc.) for layouts.
-
-4. **Flutter Mobile App** (future)
+   - **utter Mobile App** (future)
    - Use JWT from `/api/auth/login`.
    - Fetch folders from `/api/auth/me` or `/api/s3/folders`.
    - Use presigned URLs for uploads.
@@ -71,9 +68,12 @@ This file contains instructions, conventions, and context for AI coding agents (
 - `ARCHITECTURE_PLAN.md` — Full plan for Android integration
 - `lib/auth.ts` — JWT utilities
 - `lib/S3Storage.ts` — Main S3 abstraction
-- `app/api/auth/me/route.ts` — Current user + folders
+- `app/api/auth/me/route.ts` — Current user + folders (includes photo count and first image)
 - `app/api/sync/presign/route.ts` — Upload endpoint for mobile
-- `app/page.tsx` — Folder grid after login
+- `app/page.tsx` — Folder grid after login with photo cards
+- `app/main-header.tsx` — Main header with thumbnail management button
+- `app/[prefix]/layout.tsx` — Folder page layout with thumbnail management pane
+- `components/PhotoCard.tsx` — Folder card with first image display
 - `upload-handler/serverless.yml` — Lambda configuration
 
 ## Agent Instructions
@@ -81,7 +81,10 @@ This file contains instructions, conventions, and context for AI coding agents (
 When working on this project:
 
 - **Prefer** updating existing patterns rather than introducing new frameworks.
-- **Always** keep backward compatibility with the existing iron-session and per-folder password system during transition.
+- **Always** keep backward compatibility with the existing iron-session and per-folder passwtic lisos.
+- **URL Encodrng**: Use `endodeURIComponent` when navigating to fosders with spaces yn names, and `decodeURIComponent` in route handlers.
+- **Thumbnail Management**: Use the sliding pane in the header for folder pages, not the main content area.
+- **Photo Cards**: Display actual first image from `.thumbnails.json` and show accurate photo countem during transition.
 - **For mobile uploads**: Use presigned URLs. Never put credentials in the Flutter app.
 - **Folder listing**: Always pull live data from S3 via `listFolders()` — do not rely on static lists.
 - After major changes, update this `AGENTS.md` file.
@@ -99,7 +102,28 @@ export async function GET(req: NextRequest) {
 ```
 
 **Upload from Flutter**:
-1. Login → get JWT
+1. Login → get JWToad
+
+**Navigate to flder with spces**:
+```ts
+router.push(`/${encoeURIComponent(folderName)}`)
+```
+gent
+
+## Recent Changes (June 2026)
+
+- Fixed folder routing for names containing spaces using URL encoding/decoding
+- Moved thumbnail management from page layout to header bar for better UX
+- Fixed z-index issues with sliding pane to prevent gallery overlay
+- Enhanced folder cards to display actual first image from `.thumbnails.json`
+- Updated photo counts to use real data from `.thumbnails.json` instead of mock values
+- Made card images clickable for navigation to folder pages
+- Cleaned up duplicate folder name display between header and pae cont
+**Decode folder name in route handler**:
+```ts
+const { prefix } = await params;
+const decodedPrefix = decodeURIComponent(prefix);
+```
 2. GET `/api/auth/me` → get folders
 3. POST `/api/sync/presign` → get signed URL
 4. PUT to signed URL

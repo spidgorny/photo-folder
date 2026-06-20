@@ -6,7 +6,7 @@ import { getThumbnailsFallbackToFiles } from '@/app/api/s3/files/[prefix]/getThu
 
 /**
  * Handles GET requests for current user information and folder list.
- * Replaces logic previously in pages/api/auth/me.ts
+ * Returns folders with photo count and first image for display on home page.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -22,8 +22,9 @@ export async function GET(request: NextRequest) {
     // Fetch thumbnail data for each folder to get photo count and first image
     const foldersWithThumbnails = await Promise.all(
       folders.map(async (folder: any) => {
+        const folderName = folder.name || folder.key?.replace(/\/$/, '') || '';
+
         try {
-          const folderName = folder.name || folder.key?.replace(/\/$/, '') || '';
           const thumbnails = await getThumbnailsFallbackToFiles(folderName);
           const firstImage = thumbnails.length > 0 ? thumbnails[0] : null;
 
@@ -37,10 +38,10 @@ export async function GET(request: NextRequest) {
             } : null,
           };
         } catch (err) {
-          console.error(`Error fetching thumbnails for folder ${folder.name}:`, err);
+          console.error(`Error fetching thumbnails for folder ${folderName}:`, err);
           return {
             ...folder,
-            name: folder.name || folder.key?.replace(/\/$/, '') || '',
+            name: folderName,
             photoCount: 0,
             firstImage: null,
           };
@@ -51,7 +52,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       user: user,
       folders: foldersWithThumbnails,
-      message: "Successfully retrieved user context and folder list.",
     });
 
   } catch (error) {

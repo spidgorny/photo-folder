@@ -12,8 +12,8 @@ interface MainHeaderProps {
 
 export function MainHeader({ onOpenThumbnailManager }: MainHeaderProps) {
 	const pathname = usePathname();
-	const isFolderPage = pathname !== '/' && pathname?.split('/').length === 2;
 	const folderName = pathname?.split('/').slice(-1)[0] || '';
+	const isFolderPage = pathname !== '/' && pathname?.split('/').length === 2;
 
 	return (
 		<header className="bg-white border-bottom shadow-sm">

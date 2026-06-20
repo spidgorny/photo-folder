@@ -21,6 +21,8 @@ export default function PhotoCard({ folderName, photoCount = 0, firstImage }: Ph
     return null;
   }
 
+  const handleNavigate = () => router.push(`/${encodeURIComponent(folderName)}`);
+
   return (
     <div className="card h-100">
       {firstImage ? (
@@ -29,13 +31,13 @@ export default function PhotoCard({ folderName, photoCount = 0, firstImage }: Ph
           alt={folderName}
           className="card-img-top"
           style={{ height: '150px', objectFit: 'cover', cursor: 'pointer' }}
-          onClick={() => router.push(`/${encodeURIComponent(folderName)}`)}
+          onClick={handleNavigate}
         />
       ) : (
         <div
           className="card-img-top d-flex align-items-center justify-content-center"
           style={{ height: '150px', backgroundColor: `hsl(${Math.random() * 360}, 70%, 80%)`, cursor: 'pointer' }}
-          onClick={() => router.push(`/${encodeURIComponent(folderName)}`)}
+          onClick={handleNavigate}
         >
           <div className="display-6">📷</div>
         </div>
@@ -47,7 +49,7 @@ export default function PhotoCard({ folderName, photoCount = 0, firstImage }: Ph
 
         <button
           className="btn btn-primary mt-auto"
-          onClick={() => router.push(`/${encodeURIComponent(folderName)}`)}
+          onClick={handleNavigate}
         >
           View Folder →
         </button>

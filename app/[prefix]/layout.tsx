@@ -12,8 +12,8 @@ export default function FolderLayout({
 	children: React.ReactNode;
 }) {
 	const pathname = usePathname();
-	const [showThumbnailManager, setShowThumbnailManager] = useState(false);
 	const folderName = pathname?.split('/').slice(-1)[0] || '';
+	const [showThumbnailManager, setShowThumbnailManager] = useState(false);
 
 	return (
 		<>
