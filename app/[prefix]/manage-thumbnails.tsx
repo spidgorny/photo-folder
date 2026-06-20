@@ -38,14 +38,6 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 			return;
 		}
 
-		if (
-			!confirm(
-				`Regenerate thumbnails for all ${missingFiles.length} missing files? This may take a while.`,
-			)
-		) {
-			return;
-		}
-
 		setRegenerationProgress({ current: 0, total: missingFiles.length, currentFile: '' });
 
 		let successCount = 0;
