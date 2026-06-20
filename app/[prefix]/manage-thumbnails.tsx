@@ -33,22 +33,18 @@ alert("Sorted! The order will be saved to S3.");
 			(file) => !files.some((x) => x.key === file.key),
 		);
 
-		if (missingFiles.length === 0) {
+		const filesWithoutData = files.filter(
+			(file) => !file.base64 || !file.metadata,
+		);
+
+		const totalMissing = missingFiles.length + filesWithoutData.length;
+
+		if (totalMissing === 0) {
 			alert("No missing thumbnails to regenerate.");
 			return;
 		}
 
-		setRegenerationProgress({ completed: 0, processing: [], total: missingFiles.length });
-
-		const result = await regenerateMissingThumbnails(props.prefix, (progress) => {
-			setRegenerationProgress({
-				completed: progress.completed,
-				processing: progress.processing.map(f => f.split('/').slice(-1)[0]),
-				total: progress.total,
-			});
-		});
-
-		setRegenerationProgress({ completed: 0, processing: [], total: 0 });
+		const result = await regenerateMissingThumbnails(props.prefix);
 
 		if (result.errors.length > 0) {
 			alert(`Regeneration complete: ${result.triggered} succeeded, ${result.failed} failed. Check console for details.`);
@@ -89,11 +85,11 @@ alert("Sorted! The order will be saved to S3.");
 					<button
 						onClick={regenerateMissing}
 						className="btn btn-success"
-						disabled={isWorking || uploadsWithoutThumbnails.length === 0 || !isAuthenticated}
+						disabled={isWorking || (uploadsWithoutThumbnails.length === 0 && filesWithoutBase64.length === 0) || !isAuthenticated}
 						title={!isAuthenticated ? "Please sign in to regenerate thumbnails" : undefined}
 					>
 						🔄 Regenerate All Missing Thumbnails (
-						{uploadsWithoutThumbnails.length})
+						{uploadsWithoutThumbnails.length + filesWithoutBase64.length})
 					</button>
 					{regenerationProgress.total > 0 && (
 						<div>
