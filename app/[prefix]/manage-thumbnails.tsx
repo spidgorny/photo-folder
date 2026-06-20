@@ -109,27 +109,47 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 			</div>
 
 			<div className="mb-4 p-3 border rounded bg-light">
-				<button
-					onClick={regenerateMissing}
-					className="btn btn-success mb-2"
-					disabled={isWorking || uploadsWithoutThumbnails.length === 0 || !isAuthenticated}
-					title={!isAuthenticated ? "Please sign in to regenerate thumbnails" : undefined}
-				>
-					🔄 Regenerate All Missing Thumbnails (
-					{uploadsWithoutThumbnails.length})
-				</button>
-				<small className="text-muted d-block">
-					Calls the Lambda handler for every file that is missing from{" "}
-					<code>.thumbnails.json</code>.
-					<br />
-					Use this after bulk uploads or if thumbnails are incomplete.
-					{!isAuthenticated && (
-						<>
-							<br />
-							<strong className="text-danger">⚠️ Sign in required to regenerate thumbnails</strong>
-						</>
+				<div className="d-flex flex-column gap-2">
+					<button
+						onClick={regenerateMissing}
+						className="btn btn-success"
+						disabled={isWorking || uploadsWithoutThumbnails.length === 0 || !isAuthenticated}
+						title={!isAuthenticated ? "Please sign in to regenerate thumbnails" : undefined}
+					>
+						🔄 Regenerate All Missing Thumbnails (
+						{uploadsWithoutThumbnails.length})
+					</button>
+					{regenerationProgress.total > 0 && (
+						<div>
+							<div className="d-flex justify-content-between mb-1">
+								<small className="text-muted">
+									Processing: {regenerationProgress.currentFile}
+								</small>
+								<small className="text-muted">
+									{regenerationProgress.current} / {regenerationProgress.total}
+								</small>
+							</div>
+							<ProgressBar
+								now={(regenerationProgress.current / regenerationProgress.total) * 100}
+								variant="info"
+								animated
+								striped
+							/>
+						</div>
 					)}
-				</small>
+					<small className="text-muted">
+						Calls the Lambda handler for every file that is missing from{" "}
+						<code>.thumbnails.json</code>.
+						<br />
+						Use this after bulk uploads or if thumbnails are incomplete.
+						{!isAuthenticated && (
+							<>
+								<br />
+								<strong className="text-danger">⚠️ Sign in required to regenerate thumbnails</strong>
+							</>
+						)}
+					</small>
+				</div>
 			</div>
 
 			<h6>Uploads without Thumbnails ({uploadsWithoutThumbnails.length})</h6>
