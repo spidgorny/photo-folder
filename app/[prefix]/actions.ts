@@ -47,6 +47,7 @@ export async function reindexFile(fileKey: string) {
 // New function: trigger thumbnail generation for all missing files
 export async function regenerateMissingThumbnails(prefix: string) {
 	const s3 = getS3Storage();
+	const errors: { file: string; error: string }[] = [];
 
 	// Get all uploaded files
 	const allFiles = await s3.list(prefix);
@@ -66,15 +67,25 @@ export async function regenerateMissingThumbnails(prefix: string) {
 
 	console.log(`Found ${missing.length} files missing thumbnails in ${prefix}`);
 
+	let successCount = 0;
 	for (const file of missing) {
 		console.log(`Triggering regeneration for: ${file.key}`);
-		await reindexFile(file.key);
+		try {
+			await reindexFile(file.key);
+			successCount++;
+		} catch (err) {
+			const errorMessage = err instanceof Error ? err.message : String(err);
+			console.error(`Failed to regenerate thumbnail for ${file.key}:`, errorMessage);
+			errors.push({ file: file.key, error: errorMessage });
+		}
 		// Small delay to avoid overwhelming the Lambda
 		await new Promise((r) => setTimeout(r, 800));
 	}
 
 	return {
-		triggered: missing.length,
+		triggered: successCount,
+		failed: errors.length,
 		totalUploads: uploads.length,
+		errors,
 	};
 }
