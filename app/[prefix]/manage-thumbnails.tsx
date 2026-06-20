@@ -81,24 +81,6 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 	return (
 		<div>
 			<div className="d-flex justify-content-between align-items-center mb-3">
-				{regenerationProgress.total > 0 && (
-					<div className="mt-3">
-						<div className="d-flex justify-content-between mb-1">
-							<small className="text-muted">
-								Processing: {regenerationProgress.currentFile}
-							</small>
-							<small className="text-muted">
-								{regenerationProgress.current} / {regenerationProgress.total}
-							</small>
-						</div>
-						<ProgressBar
-							now={(regenerationProgress.current / regenerationProgress.total) * 100}
-							variant="info"
-							animated
-							striped
-						/>
-					</div>
-				)}
 				<h5>Manage Thumbnails — {props.prefix}</h5>
 				<button
 					className="btn btn-sm btn-outline-secondary"
