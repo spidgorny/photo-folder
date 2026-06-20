@@ -92,6 +92,7 @@ function DeleteButton(props: {
 				throw new Error(response.statusText);
 			}
 
+			// Force SWR to revalidate and refresh the thumbnail cache
 			await mutateThumbnails();
 			props.resetSelectedImages();
 		} catch (error) {
