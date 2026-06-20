@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 interface UploadSidebarProps {
@@ -15,27 +15,51 @@ export function UploadSidebar({ isOpen, onClose }: UploadSidebarProps) {
 	const [uploadProgress, setUploadProgress] = useState(0);
 	const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
 	const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+	const dragCounter = useRef(0);
 
-	const handleDragOver = useCallback((e: React.DragEvent) => {
+	const handleDragEnter = useCallback((e: React.DragEvent) => {
 		e.preventDefault();
-		setIsDragging(true);
+		e.stopPropagation();
+		dragCounter.current++;
+		if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+			setIsDragging(true);
+		}
 	}, []);
 
 	const handleDragLeave = useCallback((e: React.DragEvent) => {
 		e.preventDefault();
-		setIsDragging(false);
+		e.stopPropagation();
+		dragCounter.current--;
+		if (dragCounter.current === 0) {
+			setIsDragging(false);
+		}
+	}, []);
+
+	const handleDragOver = useCallback((e: React.DragEvent) => {
+		e.preventDefault();
+		e.stopPropagation();
+		if (e.dataTransfer.dropEffect !== 'copy') {
+			e.dataTransfer.dropEffect = 'copy';
+		}
 	}, []);
 
 	const handleDrop = useCallback((e: React.DragEvent) => {
 		e.preventDefault();
+		e.stopPropagation();
 		setIsDragging(false);
-		const files = Array.from(e.dataTransfer.files);
-		setSelectedFiles(files);
+		dragCounter.current = 0;
+
+		if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+			const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+			if (files.length > 0) {
+				setSelectedFiles(prev => [...prev, ...files]);
+			}
+		}
 	}, []);
 
 	const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
 		const files = Array.from(e.target.files || []);
-		setSelectedFiles(files);
+		setSelectedFiles(prev => [...prev, ...files]);
 	}, []);
 
 	const handleUpload = async () => {
@@ -58,6 +82,8 @@ export function UploadSidebar({ isOpen, onClose }: UploadSidebarProps) {
 
 				if (response.ok) {
 					setUploadedFiles(prev => [...prev, file.name]);
+				} else {
+					console.error("Upload failed for:", file.name);
 				}
 			} catch (error) {
 				console.error("Upload failed:", error);
@@ -76,12 +102,17 @@ export function UploadSidebar({ isOpen, onClose }: UploadSidebarProps) {
 		setUploadProgress(0);
 	};
 
+	const removeFile = (index: number) => {
+		setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+	};
+
 	if (!isOpen) return null;
 
 	return (
 		<div
 			className={`position-fixed top-0 end-0 h-100 bg-white shadow-lg ${isDragging ? 'border-primary border-4' : ''}`}
-			style={{ width: "400px", zIndex: 10000, transition: "transform 0.3s ease" }}
+			style={{ width: "400px", zIndex: 10000 }}
+			onDragEnter={handleDragEnter}
 			onDragOver={handleDragOver}
 			onDragLeave={handleDragLeave}
 			onDrop={handleDrop}
@@ -114,23 +145,33 @@ export function UploadSidebar({ isOpen, onClose }: UploadSidebarProps) {
 								style={{
 									borderStyle: "dashed",
 									borderColor: isDragging ? "#0d6efd" : "#dee2e6",
-									backgroundColor: isDragging ? "#e7f1ff" : "transparent"
+									backgroundColor: isDragging ? "#e7f1ff" : "transparent",
+									transition: "all 0.2s ease"
 								}}
 							>
 								<div className="mb-3">
-									<i className="bi bi-cloud-upload display-4 text-muted"></i>
+									<span style={{ fontSize: "48px" }}>📁</span>
 								</div>
 								<p className="text-muted mb-3">
 									Drag and drop files here, or click to select
 								</p>
 								<input
 									type="file"
+									id="file-upload"
 									multiple
 									accept="image/*"
 									onChange={handleFileSelect}
 									className="form-control"
 									disabled={uploading}
+									style={{ display: "none" }}
 								/>
+								<label
+									htmlFor="file-upload"
+									className="btn btn-outline-primary"
+									style={{ cursor: "pointer" }}
+								>
+									Select Files
+								</label>
 							</div>
 
 							{selectedFiles.length > 0 && (
@@ -139,8 +180,15 @@ export function UploadSidebar({ isOpen, onClose }: UploadSidebarProps) {
 									<ul className="list-group">
 										{selectedFiles.map((file, index) => (
 											<li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-												<span className="text-truncate" style={{ maxWidth: "250px" }}>{file.name}</span>
-												<span className="text-muted small">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
+												<span className="text-truncate" style={{ maxWidth: "200px" }}>{file.name}</span>
+												<div className="d-flex align-items-center gap-2">
+													<span className="text-muted small">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
+													<button
+														className="btn btn-close btn-sm"
+														onClick={() => removeFile(index)}
+														disabled={uploading}
+													></button>
+												</div>
 											</li>
 										))}
 									</ul>
@@ -151,7 +199,7 @@ export function UploadSidebar({ isOpen, onClose }: UploadSidebarProps) {
 								<div className="mb-3">
 									<div className="progress">
 										<div
-											className="progress-bar"
+											className="progress-bar progress-bar-striped progress-bar-animated"
 											role="progressbar"
 											style={{ width: `${uploadProgress}%` }}
 											aria-valuenow={uploadProgress}
@@ -170,7 +218,7 @@ export function UploadSidebar({ isOpen, onClose }: UploadSidebarProps) {
 									<ul className="list-group">
 										{uploadedFiles.map((file, index) => (
 											<li key={index} className="list-group-item text-success">
-												<i className="bi bi-check-circle me-2"></i>
+												<span className="me-2">✓</span>
 												{file}
 											</li>
 										))}
