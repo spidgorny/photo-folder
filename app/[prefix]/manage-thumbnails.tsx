@@ -22,11 +22,11 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 	const isAuthenticated = !!session.user;
 	const [regenerationProgress, setRegenerationProgress] = useState({ completed: 0, processing: [] as string[], total: 0 });
 
-	const sortByTime = wrapWorking(async () => {
-		const sorted = files.toSorted(sortBy((x) => x.created ?? x.modified));
-		await updateThumbnailFile(`${props.prefix}/.thumbnails.json`, sorted);
-		await mutateThumbnails();
-	});
+const sortByTime = () => {
+const sorted = files.toSorted(sortBy((x) => x.created ?? x.modified));
+updateThumbnailFile(`${props.prefix}/.thumbnails.json`, sorted);
+alert("Sorted! The order will be saved to S3.");
+};
 
 	const regenerateMissing = wrapWorking(async () => {
 		const missingFiles = uploads.filter(
@@ -163,16 +163,7 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 
 			<div className="d-flex justify-content-between mt-4">
 				<h5>Current Thumbnails ({files.length})</h5>
-				<SaveButton
-					className="gap-2 align-items-center"
-					onClick={async () => {
-						await sortByTime(null);
-					}}
-					isWorking={isWorking}
-					disabled={isPerfectlySorted}
-				>
-					Sort By Time
-				</SaveButton>
+<button className="btn btn-outline-primary gap-2 align-items-center" onClick={sortByTime}>Sort By Time</button>
 			</div>
 
 			<table className="table table-sm">
