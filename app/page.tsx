@@ -15,6 +15,8 @@ interface FolderDetails {
     key: string;
     src: string;
   } | null;
+  loaded: boolean;
+}
 
 export default function HomePage() {
   const { user, folders, isLoading, error, mutate } = useClientSession();
