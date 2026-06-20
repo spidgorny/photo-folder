@@ -219,7 +219,14 @@ const FileRow = (props: {
       await axios.post('/api/reindex', { prefix: props.prefix, key: props.file.key }, { withCredentials: true });
       await mutateThumbnails();
     } catch (e) {
-      setError(e as Error);
+      if (axios.isAxiosError(e)) {
+        const backendError = e.response?.data?.error || e.response?.data || e.message;
+        const status = e.response?.status;
+        const errorMessage = status ? `${status}: ${backendError}` : backendError;
+        setError(new Error(errorMessage));
+      } else {
+        setError(e as Error);
+      }
     } finally {
       setIsWorking(false);
     }
