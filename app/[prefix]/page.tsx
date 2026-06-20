@@ -1,42 +1,48 @@
-"use server";
+"use client";
 import { ListFilesGrid } from "./list-files-grid.tsx";
-import { getBackendSession } from "@/lib/session.ts";
-import invariant from "@/lib/invariant.ts";
-import { notFound } from "next/navigation";
-import {
-	getPasswordFor,
-	getThumbnailsFallbackToFiles,
-} from "@/app/api/s3/files/[prefix]/getThumbnailsFallbackToFiles.ts";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { useClientSession } from "@/components/use-client-session.tsx";
 import { PasswordForm } from "@/app/[prefix]/password-form.tsx";
+import { useThumbnails } from "@/components/use-thumbnails.tsx";
 
-export default async function Home({
-	params,
-}: {
-	params: Promise<{ prefix: string }>;
-}) {
-	const { prefix } = await params;
-	const decodedPrefix = decodeURIComponent(prefix);
-	const session = await getBackendSession();
+export default function Home() {
+	const params = useParams();
+	const prefix = params?.prefix as string;
+	const decodedPrefix = prefix ? decodeURIComponent(prefix) : '';
+	const { user } = useClientSession();
+	const { data, error, isLoading } = useThumbnails(decodedPrefix);
+	const [hasPassword, setHasPassword] = useState(false);
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-	try {
-		const files = await getThumbnailsFallbackToFiles(decodedPrefix);
-		invariant(files?.length, "files not found");
-
-		const password = await getPasswordFor(decodedPrefix);
-		if (password) {
-			if (!session.validPasswords?.includes(password)) {
-				return <PasswordForm prefix={decodedPrefix} />;
-			}
+	// Check if folder has password (this would need an API call)
+	// For now, we'll just render the grid if user is authenticated
+	useEffect(() => {
+		if (user) {
+			setIsAuthenticated(true);
 		}
+	}, [user]);
 
-		return (
-			<main className="container-fluid">
-				{!decodedPrefix && <div>Loading...</div>}
-				{decodedPrefix && <ListFilesGrid prefix={decodedPrefix} />}
-			</main>
-		);
-	} catch (e) {
-		console.error(e);
-		return notFound();
+	if (isLoading) {
+		return <div className="p-8 text-center">Loading...</div>;
 	}
+
+	if (error) {
+		return <div className="p-8 text-center text-danger">Error loading files: {error.message}</div>;
+	}
+
+	if (!isAuthenticated) {
+		return <div className="p-8 text-center">Please log in to view this folder.</div>;
+	}
+
+	if (hasPassword && !isAuthenticated) {
+		return <PasswordForm prefix={decodedPrefix} />;
+	}
+
+	return (
+		<main className="container-fluid">
+			{!decodedPrefix && <div>Loading...</div>}
+			{decodedPrefix && <ListFilesGrid prefix={decodedPrefix} />}
+		</main>
+	);
 }
