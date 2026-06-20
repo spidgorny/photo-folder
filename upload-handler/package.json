@@ -2,6 +2,7 @@
 	"name": "photo-folder",
 	"version": "0.1.0",
 	"private": true,
+	"type": "module",
 	"scripts": {
 		"sls:invoke:local": "npx serverless invoke local -f uploadHandler -p ./testEventS3.json",
 		"sls:invoke:local-asd": "npx serverless invoke local -f uploadHandler -p ./testEventS3-asd.json",

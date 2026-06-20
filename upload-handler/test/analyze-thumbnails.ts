@@ -1,7 +1,8 @@
-const fs = require('fs');
+import fs from 'fs';
+import { findUp } from 'find-up';
 
 // Read the .thumbnails.json file (from grandparent directory)
-const filePath = '../../.thumbnails.json';
+const filePath = await findUp('.thumbnails.json');
 const data: any[] = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
 // Analyze each key in the objects
