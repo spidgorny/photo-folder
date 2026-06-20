@@ -1,11 +1,11 @@
 const fs = require('fs');
 
-// Read the .thumbnails.json file
-const filePath = './.thumbnails.json';
-const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+// Read the .thumbnails.json file (from grandparent directory)
+const filePath = '../../.thumbnails.json';
+const data: any[] = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
 // Analyze each key in the objects
-const keyStats = {};
+const keyStats: Record<string, { count: number; totalSize: number; sizes: number[] }> = {};
 
 data.forEach(item => {
 	Object.keys(item).forEach(key => {
