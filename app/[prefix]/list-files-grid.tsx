@@ -77,6 +77,8 @@ export function ListFilesGrid(props: { prefix: string }) {
 					onClick={onClick}
 					enableImageSelection={session?.user}
 					thumbnailImageComponent={ImageComponent}
+					rowHeight={200}
+					margin={4}
 				/>
 			)}
 
@@ -94,6 +96,7 @@ const ImageComponent = (props: ThumbnailImageProps<ImageExtended<Image>>) => {
 	// const [show, setShow] = useState(false);
 
 	const { title, key, ...otherProps } = props.imageProps;
+	const image = props.item;
 
 	return (
 		<div
@@ -106,9 +109,10 @@ const ImageComponent = (props: ThumbnailImageProps<ImageExtended<Image>>) => {
 				priority={false}
 				fetchPriority="low"
 				title={title ?? ""}
-				width={512}
-				height={512}
+				width={image.width || 512}
+				height={image.height || 512}
 				{...otherProps}
+				style={{ ...otherProps.style, width: '100%', height: 'auto' }}
 			/>
 		</div>
 	);
