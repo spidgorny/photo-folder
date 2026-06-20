@@ -178,7 +178,8 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 			<table className="table table-sm">
 				<thead>
 					<tr>
-						<th colSpan={2}>Status</th>
+						<th>Thumb</th>
+						<th>Status</th>
 						<th>File</th>
 						<th>Size</th>
 						<th className="text-end">Date</th>
