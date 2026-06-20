@@ -20,14 +20,12 @@ export async function reindexFile(fileKey: string) {
 	try {
 		const apiUrl = process.env.LAMBDA_HANDLE_UPLOAD;
 		invariant(apiUrl, "LAMBDA_HANDLE_UPLOAD missing");
-		let payload = {
-			file: fileKey,
-		};
+		let payload = JSON.stringify({ file: fileKey });
 		console.log("[ReindexFile] POST to Lambda:", apiUrl, "with payload:", payload);
 		const response = await axios.post(apiUrl, payload, { headers: { "Content-Type": "application/json" } });
   if (response.status !== 200) {
     console.error('[ReindexFile] Lambda upload failed', response.status, response.data);
-    throw new Error(`Lambda upload failed with status ${response.status}`);
+    throw new Error(`Lambda upload failed with status ${response.status}: ${JSON.stringify(response.data)}`);
   }
   console.log('[ReindexFile] Lambda response:', response.data);
 	} catch (err) {
@@ -39,8 +37,11 @@ export async function reindexFile(fileKey: string) {
 				data: err.response?.data,
 				url: err.config?.url,
 			});
+			const errorMessage = `Failed to regenerate thumbnail for ${fileKey}: ${err.response?.status} ${err.response?.statusText} - ${JSON.stringify(err.response?.data)}`;
+			throw new Error(errorMessage);
 		}
-		throw err;
+		const errorMessage = `Failed to regenerate thumbnail for ${fileKey}: ${err instanceof Error ? err.message : String(err)}`;
+		throw new Error(errorMessage);
 	}
 }
 
