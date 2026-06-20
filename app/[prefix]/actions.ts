@@ -93,12 +93,27 @@ export async function regenerateMissingThumbnails(
 	const existingKeys = new Set(thumbnails.map((t) => t.key));
 	const missing = uploads.filter((f) => !existingKeys.has(f.key));
 
+	// Also include files that are missing base64 or metadata
+	const filesWithoutData = thumbnails.filter((f) => !f.base64 || !f.metadata);
+
 	console.log(`Found ${missing.length} files missing thumbnails in ${prefix}`);
+	console.log(`Found ${filesWithoutData.length} files missing base64/metadata in ${prefix}`);
+
+	const allFilesToProcess = [...missing, ...filesWithoutData];
+
+	if (allFilesToProcess.length === 0) {
+		return {
+			triggered: 0,
+			failed: 0,
+			totalUploads: uploads.length,
+			errors,
+		};
+	}
 
 	let completed = 0;
 	let successCount = 0;
 	const processing = new Set<string>();
-	const queue = [...missing];
+	const queue = [...allFilesToProcess];
 
 	const processNext = async (): Promise<void> => {
 		if (queue.length === 0) return;
@@ -116,14 +131,14 @@ export async function regenerateMissingThumbnails(
 		} finally {
 			processing.delete(file.key);
 			completed++;
-			console.log(`Progress: ${completed}/${missing.length} files processed`);
+			console.log(`Progress: ${completed}/${allFilesToProcess.length} files processed`);
 
 			// Report progress if callback provided
 			if (onProgress) {
 				onProgress({
 					completed,
 					processing: Array.from(processing),
-					total: missing.length,
+					total: allFilesToProcess.length,
 				});
 			}
 
