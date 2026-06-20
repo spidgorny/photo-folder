@@ -24,3 +24,27 @@
 .react-grid-gallery > div {
 	z-index: 1 !important;
 }
+
+/* Fix lightbox thumbnail sizing */
+.yarl__thumbnails {
+	height: 120px !important;
+}
+
+.yarl__thumbnails_thumbnail {
+	width: auto !important;
+	height: 100px !important;
+	object-fit: cover !important;
+}
+
+.yarl__thumbnails_container {
+	display: flex !important;
+	justify-content: center !important;
+	align-items: center !important;
+	gap: 8px !important;
+}
+
+.yarl__thumbnails_track {
+	display: flex !important;
+	gap: 8px !important;
+	align-items: center !important;
+}
