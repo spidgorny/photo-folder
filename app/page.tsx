@@ -15,54 +15,65 @@ interface FolderDetails {
     key: string;
     src: string;
   } | null;
-}
 
 export default function HomePage() {
   const { user, folders, isLoading, error, mutate } = useClientSession();
   const [showSignIn, setShowSignIn] = useState(false);
-  const [folderDetails, setFolderDetails] = useState<FolderDetails[]>([]);
-  const [loadingDetails, setLoadingDetails] = useState(false);
+  const [folderDetails, setFolderDetails] = useState<Record<string, FolderDetails>>({});
 
   useEffect(() => {
     const fetchFolderDetails = async () => {
       if (!folders || folders.length === 0) return;
 
-      setLoadingDetails(true);
-      try {
-        const details = await Promise.all(
-          folders.map(async (folder: any) => {
-            const folderName = folder.name || folder.key?.replace(/\/$/, '') || '';
-            try {
-              const response = await fetch(`/api/s3/folder-details?folder=${encodeURIComponent(folderName)}`);
-              if (response.ok) {
-                const data = await response.json();
-                return {
-                  name: folderName,
-                  photoCount: data.photoCount || 0,
-                  firstImage: data.firstImage || null,
-                };
-              }
-              return {
+      // Initialize folder details with basic info immediately
+      const initialDetails: Record<string, FolderDetails> = {};
+      folders.forEach((folder: any) => {
+        const folderName = folder.name || folder.key?.replace(/\/$/, '') || '';
+        initialDetails[folderName] = {
+          name: folderName,
+          photoCount: 0,
+          firstImage: null,
+          loaded: false,
+        };
+      });
+      setFolderDetails(initialDetails);
+
+      // Fetch details for each folder independently
+      folders.forEach(async (folder: any) => {
+        const folderName = folder.name || folder.key?.replace(/\/$/, '') || '';
+        try {
+          const response = await fetch(`/api/s3/folder-details?folder=${encodeURIComponent(folderName)}`);
+          if (response.ok) {
+            const data = await response.json();
+            setFolderDetails((prev) => ({
+              ...prev,
+              [folderName]: {
                 name: folderName,
-                photoCount: 0,
-                firstImage: null,
-              };
-            } catch (err) {
-              console.error(`Error fetching details for ${folderName}:`, err);
-              return {
-                name: folderName,
-                photoCount: 0,
-                firstImage: null,
-              };
-            }
-          })
-        );
-        setFolderDetails(details);
-      } catch (error) {
-        console.error('Error fetching folder details:', error);
-      } finally {
-        setLoadingDetails(false);
-      }
+                photoCount: data.photoCount || 0,
+                firstImage: data.firstImage || null,
+                loaded: true,
+              },
+            }));
+          } else {
+            setFolderDetails((prev) => ({
+              ...prev,
+              [folderName]: {
+                ...prev[folderName],
+                loaded: true,
+              },
+            }));
+          }
+        } catch (err) {
+          console.error(`Error fetching details for ${folderName}:`, err);
+          setFolderDetails((prev) => ({
+            ...prev,
+            [folderName]: {
+              ...prev[folderName],
+              loaded: true,
+            },
+          }));
+        }
+      });
     };
 
     fetchFolderDetails();
@@ -95,20 +106,25 @@ export default function HomePage() {
         </div>
       </div>
     );
-  }
-
-  return (
-    <main className="container py-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className='h3 mb-0'>Welcome back, {user?.email || user?.userId || 'User'}!</h1>
-      </div>
-
-      {/* Main Grid View for Folders */}
-      <section>
-        <h2 className='h4 mb-4'>Your Photo Folders</h2>
-        {loadingDetails ? (
-          <div className="text-center py-4">
-            <div className="spinner-border" role="status">
+  }foders && flers.leh> 0 
+row rowols-1 ow-cols-md-2rowcols-lg-3 g-
+  return ({fodr.ma((fl:ny) = {
+    <main clascoest=focderaine r fo>r.me || folerkey?relce(a\/$/, '') || '';sName='h3 mb-0'>Welcome back, {user?.email || user?.userId || 'User'}!</h1>
+      </i>consteta fdeDetai[folderNae];
+      {/* MadViu*n
+        <section>N
+          <h2 className='h4 
+                   mb-4'>Your Photo FoNers<
+                   /h2>tails? ?? 0
+                   tails?age ?? null}
+                    lodin={!details?.loadd
+                 
+          {loadingDetails ? (
+            <di;
+            }v 
+          </div>
+        ) : (className="text-center py-4">
+          <div className="text-center py-4 text-muted">No folders found  <div className="spinner-border" role="status">
               <span className="visually-hidden">Loading...</span>
             </div>
           </div>
