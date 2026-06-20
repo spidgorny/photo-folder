@@ -29,28 +29,33 @@ export async function handleUploadObject(
 	logger: Logger,
 	uploadObject: UploadObject,
 ) {
-	const prefix = uploadObject.key.split("/")[0];
-	logger.log({ prefix });
+	try {
+		const prefix = uploadObject.key.split("/")[0];
+		logger.log({ prefix });
 
-	logger.log("getBuffer", uploadObject.key);
-	const bytes = await s3.getBuffer(uploadObject.key);
-	logger.log("handlePlaceholder");
-	const timePlaceholder = await time(
-		async () =>
-			await handlePlaceholder(s3, logger, prefix, uploadObject, bytes),
-	);
-	logger.log("handleThumbnail");
-	const timeThumbnail = await time(
-		async () => await handleThumbnail(s3, logger, prefix, uploadObject, bytes),
-	);
+		logger.log("getBuffer", uploadObject.key);
+		const bytes = await s3.getBuffer(uploadObject.key);
+		logger.log("handlePlaceholder");
+		const timePlaceholder = await time(
+			async () =>
+				await handlePlaceholder(s3, logger, prefix, uploadObject, bytes),
+		);
+		logger.log("handleThumbnail");
+		const timeThumbnail = await time(
+			async () => await handleThumbnail(s3, logger, prefix, uploadObject, bytes),
+		);
 
-	logger.log({ timePlaceholder, timeThumbnail });
-	let output = {
-		uploadObject,
-		timePlaceholder,
-		timeThumbnail,
-	};
-	logger.log(output);
-	return output;
+		logger.log({ timePlaceholder, timeThumbnail });
+		let output = {
+			uploadObject,
+			timePlaceholder,
+			timeThumbnail,
+		};
+		logger.log(output);
+		return output;
+	} catch (e) {
+		logger.error("Error in handleUploadObject:", e);
+		throw e;
+	}
 }
 

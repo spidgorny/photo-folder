@@ -35,10 +35,13 @@ export async function handlerApi(event: APIGatewayProxyEvent) {
 		};
 	} catch (e) {
 		invariant(e instanceof Error, "error is not an Error");
+		console.error("Lambda API Error:", e);
+		console.error("Error stack:", e.stack);
 		return {
 			status: "error",
 			message: e.message,
 			stack: e.stack?.split("\n"),
+			details: String(e),
 		};
 	}
 }
