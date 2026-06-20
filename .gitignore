@@ -41,3 +41,4 @@ allowed-users.json
 next-env.d.ts
 .todo.json
 mobile_photo_sync/
+.thumbnails.json

@@ -7,12 +7,25 @@ import { S3File } from "@/lib/s3-file";
 import AxiosError from "axios-error";
 
 export async function updateThumbnailFile(fileName: string, files: S3File[]) {
-	files = files.map((x) => ({ ...x, created: undefined }));
 	const s3 = getS3Storage();
 	const bytes = await s3.getString(fileName);
 	const oldJson = JSON.parse(bytes);
-	const newJson = JSON.stringify(files);
-	console.log(oldJson[0], files[0]);
+
+	// Create a map of old files by key to preserve all properties
+	const oldFilesMap = new Map(oldJson.map((f: any) => [f.key, f]));
+
+	// Sort the files but preserve all properties from original data
+	const mergedFiles = files.map((file) => {
+		const oldFile = oldFilesMap.get(file.key);
+		if (oldFile) {
+			// Preserve all properties from the original file, just update with sorted order
+			return { ...oldFile, created: undefined };
+		}
+		return { ...file, created: undefined };
+	});
+
+	const newJson = JSON.stringify(mergedFiles);
+	console.log("Updated thumbnail file with", mergedFiles.length, "files");
 	return await s3.put(fileName, newJson);
 }
 
