@@ -6,8 +6,9 @@
 		"sls:invoke:local": "npx serverless invoke local -f uploadHandler -p ./testEventS3.json",
 		"sls:invoke:local-asd": "npx serverless invoke local -f uploadHandler -p ./testEventS3-asd.json",
 		"sls:deploy": "npx serverless deploy --verbose",
-		"sls:logs": "npx serverless logs -f uploadHandler -t --verbose",
-		"aws:logs": "aws logs tail --follow --region eu-central-1 /aws/lambda/upload-handler-dev-uploadHandler",
+		"sls:logs:s3": "npx serverless logs -f uploadHandler -t --verbose",
+		"sls:logs:api": "npx serverless logs -f uploadHandlerApi -t --verbose",
+		"aws:logs:s3": "aws logs tail --follow --region eu-central-1 /aws/lambda/upload-handler-dev-uploadHandler",
 		"aws:logs:api": "aws logs tail --follow --region eu-central-1 /aws/lambda/upload-handler-dev-uploadHandlerApi",
 		"test:local": "npm run sls:invoke:local-asd",
 		"test:lambda": "npx serverless invoke -f uploadHandler -p ./testEventS3-asd.json"

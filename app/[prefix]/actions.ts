@@ -55,10 +55,14 @@ export async function reindexFile(fileKey: string) {
 	}
 }
 
-// New function: trigger thumbnail generation for all missing files
-export async function regenerateMissingThumbnails(prefix: string) {
+// New function: trigger thumbnail generation for all missing files with concurrency pool
+export async function regenerateMissingThumbnails(
+	prefix: string,
+	onProgress?: (progress: { completed: number; processing: string[]; total: number }) => void,
+) {
 	const s3 = getS3Storage();
 	const errors: { file: string; error: string }[] = [];
+	const CONCURRENCY = 10;
 
 	// Get all uploaded files
 	const allFiles = await s3.list(prefix);
@@ -78,9 +82,24 @@ export async function regenerateMissingThumbnails(prefix: string) {
 
 	console.log(`Found ${missing.length} files missing thumbnails in ${prefix}`);
 
+	let completed = 0;
 	let successCount = 0;
-	for (const file of missing) {
-		console.log(`Triggering regeneration for: ${file.key}`);
+	const processing = new Set<string>();
+	const queue = [...missing];
+
+	const processNext = async (): Promise<void> => {
+		if (queue.length === 0) return;
+
+		const file = queue.shift()!;
+		processing.add(file.key);
+
+		// Notify progress
+		onProgress?.({
+			completed,
+			processing: Array.from(processing),
+			total: missing.length,
+		});
+
 		try {
 			await reindexFile(file.key);
 			successCount++;
@@ -88,10 +107,26 @@ export async function regenerateMissingThumbnails(prefix: string) {
 			const errorMessage = err instanceof Error ? err.message : String(err);
 			console.error(`Failed to regenerate thumbnail for ${file.key}:`, errorMessage);
 			errors.push({ file: file.key, error: errorMessage });
+		} finally {
+			processing.delete(file.key);
+			completed++;
+
+			// Notify progress
+			onProgress?.({
+				completed,
+				processing: Array.from(processing),
+				total: missing.length,
+			});
+
+			// Process next file if available
+			await processNext();
 		}
-		// Small delay to avoid overwhelming the Lambda
-		await new Promise((r) => setTimeout(r, 800));
-	}
+	};
+
+	// Start initial batch of concurrent workers
+	const workers = Math.min(CONCURRENCY, queue.length);
+	const initialWorkers = Array.from({ length: workers }, () => processNext());
+	await Promise.all(initialWorkers);
 
 	return {
 		triggered: successCount,

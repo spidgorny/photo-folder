@@ -20,7 +20,7 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 	const { isWorking, wrapWorking } = useWorking();
 	const session = useClientSession();
 	const isAuthenticated = !!session.user;
-	const [regenerationProgress, setRegenerationProgress] = useState({ current: 0, total: 0, currentFile: '' });
+	const [regenerationProgress, setRegenerationProgress] = useState({ completed: 0, processing: [] as string[], total: 0 });
 
 	const sortByTime = wrapWorking(async () => {
 		const sorted = files.toSorted(sortBy((x) => x.created ?? x.modified));
@@ -38,32 +38,22 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 			return;
 		}
 
-		setRegenerationProgress({ current: 0, total: missingFiles.length, currentFile: '' });
+		setRegenerationProgress({ completed: 0, processing: [], total: missingFiles.length });
 
-		let successCount = 0;
-		const errors: { file: string; error: string }[] = [];
+		const result = await regenerateMissingThumbnails(props.prefix, (progress) => {
+			setRegenerationProgress({
+				completed: progress.completed,
+				processing: progress.processing.map(f => f.split('/').slice(-1)[0]),
+				total: progress.total,
+			});
+		});
 
-		for (let i = 0; i < missingFiles.length; i++) {
-			const file = missingFiles[i];
-			setRegenerationProgress({ current: i + 1, total: missingFiles.length, currentFile: file.key.split('/').slice(-1)[0] });
-			try {
-				await reindexFile(file.key);
-				successCount++;
-			} catch (err) {
-				const errorMessage = err instanceof Error ? err.message : String(err);
-				console.error(`Failed to regenerate thumbnail for ${file.key}:`, errorMessage);
-				errors.push({ file: file.key, error: errorMessage });
-			}
-			// Small delay to avoid overwhelming the Lambda
-			await new Promise((r) => setTimeout(r, 800));
-		}
+		setRegenerationProgress({ completed: 0, processing: [], total: 0 });
 
-		setRegenerationProgress({ current: 0, total: 0, currentFile: '' });
-
-		if (errors.length > 0) {
-			alert(`Regeneration complete: ${successCount} succeeded, ${errors.length} failed. Check console for details.`);
+		if (result.errors.length > 0) {
+			alert(`Regeneration complete: ${result.triggered} succeeded, ${result.failed} failed. Check console for details.`);
 		} else {
-			alert(`Successfully regenerated thumbnails for ${successCount} files.`);
+			alert(`Successfully regenerated thumbnails for ${result.triggered} files.`);
 		}
 		await mutateThumbnails();
 	});
@@ -105,18 +95,41 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 						<div>
 							<div className="d-flex justify-content-between mb-1">
 								<small className="text-muted">
-									Processing: {regenerationProgress.currentFile}
+									{regenerationProgress.processing.length > 0 && (
+										<>Processing: {regenerationProgress.processing.join(', ')} </>
+									)}
 								</small>
 								<small className="text-muted">
-									{regenerationProgress.current} / {regenerationProgress.total}
+									{regenerationProgress.completed} / {regenerationProgress.total}
 								</small>
 							</div>
-							<ProgressBar
-								now={(regenerationProgress.current / regenerationProgress.total) * 100}
-								variant="info"
-								animated
-								striped
-							/>
+							<div className="d-flex" style={{ height: '20px' }}>
+								<div
+									style={{
+										width: `${(regenerationProgress.completed / regenerationProgress.total) * 100}%`,
+										backgroundColor: '#198754',
+										transition: 'width 0.3s ease',
+									}}
+								/>
+								<div
+									style={{
+										width: `${(regenerationProgress.processing.length / regenerationProgress.total) * 100}%`,
+										backgroundColor: '#ffc107',
+										transition: 'width 0.3s ease',
+									}}
+								/>
+							</div>
+							<div className="d-flex gap-2 mt-1">
+								<small className="text-muted">
+									<span style={{ color: '#198754' }}>●</span> Completed: {regenerationProgress.completed}
+								</small>
+								<small className="text-muted">
+									<span style={{ color: '#ffc107' }}>●</span> Processing: {regenerationProgress.processing.length}
+								</small>
+								<small className="text-muted">
+									<span style={{ color: '#6c757d' }}>●</span> Remaining: {regenerationProgress.total - regenerationProgress.completed - regenerationProgress.processing.length}
+								</small>
+							</div>
 						</div>
 					)}
 					<small className="text-muted">
