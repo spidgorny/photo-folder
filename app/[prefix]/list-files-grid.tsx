@@ -66,7 +66,7 @@ export function ListFilesGrid(props: { prefix: string }) {
 	});
 
 	return (
-		<div>
+		<div className="container-fluid">
 			{error && <div className="alert alert-danger">{error?.message}</div>}
 			{!data && <div>loading...</div>}
 

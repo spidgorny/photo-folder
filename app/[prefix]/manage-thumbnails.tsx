@@ -70,7 +70,7 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 			<div className="mb-4 p-3 border rounded bg-light">
 				<button
 					onClick={regenerateMissing}
-					className="btn btn-success btn-lg mb-2"
+					className="btn btn-success mb-2"
 					disabled={isWorking || uploadsWithoutThumbnails.length === 0 || !isAuthenticated}
 					title={!isAuthenticated ? "Please sign in to regenerate thumbnails" : undefined}
 				>

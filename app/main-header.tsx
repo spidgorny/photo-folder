@@ -1,11 +1,20 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useClientSession } from "@/components/use-client-session.tsx";
 import { MySlidingPane } from "@/components/my-sliding-pane.tsx";
 import { SignInForm } from "@/components/SignInForm";
 
-export function MainHeader() {
+interface MainHeaderProps {
+	onOpenThumbnailManager?: () => void;
+}
+
+export function MainHeader({ onOpenThumbnailManager }: MainHeaderProps) {
+	const pathname = usePathname();
+	const isFolderPage = pathname !== '/' && pathname?.split('/').length === 2;
+	const folderName = pathname?.split('/').slice(-1)[0] || '';
+
 	return (
 		<header className="bg-white border-bottom shadow-sm">
 			<div className="container-fluid">
@@ -16,8 +25,19 @@ export function MainHeader() {
 								📷 Photo Folder
 							</Link>
 						</h4>
+						{isFolderPage && <span className="text-muted">/ {folderName}</span>}
 					</div>
-					<SignInOrOut />
+					<div className="d-flex align-items-center gap-3">
+						{isFolderPage && (
+							<button
+								className="btn btn-outline-primary btn-sm"
+								onClick={onOpenThumbnailManager}
+							>
+								Manage Thumbnails
+							</button>
+						)}
+						<SignInOrOut />
+					</div>
 				</div>
 			</div>
 		</header>

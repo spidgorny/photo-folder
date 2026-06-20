@@ -14,28 +14,25 @@ export default async function Home({
 }: {
 	params: Promise<{ prefix: string }>;
 }) {
-	// const params = useParams();
-	// const session = useClientSession();
-	// let prefix = params?.prefix as string | undefined;
 	const { prefix } = await params;
+	const decodedPrefix = decodeURIComponent(prefix);
 	const session = await getBackendSession();
 
 	try {
-		// const files = await getS3Storage().list(prefix);
-		const files = await getThumbnailsFallbackToFiles(prefix);
+		const files = await getThumbnailsFallbackToFiles(decodedPrefix);
 		invariant(files?.length, "files not found");
 
-		const password = await getPasswordFor(prefix);
+		const password = await getPasswordFor(decodedPrefix);
 		if (password) {
 			if (!session.validPasswords?.includes(password)) {
-				return <PasswordForm prefix={prefix} />;
+				return <PasswordForm prefix={decodedPrefix} />;
 			}
 		}
 
 		return (
 			<main className="container-fluid">
-				{!prefix && <div>Loading...</div>}
-				{prefix && <ListFilesGrid prefix={prefix} />}
+				{!decodedPrefix && <div>Loading...</div>}
+				{decodedPrefix && <ListFilesGrid prefix={decodedPrefix} />}
 			</main>
 		);
 	} catch (e) {

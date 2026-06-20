@@ -41,10 +41,11 @@ export default function HomePage() {
     );
   }
 
-  // Aggregate data for the cards (In a real scenario, you might fetch photo counts here)
+  // Aggregate data for the cards
   const folderCards = folders?.map(folder => ({
     name: folder.name || folder.key?.replace(/\/$/, '') || '',
-    photoCount: Math.floor(Math.random() * 100) + 5 // Mocking count
+    photoCount: folder.photoCount || 0,
+    firstImage: folder.firstImage || null,
   })) || [];
 
   return (
@@ -59,7 +60,7 @@ export default function HomePage() {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
           {folderCards.map((folder) => (
             <div className="col" key={folder.name}>
-              <PhotoCard folderName={folder.name} photoCount={folder.photoCount} />
+              <PhotoCard folderName={folder.name} photoCount={folder.photoCount} firstImage={folder.firstImage} />
             </div>
           ))}
         </div>

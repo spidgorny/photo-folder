@@ -2,3 +2,25 @@
 * Global styles for the entire application.
 * Add any base resets or global definitions here (e.g., primary font family, root colors).
 */
+
+/* Fix z-index for thumbnail manager sliding pane */
+.slide-pane {
+	z-index: 99999 !important;
+}
+
+.slide-pane__content {
+	z-index: 99999 !important;
+}
+
+.slide-pane__overlay {
+	z-index: 99998 !important;
+}
+
+/* Lower z-index for gallery components to prevent overlapping */
+.react-grid-gallery {
+	z-index: 1 !important;
+}
+
+.react-grid-gallery > div {
+	z-index: 1 !important;
+}

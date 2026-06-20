@@ -1,7 +1,8 @@
 // app/api/auth/me/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthenticatedUser } from '@/lib/auth'; // Keep the original utility
+import { getAuthenticatedUser } from '@/lib/auth';
 import { getS3Storage } from '@/lib/S3Storage';
+import { getThumbnailsFallbackToFiles } from '@/app/api/s3/files/[prefix]/getThumbnailsFallbackToFiles';
 
 /**
  * Handles GET requests for current user information and folder list.
@@ -9,28 +10,52 @@ import { getS3Storage } from '@/lib/S3Storage';
  */
 export async function GET(request: NextRequest) {
   try {
-    // 1. Get authenticated user from the request object (server-side middleware logic)
     const user = await getAuthenticatedUser(request);
 
     if (!user) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
-    // Assuming 'getS3Storage' and methods are available/imported here.
-    // We keep the original call structure from app/page.tsx for consistency,
-    // but ideally, this would be a contained function to prevent circular dependencies.
-    const s3 = getS3Storage(); 
+    const s3 = getS3Storage();
     const folders = await s3.listFolders();
+
+    // Fetch thumbnail data for each folder to get photo count and first image
+    const foldersWithThumbnails = await Promise.all(
+      folders.map(async (folder: any) => {
+        try {
+          const folderName = folder.name || folder.key?.replace(/\/$/, '') || '';
+          const thumbnails = await getThumbnailsFallbackToFiles(folderName);
+          const firstImage = thumbnails.length > 0 ? thumbnails[0] : null;
+
+          return {
+            ...folder,
+            name: folderName,
+            photoCount: thumbnails.length,
+            firstImage: firstImage ? {
+              key: firstImage.key,
+              src: `/api/s3/thumb/${firstImage.key}`,
+            } : null,
+          };
+        } catch (err) {
+          console.error(`Error fetching thumbnails for folder ${folder.name}:`, err);
+          return {
+            ...folder,
+            name: folder.name || folder.key?.replace(/\/$/, '') || '',
+            photoCount: 0,
+            firstImage: null,
+          };
+        }
+      })
+    );
 
     return NextResponse.json({
       user: user,
-      folders: folders,
+      folders: foldersWithThumbnails,
       message: "Successfully retrieved user context and folder list.",
     });
 
   } catch (error) {
     console.error('Error fetching /api/auth/me:', error);
-    // General error response for debugging
     return new NextResponse(`Error processing request: ${error instanceof Error ? error.message : String(error)}`, { status: 500 });
   }
 }
