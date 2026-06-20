@@ -27,6 +27,7 @@ export default function FolderLayout({
 					onRequestClose={() => setShowThumbnailManager(false)}
 					title="Thumbnail Management"
 					className="thumbnail-management-pane"
+					overlayClassName="thumbnail-management-overlay"
 				>
 					<ManageThumbnails prefix={folderName} close={() => setShowThumbnailManager(false)} />
 				</SlidingPane>,
