@@ -93,13 +93,6 @@ export async function regenerateMissingThumbnails(
 		const file = queue.shift()!;
 		processing.add(file.key);
 
-		// Notify progress
-		onProgress?.({
-			completed,
-			processing: Array.from(processing),
-			total: missing.length,
-		});
-
 		try {
 			await reindexFile(file.key);
 			successCount++;
@@ -110,13 +103,16 @@ export async function regenerateMissingThumbnails(
 		} finally {
 			processing.delete(file.key);
 			completed++;
+			console.log(`Progress: ${completed}/${missing.length} files processed`);
 
-			// Notify progress
-			onProgress?.({
-				completed,
-				processing: Array.from(processing),
-				total: missing.length,
-			});
+			// Report progress if callback provided
+			if (onProgress) {
+				onProgress({
+					completed,
+					processing: Array.from(processing),
+					total: missing.length,
+				});
+			}
 
 			// Process next file if available
 			await processNext();

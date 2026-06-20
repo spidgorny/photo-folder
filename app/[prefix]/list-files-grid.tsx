@@ -26,8 +26,8 @@ export function ListFilesGrid(props: { prefix: string }) {
 					id: file.key.split("/").slice(-1)[0],
 					title: file.key.split("/").slice(-1)[0],
 					src: `/api/s3/thumb/${file.key}`,
-					width: file.metadata?.width,
-					height: file.metadata?.height,
+					width: file.metadata?.width || 512,
+					height: file.metadata?.height || 512,
 					isSelected: false,
 					caption: file.key.split("/").slice(-1)[0],
 					tags: [

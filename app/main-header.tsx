@@ -6,6 +6,7 @@ import { useClientSession } from "@/components/use-client-session.tsx";
 import { MySlidingPane } from "@/components/my-sliding-pane.tsx";
 import { SignInForm } from "@/components/SignInForm";
 import { UploadSidebar } from "@/components/upload-sidebar";
+import { Dropdown } from "react-bootstrap";
 
 interface MainHeaderProps {
 	onOpenThumbnailManager?: () => void;
@@ -116,24 +117,32 @@ function SignOut() {
 	const userInitial = userEmail?.charAt(0)?.toUpperCase() || "U";
 
 	return (
-		<div className="d-flex align-items-center gap-2">
-			<div
-				className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-				style={{ width: "36px", height: "36px", fontSize: "14px" }}
-				title={userEmail || "User"}
+		<Dropdown>
+			<Dropdown.Toggle
+				as="div"
+				className="d-flex align-items-center gap-2 cursor-pointer"
+				style={{ cursor: "pointer" }}
 			>
-				{userInitial}
-			</div>
-			<span className="text-muted small d-none d-md-inline">
-				{userEmail || "User"}
-			</span>
-			<button
-				onClick={signOut}
-				className="btn btn-outline-danger btn-sm"
-				disabled={isLoggingOut}
-			>
-				{isLoggingOut ? "Signing out..." : "Sign Out"}
-			</button>
-		</div>
+				<div
+					className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+					style={{ width: "36px", height: "36px", fontSize: "14px" }}
+					title={userEmail || "User"}
+				>
+					{userInitial}
+				</div>
+				<span className="text-muted small d-none d-md-inline">
+					{userEmail || "User"}
+				</span>
+			</Dropdown.Toggle>
+			<Dropdown.Menu align="end">
+				<Dropdown.Item
+					onClick={signOut}
+					disabled={isLoggingOut}
+					className="text-danger"
+				>
+					{isLoggingOut ? "Signing out..." : "Sign Out"}
+				</Dropdown.Item>
+			</Dropdown.Menu>
+		</Dropdown>
 	);
 }
