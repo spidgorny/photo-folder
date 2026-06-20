@@ -11,7 +11,6 @@ export default function Home() {
 	const prefix = params?.prefix as string;
 	const decodedPrefix = prefix ? decodeURIComponent(prefix) : '';
 	const { user } = useClientSession();
-	const { data, error, isLoading } = useThumbnails(decodedPrefix);
 	const [hasPassword, setHasPassword] = useState(false);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -23,16 +22,19 @@ export default function Home() {
 		}
 	}, [user]);
 
+	// Only fetch thumbnails if user is authenticated
+	const { data, error, isLoading } = useThumbnails(isAuthenticated && decodedPrefix ? decodedPrefix : null);
+
+	if (!isAuthenticated) {
+		return <div className="p-8 text-center">Please log in to view this folder.</div>;
+	}
+
 	if (isLoading) {
 		return <div className="p-8 text-center">Loading...</div>;
 	}
 
 	if (error) {
 		return <div className="p-8 text-center text-danger">Error loading files: {error.message}</div>;
-	}
-
-	if (!isAuthenticated) {
-		return <div className="p-8 text-center">Please log in to view this folder.</div>;
 	}
 
 	if (hasPassword && !isAuthenticated) {
