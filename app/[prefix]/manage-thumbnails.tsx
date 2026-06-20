@@ -140,7 +140,7 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 									{regenerationProgress.completed} / {regenerationProgress.total}
 								</small>
 							</div>
-							<div className="d-flex" style={{ height: '20px' }}>
+							<div className="d-flex" style={{ height: '20px', backgroundColor: '#e9ecef' }}>
 								<div
 									style={{
 										width: `${(regenerationProgress.completed / regenerationProgress.total) * 100}%`,
