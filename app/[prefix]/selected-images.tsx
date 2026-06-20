@@ -62,27 +62,77 @@ function DeleteButton(props: {
 	const { mutateThumbnails, data, error, isLoading } = useThumbnails(
 		props.prefix,
 	);
+	const [isDeleting, setIsDeleting] = React.useState(false);
+	const [deleteProgress, setDeleteProgress] = React.useState(0);
+	const [deleteError, setDeleteError] = React.useState<string | null>(null);
 
 	const onClick = async () => {
-		let keys = props.images.map((x) => x.key);
-		console.log(keys);
-		const response = await fetch("/api/s3/deleteMany", {
-			method: "DELETE",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ keys }),
-		});
-		if (!response.ok) {
-			throw new Error(response.statusText);
+		setIsDeleting(true);
+		setDeleteProgress(0);
+		setDeleteError(null);
+
+		const keys = props.images.map((x) => x.key);
+		const totalKeys = keys.length;
+
+		try {
+			// Simulate progress for each deletion
+			for (let i = 0; i < totalKeys; i++) {
+				setDeleteProgress(((i + 1) / totalKeys) * 100);
+			}
+
+			const response = await fetch("/api/s3/deleteMany", {
+				method: "DELETE",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ keys }),
+			});
+
+			if (!response.ok) {
+				throw new Error(response.statusText);
+			}
+
+			await mutateThumbnails();
+			props.resetSelectedImages();
+		} catch (error) {
+			setDeleteError(error instanceof Error ? error.message : "Delete failed");
+			console.error("Delete error:", error);
+		} finally {
+			setIsDeleting(false);
 		}
-		await mutateThumbnails();
-		props.resetSelectedImages();
 	};
 
 	return (
-		<button className="btn btn-danger" onClick={onClick}>
-			Delete
-		</button>
+		<div className="d-flex flex-column gap-2">
+			<button
+				className="btn btn-danger"
+				onClick={onClick}
+				disabled={isDeleting || props.images.length === 0}
+			>
+				{isDeleting ? (
+					<>
+						<span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+						Deleting...
+					</>
+				) : (
+					`Delete (${props.images.length})`
+				)}
+			</button>
+			{isDeleting && (
+				<div className="progress" style={{ height: "6px", minWidth: "150px" }}>
+					<div
+						className="progress-bar progress-bar-striped progress-bar-animated"
+						role="progressbar"
+						style={{ width: `${deleteProgress}%` }}
+						aria-valuenow={deleteProgress}
+						aria-valuemin={0}
+						aria-valuemax={100}
+					></div>
+				</div>
+			)}
+			{deleteError && (
+				<div className="text-danger small">{deleteError}</div>
+			)}
+		</div>
 	);
 }
