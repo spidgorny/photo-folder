@@ -43,24 +43,32 @@ export async function DELETE(req: NextRequest) {
 			await s3.remove(thumbnailPath.join("/"));
 		}),
 	);
+
+	// Update thumbnail file asynchronously without blocking the response
 	let prefix = keysToDelete[0].split("/")[0];
-	await runAfterDelete(prefix, s3);
+	runAfterDelete(prefix, s3, keysToDelete).catch(err => {
+		console.error("Error updating thumbnail file after delete:", err);
+	});
+
 	return NextResponse.json({ status: "ok", res });
 }
 
-async function runAfterDelete(prefix: string, s3: S3Storage) {
-	const files = await s3.list(prefix);
-	const thumbFile = new ThumbFileS3(s3, prefix);
-	await thumbFile.init();
-	console.log("thumb file", thumbFile.thumbnails.length);
-	let sourceDataListIsACopy = [...thumbFile.thumbnails];
-	for (let entry of sourceDataListIsACopy) {
-		const exists = files.find((x) => x.key === entry.key);
-		console.log(exists ? "+" : "0", entry.key);
-		if (!exists) {
-			thumbFile.removeKey(entry.key);
+async function runAfterDelete(prefix: string, s3: S3Storage, deletedKeys: string[]) {
+	try {
+		const thumbFile = new ThumbFileS3(s3, prefix);
+		await thumbFile.init();
+		console.log("thumb file", thumbFile.thumbnails.length);
+
+		// Only remove the specific deleted keys from thumbnail file
+		// instead of re-scanning all files (which is very slow)
+		for (const deletedKey of deletedKeys) {
+			const fileName = deletedKey.split("/").slice(-1)[0];
+			thumbFile.removeKey(fileName);
 		}
+
+		console.log("after delete", thumbFile.thumbnails.length);
+		await thumbFile.save();
+	} catch (error) {
+		console.error("Error in runAfterDelete:", error);
 	}
-	console.log("after delete", thumbFile.thumbnails.length);
-	await thumbFile.save();
 }
