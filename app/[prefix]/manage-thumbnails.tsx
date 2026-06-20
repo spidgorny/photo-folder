@@ -62,6 +62,10 @@ alert("Sorted! The order will be saved to S3.");
 		(file) => !files.some((x) => x.key === file.key),
 	);
 
+	const filesWithoutBase64 = files.filter(
+		(file) => !file.base64 || !file.metadata,
+	);
+
 	const isPerfectlySorted =
 		files
 			.toSorted(sortBy((x) => x.created ?? x.modified))
@@ -160,6 +164,24 @@ alert("Sorted! The order will be saved to S3.");
 					))}
 				</tbody>
 			</table>
+
+			{filesWithoutBase64.length > 0 && (
+				<>
+					<h6 className="mt-4">Files without Base64/Metadata ({filesWithoutBase64.length})</h6>
+					<table className="table table-sm">
+						<tbody>
+							{filesWithoutBase64.map((file) => (
+								<FileRow
+									key={file.key}
+									prefix={props.prefix}
+									file={file}
+									thumbList={files}
+								/>
+							))}
+						</tbody>
+					</table>
+				</>
+			)}
 
 			<div className="d-flex justify-content-between mt-4">
 				<h5>Current Thumbnails ({files.length})</h5>
