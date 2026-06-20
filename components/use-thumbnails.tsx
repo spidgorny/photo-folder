@@ -2,7 +2,7 @@ import useSWR from "swr";
 import { fetcher } from "../lib/fetcher";
 import { S3File } from "../lib/s3-file";
 
-export function useThumbnails(prefix: string) {
+export function useThumbnails(prefix: string | null) {
 	const { data, error, isLoading, mutate } = useSWR<{ files: S3File[] }>(
 		prefix ? `/api/s3/files/${prefix}` : null,
 		fetcher,
@@ -23,8 +23,8 @@ export function useThumbnails(prefix: string) {
 }
 
 /** Returns raw list of S3File[] from S3 API call */
-export function useFiles(prefix: string) {
-	const { isLoading, data } = useSWR(`/api/s3/uploads/${prefix}`, fetcher);
+export function useFiles(prefix: string | null) {
+	const { isLoading, data } = useSWR(prefix ? `/api/s3/uploads/${prefix}` : null, fetcher);
 	return { isLoading, uploads: data?.files ?? [] } as {
 		isLoading: boolean;
 		uploads: S3File[];

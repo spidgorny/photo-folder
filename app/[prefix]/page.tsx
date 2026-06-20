@@ -23,7 +23,7 @@ export default function Home() {
 	}, [user]);
 
 	// Only fetch thumbnails if user is authenticated
-	const { data, error, isLoading } = useThumbnails(isAuthenticated && decodedPrefix ? decodedPrefix : null);
+	const { data, error, isLoading } = useThumbnails(isAuthenticated ? decodedPrefix : null);
 
 	if (!isAuthenticated) {
 		return <div className="p-8 text-center">Please log in to view this folder.</div>;

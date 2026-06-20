@@ -13,8 +13,8 @@ interface PhotoCardProps {
   } | null;
   loading?: boolean;
 }
-,loading = false 
-export default function PhotoCard({ folderName, photoCount = 0, firstImage }: PhotoCardProps) {
+
+export default function PhotoCard({ folderName, photoCount = 0, firstImage, loading = false }: PhotoCardProps) {
   const { user } = useAuth();
   const router = useRouter();
 
@@ -33,20 +33,20 @@ export default function PhotoCard({ folderName, photoCount = 0, firstImage }: Ph
           className="card-img-top"
           style={{ height: '150px', objectFit: 'cover', cursor: 'pointer' }}
           onClick={handleNavigate}
-        />loading ? 
-      ) : (
+        />
+      ) : loading ? (
         <div
-          className="card-img-top d-flex align-items '#f8f9fa', cursor: 'pointer' }}
+          className="card-img-top d-flex align-items-center justify-content-center"
+          style={{ height: '150px', backgroundColor: '#f8f9fa', cursor: 'pointer' }}
           onClick={handleNavigate}
         >
-        - <div className="spinner-border" role="status">
+          <div className="spinner-border" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
         </div>
       ) : (
         <div
           className="card-img-top d-flex align-items-center justify-content-center"
-          style={{ height: '150px', backgroundColor: center justify-content-center"
           style={{ height: '150px', backgroundColor: `hsl(${Math.random() * 360}, 70%, 80%)`, cursor: 'pointer' }}
           onClick={handleNavigate}
         >
@@ -55,8 +55,8 @@ export default function PhotoCard({ folderName, photoCount = 0, firstImage }: Ph
       )}
 
       <div className="card-body d-flex flex-column">
-        <h5 className="card-title text-trunc{loading ? 'Loading...' : `$ate">{folderName}</`}h5>
-        <p className="card-text text-muted">{photoCount} photos</p>
+        <h5 className="card-title text-truncate">{folderName}</h5>
+        <p className="card-text text-muted">{loading ? 'Loading...' : `${photoCount} photos`}</p>
 
         <button
           className="btn btn-primary mt-auto"

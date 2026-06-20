@@ -108,36 +108,36 @@ export default function HomePage() {
         </div>
       </div>
     );
-  }foders && flers.leh> 0 
-row rowols-1 ow-cols-md-2rowcols-lg-3 g-
-  return ({fodr.ma((fl:ny) = {
-    <main clascoest=focderaine r fo>r.me || folerkey?relce(a\/$/, '') || '';sName='h3 mb-0'>Welcome back, {user?.email || user?.userId || 'User'}!</h1>
-      </i>consteta fdeDetai[folderNae];
-      {/* MadViu*n
-        <section>N
-          <h2 className='h4 
-                   mb-4'>Your Photo FoNers<
-                   /h2>tails? ?? 0
-                   tails?age ?? null}
-                    lodin={!details?.loadd
-                 
-          {loadingDetails ? (
-            <di;
-            }v 
-          </div>
-        ) : (className="text-center py-4">
-          <div className="text-center py-4 text-muted">No folders found  <div className="spinner-border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
+  }
+
+  return (
+    <main className="container py-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1 className='h3 mb-0'>Welcome back, {user?.email || user?.userId || 'User'}!</h1>
+      </div>
+
+      {/* Main Grid View for Folders */}
+      <section>
+        <h2 className='h4 mb-4'>Your Photo Folders</h2>
+        {folders && folders.length > 0 ? (
+          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {folders.map((folder: any) => {
+              const folderName = folder.name || folder.key?.replace(/\/$/, '') || '';
+              const details = folderDetails[folderName];
+              return (
+                <div className="col" key={folderName}>
+                  <PhotoCard
+                    folderName={folderName}
+                    photoCount={details?.photoCount ?? 0}
+                    firstImage={details?.firstImage ?? null}
+                    loading={!details?.loaded}
+                  />
+                </div>
+              );
+            })}
           </div>
         ) : (
-          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            {folderDetails.map((folder) => (
-              <div className="col" key={folder.name}>
-                <PhotoCard folderName={folder.name} photoCount={folder.photoCount} firstImage={folder.firstImage} />
-              </div>
-            ))}
-          </div>
+          <div className="text-center py-4 text-muted">No folders found</div>
         )}
       </section>
     </main>
