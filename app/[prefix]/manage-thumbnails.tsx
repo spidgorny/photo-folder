@@ -137,11 +137,6 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 						<div>
 							<div className="d-flex justify-content-between mb-1">
 								<small className="text-muted">
-									{regenerationProgress.processing.length > 0 && (
-										<>Processing: {regenerationProgress.processing.join(', ')} </>
-									)}
-								</small>
-								<small className="text-muted">
 									{regenerationProgress.completed} / {regenerationProgress.total}
 								</small>
 							</div>
