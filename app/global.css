@@ -51,6 +51,19 @@
 	z-index: 2147483646 !important;
 }
 
+.thumbnail-management-overlay {
+	z-index: 2147483646 !important;
+}
+
+/* Force all sliding pane elements to use max z-index */
+[class*="sliding-pane"] {
+	z-index: 2147483647 !important;
+}
+
+[class*="sliding-pane"] > div {
+	z-index: 2147483647 !important;
+}
+
 /* Fix lightbox thumbnail sizing */
 .yarl__thumbnails {
 	height: 120px !important;
