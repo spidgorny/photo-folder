@@ -5,42 +5,55 @@ import { usePathname } from "next/navigation";
 import { useClientSession } from "@/components/use-client-session.tsx";
 import { MySlidingPane } from "@/components/my-sliding-pane.tsx";
 import { SignInForm } from "@/components/SignInForm";
+import { UploadSidebar } from "@/components/upload-sidebar";
 
 interface MainHeaderProps {
 	onOpenThumbnailManager?: () => void;
 }
 
 export function MainHeader({ onOpenThumbnailManager }: MainHeaderProps) {
+	const [showUploadSidebar, setShowUploadSidebar] = useState(false);
 	const pathname = usePathname();
 	const folderName = pathname?.split('/').slice(-1)[0] || '';
 	const isFolderPage = pathname !== '/' && pathname?.split('/').length === 2;
 
 	return (
-		<header className="bg-white border-bottom shadow-sm">
-			<div className="container-fluid">
-				<div className="d-flex justify-content-between align-items-center py-3">
-					<div className="d-flex align-items-center gap-4">
-						<h4 className="m-0">
-							<Link href="/" className="text-decoration-none text-dark">
-								📷 Photo Folder
-							</Link>
-						</h4>
-						{isFolderPage && <span className="text-muted">/ {folderName}</span>}
-					</div>
-					<div className="d-flex align-items-center gap-3">
-						{isFolderPage && (
-							<button
-								className="btn btn-outline-primary btn-sm"
-								onClick={onOpenThumbnailManager}
-							>
-								Manage Thumbnails
-							</button>
-						)}
-						<SignInOrOut />
+		<>
+			<header className="bg-white border-bottom shadow-sm">
+				<div className="container-fluid">
+					<div className="d-flex justify-content-between align-items-center py-3">
+						<div className="d-flex align-items-center gap-4">
+							<h4 className="m-0">
+								<Link href="/" className="text-decoration-none text-dark">
+									📷 Photo Folder
+								</Link>
+							</h4>
+							{isFolderPage && <span className="text-muted">/ {folderName}</span>}
+						</div>
+						<div className="d-flex align-items-center gap-3">
+							{isFolderPage && (
+								<>
+									<button
+										className="btn btn-outline-primary btn-sm"
+										onClick={() => setShowUploadSidebar(true)}
+									>
+										Upload
+									</button>
+									<button
+										className="btn btn-outline-primary btn-sm"
+										onClick={onOpenThumbnailManager}
+									>
+										Manage Thumbnails
+									</button>
+								</>
+							)}
+							<SignInOrOut />
+						</div>
 					</div>
 				</div>
-			</div>
-		</header>
+			</header>
+			<UploadSidebar isOpen={showUploadSidebar} onClose={() => setShowUploadSidebar(false)} />
+		</>
 	);
 }
 
