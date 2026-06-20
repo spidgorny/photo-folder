@@ -1,5 +1,5 @@
 import { useFiles, useThumbnails } from "@/components/use-thumbnails.tsx";
-import { Spinner } from "react-bootstrap";
+import { Spinner, ProgressBar } from "react-bootstrap";
 import axios from "axios";
 import React, { useState } from "react";
 import { SaveButton } from "spidgorny-react-helpers/save-button.tsx";
@@ -20,6 +20,7 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 	const { isWorking, wrapWorking } = useWorking();
 	const session = useClientSession();
 	const isAuthenticated = !!session.user;
+	const [regenerationProgress, setRegenerationProgress] = useState({ current: 0, total: 0, currentFile: '' });
 
 	const sortByTime = wrapWorking(async () => {
 		const sorted = files.toSorted(sortBy((x) => x.created ?? x.modified));
@@ -28,20 +29,50 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 	});
 
 	const regenerateMissing = wrapWorking(async () => {
-		const missingCount = uploads.filter(
+		const missingFiles = uploads.filter(
 			(file) => !files.some((x) => x.key === file.key),
-		).length;
+		);
+
+		if (missingFiles.length === 0) {
+			alert("No missing thumbnails to regenerate.");
+			return;
+		}
 
 		if (
 			!confirm(
-				`Regenerate thumbnails for all ${missingCount} missing files? This may take a while.`,
+				`Regenerate thumbnails for all ${missingFiles.length} missing files? This may take a while.`,
 			)
 		) {
 			return;
 		}
 
-		const result = await regenerateMissingThumbnails(props.prefix);
-		alert(`Triggered regeneration for ${result.triggered} missing files.`);
+		setRegenerationProgress({ current: 0, total: missingFiles.length, currentFile: '' });
+
+		let successCount = 0;
+		const errors: { file: string; error: string }[] = [];
+
+		for (let i = 0; i < missingFiles.length; i++) {
+			const file = missingFiles[i];
+			setRegenerationProgress({ current: i + 1, total: missingFiles.length, currentFile: file.key.split('/').slice(-1)[0] });
+			try {
+				await reindexFile(file.key);
+				successCount++;
+			} catch (err) {
+				const errorMessage = err instanceof Error ? err.message : String(err);
+				console.error(`Failed to regenerate thumbnail for ${file.key}:`, errorMessage);
+				errors.push({ file: file.key, error: errorMessage });
+			}
+			// Small delay to avoid overwhelming the Lambda
+			await new Promise((r) => setTimeout(r, 800));
+		}
+
+		setRegenerationProgress({ current: 0, total: 0, currentFile: '' });
+
+		if (errors.length > 0) {
+			alert(`Regeneration complete: ${successCount} succeeded, ${errors.length} failed. Check console for details.`);
+		} else {
+			alert(`Successfully regenerated thumbnails for ${successCount} files.`);
+		}
 		await mutateThumbnails();
 	});
 
@@ -58,6 +89,24 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 	return (
 		<div>
 			<div className="d-flex justify-content-between align-items-center mb-3">
+				{regenerationProgress.total > 0 && (
+					<div className="mt-3">
+						<div className="d-flex justify-content-between mb-1">
+							<small className="text-muted">
+								Processing: {regenerationProgress.currentFile}
+							</small>
+							<small className="text-muted">
+								{regenerationProgress.current} / {regenerationProgress.total}
+							</small>
+						</div>
+						<ProgressBar
+							now={(regenerationProgress.current / regenerationProgress.total) * 100}
+							variant="info"
+							animated
+							striped
+						/>
+					</div>
+				)}
 				<h5>Manage Thumbnails — {props.prefix}</h5>
 				<button
 					className="btn btn-sm btn-outline-secondary"
