@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth";
-import { getThumbnailsFallbackToFiles } from "@/app/api/s3/files/[prefix]/getThumbnailsFallbackToFiles.ts";
+import { getS3Storage } from "@/lib/S3Storage.ts";
 
 export async function GET(
 	request: NextRequest,
@@ -26,6 +26,8 @@ export async function GET(
 		}
 	}
 
-	const files = await getThumbnailsFallbackToFiles(prefix);
+	// Use fast S3 list operation instead of downloading large .thumbnails.json
+	const s3 = getS3Storage();
+	const files = await s3.list(prefix);
 	return NextResponse.json({ files });
 }
