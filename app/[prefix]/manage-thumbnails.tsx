@@ -7,7 +7,6 @@ import { sortBy } from "spidgorny-react-helpers/lib/array.ts";
 import {
 	reindexFile,
 	updateThumbnailFile,
-	regenerateMissingThumbnails,
 } from "@/app/[prefix]/actions.ts";
 import { useWorking } from "spidgorny-react-helpers/use-working.tsx";
 import { S3File } from "@/lib/s3-file.ts";
@@ -37,7 +36,8 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 			(file) => !file.base64 || !file.metadata,
 		);
 
-		const totalMissing = missingFiles.length + filesWithoutData.length;
+		const allFilesToProcess = [...missingFiles, ...filesWithoutData];
+		const totalMissing = allFilesToProcess.length;
 
 		if (totalMissing === 0) {
 			alert("No missing thumbnails to regenerate.");
@@ -46,20 +46,52 @@ export function ManageThumbnails(props: { prefix: string; close: () => void }) {
 
 		setRegenerationProgress({ completed: 0, processing: [], total: totalMissing });
 
-		const result = await regenerateMissingThumbnails(props.prefix, (progress) => {
-			setRegenerationProgress({
-				completed: progress.completed,
-				processing: progress.processing.map(f => f.split('/').slice(-1)[0]),
-				total: progress.total,
-			});
-		});
+		const CONCURRENCY = 10;
+		let completed = 0;
+		let successCount = 0;
+		const errors: { file: string; error: string }[] = [];
+		const processing = new Set<string>();
+		const queue = [...allFilesToProcess];
+
+		const processNext = async (): Promise<void> => {
+			if (queue.length === 0) return;
+
+			const file = queue.shift()!;
+			processing.add(file.key);
+
+			try {
+				await reindexFile(file.key);
+				successCount++;
+			} catch (err) {
+				const errorMessage = err instanceof Error ? err.message : String(err);
+				console.error(`Failed to regenerate thumbnail for ${file.key}:`, errorMessage);
+				errors.push({ file: file.key, error: errorMessage });
+			} finally {
+				processing.delete(file.key);
+				completed++;
+
+				setRegenerationProgress({
+					completed,
+					processing: Array.from(processing).map(f => f.split('/').slice(-1)[0]),
+					total: totalMissing,
+				});
+
+				// Process next file if available
+				await processNext();
+			}
+		};
+
+		// Start initial batch of concurrent workers
+		const workers = Math.min(CONCURRENCY, queue.length);
+		const initialWorkers = Array.from({ length: workers }, () => processNext());
+		await Promise.all(initialWorkers);
 
 		setRegenerationProgress({ completed: 0, processing: [], total: 0 });
 
-		if (result.errors.length > 0) {
-			alert(`Regeneration complete: ${result.triggered} succeeded, ${result.failed} failed. Check console for details.`);
+		if (errors.length > 0) {
+			alert(`Regeneration complete: ${successCount} succeeded, ${errors.length} failed. Check console for details.`);
 		} else {
-			alert(`Successfully regenerated thumbnails for ${result.triggered} files.`);
+			alert(`Successfully regenerated thumbnails for ${successCount} files.`);
 		}
 		await mutateThumbnails();
 	});

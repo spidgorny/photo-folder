@@ -29,6 +29,7 @@ export async function updateThumbnailFile(fileName: string, files: S3File[]) {
 	return await s3.put(fileName, newJson);
 }
 
+// Server action to reindex a single file
 export async function reindexFile(fileKey: string) {
 	try {
 		const apiUrl = process.env.LAMBDA_HANDLE_UPLOAD;
@@ -66,96 +67,4 @@ export async function reindexFile(fileKey: string) {
 			throw new Error(`Failed to regenerate thumbnail for ${fileKey}: ${String(err)}`);
 		}
 	}
-}
-
-// New function: trigger thumbnail generation for all missing files with concurrency pool
-export async function regenerateMissingThumbnails(
-	prefix: string,
-	onProgress?: (progress: { completed: number; processing: string[]; total: number }) => void,
-) {
-	const s3 = getS3Storage();
-	const errors: { file: string; error: string }[] = [];
-	const CONCURRENCY = 10;
-
-	// Get all uploaded files
-	const allFiles = await s3.list(prefix);
-	const uploads = allFiles.filter((f) => !f.key.endsWith("/"));
-
-	// Get current thumbnails list
-	let thumbnails: S3File[] = [];
-	try {
-		const bytes = await s3.getString(`${prefix}/.thumbnails.json`);
-		thumbnails = JSON.parse(bytes);
-	} catch (e) {
-		console.log("No .thumbnails.json yet, will create one");
-	}
-
-	const existingKeys = new Set(thumbnails.map((t) => t.key));
-	const missing = uploads.filter((f) => !existingKeys.has(f.key));
-
-	// Also include files that are missing base64 or metadata
-	const filesWithoutData = thumbnails.filter((f) => !f.base64 || !f.metadata);
-
-	console.log(`Found ${missing.length} files missing thumbnails in ${prefix}`);
-	console.log(`Found ${filesWithoutData.length} files missing base64/metadata in ${prefix}`);
-
-	const allFilesToProcess = [...missing, ...filesWithoutData];
-
-	if (allFilesToProcess.length === 0) {
-		return {
-			triggered: 0,
-			failed: 0,
-			totalUploads: uploads.length,
-			errors,
-		};
-	}
-
-	let completed = 0;
-	let successCount = 0;
-	const processing = new Set<string>();
-	const queue = [...allFilesToProcess];
-
-	const processNext = async (): Promise<void> => {
-		if (queue.length === 0) return;
-
-		const file = queue.shift()!;
-		processing.add(file.key);
-
-		try {
-			await reindexFile(file.key);
-			successCount++;
-		} catch (err) {
-			const errorMessage = err instanceof Error ? err.message : String(err);
-			console.error(`Failed to regenerate thumbnail for ${file.key}:`, errorMessage);
-			errors.push({ file: file.key, error: errorMessage });
-		} finally {
-			processing.delete(file.key);
-			completed++;
-			console.log(`Progress: ${completed}/${allFilesToProcess.length} files processed`);
-
-			// Report progress if callback provided
-			if (onProgress) {
-				onProgress({
-					completed,
-					processing: Array.from(processing),
-					total: allFilesToProcess.length,
-				});
-			}
-
-			// Process next file if available
-			await processNext();
-		}
-	};
-
-	// Start initial batch of concurrent workers
-	const workers = Math.min(CONCURRENCY, queue.length);
-	const initialWorkers = Array.from({ length: workers }, () => processNext());
-	await Promise.all(initialWorkers);
-
-	return {
-		triggered: successCount,
-		failed: errors.length,
-		totalUploads: uploads.length,
-		errors,
-	};
 }
